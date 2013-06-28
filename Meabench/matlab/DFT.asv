@@ -1,0 +1,8 @@
+%a Discrete Fourier Transformation (DFT) to analyze the raw signal
+% The Frequency resolution is determined by the size of the measurement
+% window, namelsy \delta_f=1/(T_measure) wit t_measure=size of measurement
+% window. The maximal detectable frequency is limited by the sampling
+% frequency (Nyqvist theorem). f_max = 1/2*f_sample. E.G. with a sampling
+% frequency of f_sample = 25kHz, we can detect signals upto 12.5 kHz
+
+rawdata

@@ -1,0 +1,208 @@
+%%file MAKE_PSTH_8X8
+% 
+% 
+% an extension to the standard MAKE_PSTH function. This file plots PSTh for
+% all 64 chanels.
+% IN ADDITION, it also stores the delay times of the first response spikes
+% for each channel(If there are responses of course). By this, one can
+% later calculate an average response delay and then evtl. sort the
+% responses according to this criteria.
+% 
+% 
+%
+% %%INPUT:
+% datname:                  The file name
+% 
+% 
+% ls                     The usual structure that holds the spiek
+%                        information
+% 
+% trig_times;            vector of allignment times in the PSTH
+% 
+% 
+% PRE_TRIG_TIME           Extend of PSTH before the Trigger, in SEC!
+% POST_TRIG_TIME          Extend of the PSTH after the Trigger, in SEC!
+% 
+%
+% PSTH_BIN_WIDTH                PSTH bin width, in SEC!
+% 
+% 
+% 
+% 
+% %OUTPUT:
+% %ch_psth:              A cell array that stores the Values of the PSTH
+%                        for each channel
+%
+%ch_delay_first_spike    A cell array with one cell for each channel that
+%                        stores the delay times (distribution) of the FIRST response spike. 
+%                        This can later be used to calculate e.g. an
+%                        average delay
+% plot                   a figure with the individual PSTHs
+% 
+% 
+%
+%
+%function [ch_psth ch_psth_delay_first_spike] = MAKE_PSTH_8X8(datname,ls,Trigger_times,PRE_TRIG_TIME,POST_TRIG_TIME, PSTH_BIN_WID
+
+function [ch_psth ch_delay_first_spike] = MAKE_PSTH_8X8(datname,ls,Trigger_times,PRE_TRIG_TIME,POST_TRIG_TIME, PSTH_BIN_WIDTH)
+
+
+nr_triggers         = length(Trigger_times) 
+TRIAL_TIME_VEC      = -PRE_TRIG_TIME:PSTH_BIN_WIDTH:POST_TRIG_TIME-PSTH_BIN_WIDTH;
+
+%define a maximum delay that the first spike can have
+MAXIMUM_DELAY_FIRST_SPIKE = 0.2;            %in SEC!   
+
+
+hw_ch          = [0:63];
+nr_ch          = 64;
+
+
+
+ch_psth              = cell(1,64);
+%store the spiek delay and the trial nr here
+ch_delay_first_spike = cell(2,64);
+for ii=1:64
+    ch_psth{1,ii}              = zeros(1,length(TRIAL_TIME_VEC));
+    ch_delay_first_spike{1,ii} = [];
+   
+end
+
+
+
+for ii=1:nr_triggers
+    
+    %ii
+    %for displaying process in 100-trial steps
+    if ~rem(ii,100)
+         ii
+    end
+
+    for jj=1:nr_ch
+        
+        ch_spikes     = ls.time(find(ls.channel==hw_ch(jj) & ls.time>Trigger_times(ii)-PRE_TRIG_TIME & ls.time<Trigger_times(ii)+POST_TRIG_TIME));
+        rel_ch_times  = ch_spikes-Trigger_times(ii);
+        
+        if(~isempty(rel_ch_times))
+            %for calculation of the avergae delays, just take the first
+            %spike delay, in absolute values
+            if rel_ch_times(1) <= MAXIMUM_DELAY_FIRST_SPIKE & rel_ch_times(1) > 0
+                ch_delay_first_spike{1,jj} = [ch_delay_first_spike{1,jj}; rel_ch_times(1)];
+                %%%store also the trigger nr
+                ch_delay_first_spike{2,jj} = [ch_delay_first_spike{2,jj}; ii];
+            else
+                %If there was no spike in the MAXIMUM_DELAY_FIRST_SPIKE
+                %window, set the delay time to NaN
+                ch_delay_first_spike{1,jj} = [ch_delay_first_spike{1,jj}; NaN];
+                %%%store also the trigger nr
+                ch_delay_first_spike{2,jj} = [ch_delay_first_spike{2,jj}; ii];
+            end
+           
+            
+            
+            %%%%MAKE the PSTH calculation
+            if PSTH_BIN_WIDTH      == 0.01
+                ch_hist                    = hist(rel_ch_times,TRIAL_TIME_VEC);
+                ch_psth{1,jj}              = ch_psth{1,jj} + ch_hist;
+            
+            elseif PSTH_BIN_WIDTH  == 0.005
+                ch_hist       = histc(rel_ch_times,TRIAL_TIME_VEC);
+                ch_psth{1,jj} = ch_psth{1,jj} + ch_hist;
+            
+            else
+                %disp(' What is the Bin width? Take care of not binning the blanking period!' );
+                %return;
+                ch_hist       = histc(rel_ch_times,TRIAL_TIME_VEC);
+                ch_psth{1,jj} = ch_psth{1,jj} + ch_hist;
+            end
+
+
+        else%%%if rel_ch_times is empty, i.e there was no spike, still write that in the ch_delay_first_spike
+                ch_delay_first_spike{1,jj} = [ch_delay_first_spike{1,jj}; NaN];
+                %%%store also the trigger nr
+                ch_delay_first_spike{2,jj} = [ch_delay_first_spike{2,jj}; ii];
+        end %the end of the if (rel_chtimes) else loop
+    
+    end% the end of the ch loop
+     
+end
+
+
+ %check all response spikes in their temporal order and assign sequences
+    %%%This give a matrix with the relative response times for each
+    %%%channel, if there was no response, then it is NaN
+    %Only take the elecrodes, not the analog channels
+    %ALL_responses is a NR_trials*60 electrode matrix
+    ALL_responses = cell2mat(ch_delay_first_spike(1,1:60));
+    %this is a nice command, it sorts the response times and stores the
+    %sequences of the channels as the indices in order of appearance (temporal delay of
+    %response)
+    %It sorts alonh the columns, i..e for each trial separatly as it has to
+    %be
+    [ALL_responses_sort Channel_Sequences] = sort(ALL_responses,2);
+    
+    %%%If a sort Channel_Sequences again, and then take the indices, I get the position of each electrode in the response 
+      %at the right position, 
+     [Ch_Nrs EL_position] = sort(Channel_Sequences,2);
+     
+     %%I still need the NaNs in the right position
+     %1-dimensional indexing:
+     nan_ind               = find(isnan(ALL_responses));
+     EL_position(nan_ind)  = NaN;
+     
+     
+     %I can calculate a mean sequence position
+     %make the mean over the columns (trials), and don't consider the NaNs
+     %Mean_response_position(:,1) = nanmean(EL_position,1);
+     
+     %I cn also find the nr. of responses where I calculated the mean
+     %position nr from
+     %Find the 2-d indexing of all not(NaNs)
+%      [row_ind col_ind]           = find(~isnan(EL_position));
+%      %bin the electrodes according to how many not(NaNs) they have
+%      Mean_response_position(:,2) = hist(col_ind,1:60);
+     
+     %%a way to find the Nr. of responses
+
+
+% %plot the result
+PSTH_8x8_fig = screen_size_fig;
+for ii=1:nr_ch
+ %find the rigt position
+    [xposi,yposi]=hw2cr(ii-1);
+    
+    plotpos     = xposi+8*(yposi-1);
+    hsub(ii)    = subplot(8,8,plotpos);
+    plot(TRIAL_TIME_VEC,ch_psth{1,ii}/(PSTH_BIN_WIDTH*nr_triggers));
+    xlim([-PRE_TRIG_TIME POST_TRIG_TIME]);
+    ylimits = get(gca,'Ylim');
+    max_ylim(ii) = ylimits(2);
+end
+
+
+ set(hsub(1:59),'Ylim',[0 max(max_ylim(1:59))])
+ subplot(8,8,1)
+ xlabel(' time r.t. trigger [sec]');
+ ylabel('rate in trial [Hz]');
+ title({['PSTH, averaged over ', num2str(nr_triggers),' trials'];...
+        ['bin width: ', num2str(PSTH_BIN_WIDTH*1000),' msec, channel: 61']});
+        
+  
+    
+% % %   %%for calculation on the server
+% % %   %datname = '..' ;
+%   filename=strcat(datname,'_MAKE_PSTH_8X8.mat');
+%   save(filename,'ch_psth','ch_delay_first_spike', 'TRIAL_TIME_VEC','Trigger_times','PRE_TRIG_TIME','POST_TRIG_TIME','PSTH_BIN_WIDTH','EL_position', 'Mean_response_position');
+%   
+%   
+  
+  
+  
+  
+  
+  
+  
+
+        
+        
+        

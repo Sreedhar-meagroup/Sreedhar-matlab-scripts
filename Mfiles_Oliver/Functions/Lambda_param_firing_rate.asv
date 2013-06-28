@@ -1,0 +1,72 @@
+%Analysing pre-stimulus firing rate and estimated parameter lambda fro
+%response delay
+
+function Lambda_param_firing_rate(Response_delay_Prestim_act_Datasets)
+%Determine how mant datasets are stored right now
+Nr_Datasets = length(Response_delay_Prestim_act_Datasets);
+
+%reassignement
+Results   = Response_delay_Prestim_act_Datasets;
+
+ALL_lambda       = [];
+ALL_mean_FR      = [];
+
+%resolution of the firing rate estimate
+FR_estim_bin = 0.01;
+
+for ii=1:Nr_Datasets
+    %for each dataste, load the according analysis
+    load(Results(ii).STORAGE);
+    %this loads also the StimRaster_Sparse array, where ALL detected spikes
+    %pre- and post stimulus are stored
+    
+    Nr_channels = length(Analysis_channels);
+    HW_channels = cr2hw(Analysis_channels);
+    for jj=1:Nr_channels
+        ch        = HW_channels(jj);
+        %find the no. of trials
+        no_trials =  size(StimRaster_Sparse{ch+1},2);
+        for kk=1:no_trials
+            prestim_ind  = find(StimRaster_Sparse{ch+1}(:,kk)<0);
+            %these values are originally negative, make them positive and
+            %sort them in ascending order. I.e. the vector stores spikes
+            %in reverse direction than experimentally observed. 
+            if ~isempty(prestim_ind)
+                Sp_train{kk} = sort(-full(StimRaster_Sparse{ch+1}(prestim_ind,kk)));
+            else
+                Sp_train{kk} = [];
+            end
+        end
+        %find the maximal distant spike pre-stimulus, to determine the
+        %vector over which rates are calculated
+        time_max = ceil(max(cell2mat(cellfun(@max,Sp_train,'uniformOutput',false))));
+        time_vec = 0:FR_estim_bin:time_max;
+        
+        %I can now conveniently calculate firing rates from the spike
+        %trains
+        %external function
+        [FR_estim time_out] = Spike_train_firing_rate_estimate(Sp_train,time_vec);
+        
+        %I can claculate mean firing rates, for each trial and across each
+        %trial
+        Mean_FR_prestim = mean(cellfun(@mean,FR_estim));
+        
+        %now I can assign this to the array for mean firing rate
+        %calculation
+        Mean_FR_lambda{ii}{jj}(1) = Mean_FR_prestim;    %stores the mean firing rate
+        Mean_FR_lambda{ii}{jj}(2) = fit_fct_parameter{jj}(3);
+        
+    end
+end
+
+
+for ii=1:Nr_Datasets
+    mean_fr     = cellfun(@(x) x(1),Mean_FR_lambda{ii}(:));
+    lambdas     = cellfun(@(x) x(2),Mean_FR_lambda{ii}(:));
+    ALL_lambda  = [ALL_lambda; lambdas];
+    ALL_mean_FR = [ALL_mean_FR; mean_fr];
+end
+
+
+
+    disp('hallo');

@@ -1,0 +1,51 @@
+%write a function that plots all the cutouts for a givn channel in one
+%figure
+
+%input:
+% ls             =   name of the structure that holds the cutouts, this is usually loaded with loadspike_seq_cutouts
+% mea_channel_nr =   mea channel for which cutouts should be plotted, can
+%                    also be a vector of several channels
+% nr_cutouts     =  how many cutouts to be plotted maximamly in ne figure
+
+function artifact_check(ls,mea_channel,nr_cutouts)
+
+nr_channels = length(mea_channel);
+hw_channel  = cr2hw(mea_channel);
+x_vec       = (-2+0.04):0.04:(3-0.04);
+
+
+for kk=1:nr_channels
+    ch_ind      = find(ls.channel==hw_channel(kk));
+
+    total_nr_spikes=length(ch_ind);
+    if total_nr_spikes<nr_cutouts
+        disp(['only ', num2str(total_nr_spikes),' spikes on the resp. channel, plotting all those']);
+        nr_cutouts = total_nr_spikes;
+    end
+
+
+    cutout_fig=screen_size_fig();
+    plot(x_vec,ls.context(:,ch_ind(1:nr_cutouts)),'--','Color', [.8 .8 .8])
+    hold on;
+
+    mean_cutout=mean(ls.context(:,ch_ind(1:nr_cutouts)),2);
+    plot(x_vec,mean_cutout,'r', 'LineWidth', 2);
+    title({[num2str(nr_cutouts),' spike cutouts from channel ',num2str(mea_channel(kk)),' plotted in gray'];...
+        ['mean cutout shape plotted in red']});
+    xlabel('time [msec] ');
+end
+  
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

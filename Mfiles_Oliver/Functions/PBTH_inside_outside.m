@@ -1,0 +1,279 @@
+% for feedback stimulation experiments, take the stimulation period and
+% compare stimulated bursts (which always have a high-rate) and
+% unstimulated bursts, but which also have a high rate. This happens during
+% the experiment, becuase I have an dadditional min. 10 sec no-stimulation
+% period once a stimulation was triggered. And in this period, of course,
+% there might also be bursts with high rates, but they are not stimulated.
+%Compare by means of their PSTH
+% For the analysis here, the rate crossing should be calculated from new
+% (not taking the online trigger) and then checked if it was a stimulated
+% burst or not. This is because, I only have the trigger for the actual
+% stimulated bursts and would have to calculate a rate crossing for the
+% times in between anyway. And in order to be uniform for the stimulated
+% and unstimulated bursts, I should do it in the way explained.
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% input:
+% ls:                   the usual structure with spike information
+% 
+% 
+% burst detection:      the cell array, for each channel one, with the
+%                       stored burst information. 
+% 
+% 
+% NB_onset              The vector with onset times of the NBs
+%
+% CHANNEL_VEC:          A vector with MEA channel nrs. for which the
+%                       analysis should be done
+% 
+% %TIME_START, TIME_END   start end end time of the calculation, in hrs
+% 
+% 
+% TRIG_CH:               Te MEA_channel for which the rate calculation was
+%                       done (in the experiment)
+%
+%
+%varargin               Can contain plot handles where the individual plots
+%                       for the channels should go to
+% 
+% 
+% 
+% 
+% %output:
+% A figure showing the PSTH for the two compared cases 
+% 
+% 
+% 
+% 
+function [inside_PSTH outside_PSTH inside_trigger_times outside_trigger_times] = PBTH_inside_outside(ls,burst_detection,NB_onset, CHANNEL_VEC, TIME_START, TIME_END,TRIG_CH, varargin)
+
+
+if ~isempty(varargin)
+    plot_handles = varargin{1}
+else
+    plot_handles = [];
+end
+
+%TRIG_CH    = 66;
+trig_ch_hw = cr2hw(TRIG_CH);
+
+nr_ch   = length(CHANNEL_VEC);
+hw_ch   = cr2hw(CHANNEL_VEC);
+
+stim_times = ls.time(find(ls.channel==61 & ls.time>TIME_START*3600 & ls.time<TIME_END*3600));
+
+
+RATE_THRESH  = 30   % A parameter for rate-crossing that has to be set
+MIN_SEPARATE = 1    %The minimu time between detecting two rate-crossings, in experiments, this was usually approx 10 sec
+
+ [high_rate_cross_times  high_rate_cross_vals]        = get_trig_times(ls,TRIG_CH,TIME_START,TIME_END,RATE_THRESH,MIN_SEPARATE);
+ close(gcf)
+%the following stores the burst onsets of the TRIG_CH
+nr_bursts = length(NB_onset);
+%for jj=1:nr_bursts
+    burst_starts = NB_onset(:,2);
+%end
+
+ %take only those high_rate_cross-times that are around the beginning of a
+ %burst on the TRIG_CH
+ nr_rate_cross = 0;
+ for ii = 1:length(high_rate_cross_times{1})
+     if find(burst_starts < high_rate_cross_times{1}(ii) & burst_starts > high_rate_cross_times{1}(ii)-0.3)
+         nr_rate_cross = nr_rate_cross+1;
+         high_rate_cross_ind(nr_rate_cross) = ii;
+     end
+ end
+ high_rate_cross_times = high_rate_cross_times{1}(high_rate_cross_ind);
+ high_rate_cross_vals  = high_rate_cross_vals{1}(high_rate_cross_ind);
+ 
+ %high_rate_cross_times          = high_rate_cross_times{1};
+ nr_rate_cross                  = length(high_rate_cross_times);
+ inside_trig_times              = cell(1,nr_ch);
+ outside_trig_times             = cell(1,nr_ch);
+ 
+for ii=1:nr_ch
+    %this gives the time when on the resp. channel high rates are crossed
+   
+        
+    
+    %cycle through the detected high rate cross times and seee if they  happend
+    %during a stim or not:
+   
+    inside_ind_ct               = 0;
+    outside_ind_ct              = 0;
+    inside_stim_rate_cross_ind  = [];
+    outside_stim_rate_cross_ind = [];
+   
+    
+    for kk=1:nr_rate_cross
+        cond{1}   = find(stim_times > high_rate_cross_times(kk));
+        cond{2}   = find(stim_times < high_rate_cross_times(kk)+0.2);
+         
+        %it may also happen, due to different way of caculation, that in
+        %online mode, stimulation came before the detected offline trigger
+        cond{3}   =  find( stim_times < high_rate_cross_times(kk));
+        cond{4}   =  find( stim_times+0.2 > high_rate_cross_times(kk));
+        
+        %the following gives the index which fulfills both conditions
+        
+        if  ~isempty(intersect(cond{1}, cond{2})) | ~isempty(intersect(cond{3},cond{4}))
+            
+            if intersect(cond{1}, cond{2})
+                stim_ind = intersect(cond{1}, cond{2});
+            else
+                stim_ind = intersect(cond{3}, cond{4});
+            end
+            
+            inside_ind_ct                               = inside_ind_ct+1;
+            inside_stim_rate_cross_ind(inside_ind_ct,1) = stim_ind;                                       %this gives the index in the stime times where a rate crossing happens inside the stim
+            inside_stim_rate_cross_ind(inside_ind_ct,2) = kk;                                             %this is the according index in the high_rate_cross_times array
+            
+            
+            
+            %if the next or last real trigger was is atleast a certain
+            %amount of time apart, take only those outside conditions
+        elseif min(abs(stim_times - high_rate_cross_times(kk)))>1 
+            outside_ind_ct                                = outside_ind_ct+1;
+            outside_stim_rate_cross_ind(outside_ind_ct,1) = kk;
+        end 
+    end
+    
+   
+    inside_rc_times              = high_rate_cross_times(inside_stim_rate_cross_ind(:,2));
+    outside_rc_times             = high_rate_cross_times(outside_stim_rate_cross_ind(:,1));
+    inside_stim_time             = stim_times(inside_stim_rate_cross_ind(:,1));                         %this are the absolute stim times
+    inside_rel_stim_time         = stim_times(inside_stim_rate_cross_ind(:,1)) - inside_rc_times';       %this gives the stim times relative to the rc_times
+    
+
+
+    
+    %%%
+%%%%%OBSOLETE
+%     %FURTHER MODIFICATION:
+%   In the outside condition, there are many bursts at relative short
+%   intervals, i.e. in the alignement in the PSTH, the probability that there was a burst e.g. 1-2 sec. before the alignement time is quite high. 
+%     Therefore, the baseline in the outside condition before the
+%     alignement time is higher( and has a slower drop ), because some bursts would appear not only once but double in the PSTH.
+%     This is more a matter of the way the bursts for the PSTH are choosen than real observed activity and it should therfore be taken care of. 
+%     This all does not happen in the inside condition, because there, due to the way the trigger
+%     was generated, i.e with a 10sec interval, this does not happen for
+%     sequential inside-condition burts.
+%     To solve that, only take bursts in the outside condition that are at
+%     least say 1-2 sec apart, i.e find those outside_rc_times the
+%     difference between fllowing rc_times is less than that time and
+%     remove them. There should still be plenty of them left.
+%     Or, another way is to take a random set of the outside-condition
+%     rc_times, where the size of this set is as much as there are inside-condition rc_times. 
+%     This could e.g. be done with randperm(length(outside_rc_times)) and
+%     taking the first n numbers of this return value, where n is the nr.
+%     of inside-condition rc-times
+% 
+
+
+
+    
+    outside_perm = randperm(length(outside_rc_times));
+    if length(outside_rc_times) > length(inside_rc_times)
+        outside_ind  = outside_perm(1:length(inside_rc_times));
+    else
+        outside_ind  = outside_perm(1:length(outside_rc_times));
+    end
+
+    %go over and assign the rate cross times as trigger times for the
+    %following function call
+    
+    %Take vectors of different length for outside and inside conditoon
+%     %trigger on the rc_times
+%     inside_trig_times{ii}  = inside_stim_time;
+%     outside_trig_times{ii} = outside_rc_times;   % be carefuel, here that trigger times are not in temporal order, becuase I did a randpermute (see above)
+%     
+    
+    %%%%%%%%
+    %trigger on stim time and 'artificial' stim time
+    if length(outside_rc_times) > length(inside_rc_times)
+        inside_trig_times{ii}  = inside_stim_time;
+        outside_trig_times{ii} = outside_rc_times(outside_ind) + inside_rel_stim_time';      %this is a copy construction to find stim times for the outside, i.e unstimulated bursts
+    else
+         inside_trig_times{ii}  = inside_stim_time(1:length(outside_rc_times));
+         outside_trig_times{ii} = outside_rc_times(outside_ind) + inside_rel_stim_time(1:length(outside_rc_times))';
+    end
+    
+end 
+    
+%Settings from MAKE_PSTH, 
+PRE_TRIG_TIME       = 0.25;
+POST_TRIG_TIME      = 1;
+
+PSTH_BIN_WIDTH      = 0.01;
+
+TRIAL_TIME_VEC      = -PRE_TRIG_TIME:PSTH_BIN_WIDTH:POST_TRIG_TIME-PSTH_BIN_WIDTH;
+
+
+    %calculate the PSTH for the two different conditions
+    inside_PSTH   = MAKE_PSTH(ls,CHANNEL_VEC,inside_trig_times,PSTH_BIN_WIDTH,PRE_TRIG_TIME,POST_TRIG_TIME,0);
+    outside_PSTH  = MAKE_PSTH(ls,CHANNEL_VEC,outside_trig_times,PSTH_BIN_WIDTH,PRE_TRIG_TIME,POST_TRIG_TIME,0);
+    
+    %be aware of the blanked bins. delete it
+     Blank_time                   = 0.007; %gives the blank time in sec, delete all bins covering that period
+    nr_blank_bins                = ceil(Blank_time/PSTH_BIN_WIDTH);
+    blank_bin_ind                = PRE_TRIG_TIME/PSTH_BIN_WIDTH+[1:nr_blank_bins];
+    inside_PSTH(:,blank_bin_ind) = NaN;
+ 
+    if nr_ch>4
+        nr_subplot_row = ceil(sqrt(nr_ch));
+        nr_subplot_col = ceil(nr_ch/nr_subplot_row);
+    else
+        nr_subplot_row = nr_ch;
+        nr_subplot_col = 1;
+    end
+    
+    if isempty(varargin)
+        inside_outside_PBTH_fig=screen_size_fig();
+    end
+    
+    for ii=1:nr_ch
+        nr_trig_inside(ii)  = length(inside_trig_times{ii});
+        nr_trig_outside(ii) = length(outside_trig_times{ii});
+        
+        if ~isempty(varargin)
+            axes(plot_handles(ii))
+        else
+            subplot(nr_subplot_row,nr_subplot_col,ii)
+        end
+        plot(TRIAL_TIME_VEC,inside_PSTH(ii,:)/(PSTH_BIN_WIDTH*nr_trig_inside(ii)),'r');
+        hold on;
+        plot(TRIAL_TIME_VEC,outside_PSTH(ii,:)/(PSTH_BIN_WIDTH*nr_trig_outside(ii)));
+        xlim([-PRE_TRIG_TIME POST_TRIG_TIME]);
+        title([' channel: ', num2str(CHANNEL_VEC(ii))]);
+        xlabel('time r.t. stimulus [sec]');
+        ylabel('rate in trial [Hz]');
+        
+    end
+    if isempty(varargin)
+        subplot(nr_subplot_row,nr_subplot_col,1)
+         title({['PSTH, all trials with comparable high-rates in bursts'];['in the outside condition, stim times were copy-constructed from the real stim times'];...
+            ['bin width: ', num2str(PSTH_BIN_WIDTH*1000),' msec, channel: ', num2str(CHANNEL_VEC(1))]});   
+          legend('bursts inside stimulation','bursts outside stimulation');  
+    
+    end
+    
+    
+    
+ %assign for output:
+ inside_trigger_times  = inside_trig_times{1};
+ outside_trigger_times = outside_trig_times{1};
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

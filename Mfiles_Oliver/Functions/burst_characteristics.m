@@ -1,0 +1,383 @@
+%features of bursts. let's say I have a cell burst_detection and I do some
+%analysis on this data. E.g. ISI distribution, electrode where (network)
+%bursts start, delay to other electrodes, length distribution of bursts (no
+% %of spikes)
+% 
+% 
+%function  burst_characteristsics(datname,ls,burst_detection,b_ch_mea,time_start,time_end)
+
+
+function  burst_characteristsics(datname,ls,burst_detection,b_ch_mea,time_start,time_end)
+
+
+starttime_hrs          = time_start
+recording_length_hrs   = time_end - time_start
+bursting_channels_mea  = b_ch_mea;
+bursting_channels      = cr2hw(bursting_channels_mea)+1;
+no_bursting_ch         = length(bursting_channels);
+no_columns             = ceil(sqrt(no_bursting_ch));
+no_rows                =  ceil(no_bursting_ch/no_columns);
+
+
+
+%At the beginning, plot a logarithmic ISI distribution for all spikes on
+%the channel
+log_ISI_fig = screen_size_fig();
+
+log_ISI_vec      = -7:0.1:5;
+log_xtick_label  = [0.001 0.01 0.1 1 10 50];
+log_xtick        = log(log_xtick_label);
+
+for ii=1:no_bursting_ch
+    ch_spikes       = ls.time(find(ls.channel==cr2hw(bursting_channels_mea(ii)) & ls.time>time_start*3600 & ls.time<3600*time_end));
+    nr_spikes(ii)   = length(ch_spikes);
+    ch_ISI          = diff(ch_spikes);
+    log_ch_ISI      = log(ch_ISI);
+    log_ISI_hist    = hist(log_ch_ISI,log_ISI_vec);
+    
+    
+    subplot(no_columns,no_rows,ii)
+    log_ISI_sub(ii) = bar(log_ISI_vec,log_ISI_hist);
+    set(gca,'xtick',log_xtick,'xticklabel',log_xtick_label);
+    xlim([-7 log_xtick(end)]);
+    xlabel('ln ISI length [sec]');
+   
+%     %here, plot a normal ISI distribution
+%     ISI_vec  = 0:0.001:5;
+%     ISI_hist = hist(ch_ISI,ISI_vec);
+%     subplot(no_columns,no_rows,ii);
+%     ISI_sub(ii) = bar(ISI_vec,ISI_hist);
+%     xlabel('ISI length [sec]');
+%     xlim([-0.05 0.5]);
+    
+    title(['channel: ', num2str(bursting_channels_mea(ii)),', total ',num2str(nr_spikes(ii)),' spikes'],'FontSize',12);
+    ylabel('counts');
+    log_ISI_return{ii} = log_ISI_hist;
+end
+subplot(no_columns,no_rows,1)
+title({['dataset: ',datname];...
+    [];['channel ',num2str(bursting_channels_mea(1)),', total ',num2str(nr_spikes(1)),' spikes']},'FontSize',12,'Interpreter','none');
+
+
+
+
+
+
+
+
+for ii=1:length(burst_detection)
+    burst_onsets=[];
+    
+    for jj=1:size(burst_detection{1,ii},1)
+        burst_onsets(jj) = burst_detection{1,ii}{jj,3}(1);
+    end
+        onset_ind        = find(burst_onsets > time_start*3600 & burst_onsets<time_end*3600);
+        if ~isempty(onset_ind)
+                burst_detection_new{1,ii}(:,:) = burst_detection{1,ii}(onset_ind,:);
+        else
+            burst_detection_new{1,ii} =[];
+        end
+        
+end
+
+
+%assign the new aray burst_detectio
+burst_detection  =  burst_detection_new;
+
+%plot the different burst length distributions
+%each histogram has 50 bins so far, the  binwidth is therefore dependent on
+%the maximum length that is observed
+
+length_distr_subfig = screen_size_fig;
+%for a logarithmic binning
+log_burst_length_vec     = 0:0.1:7;
+log_axis_label           = [1 3 10 30 100 300 ];
+log_axis_ticks           = log(log_axis_label);
+bin_vec = 0:80;
+for j = 1:no_bursting_ch
+    active_ch    = bursting_channels(j);
+    max_length   = max([burst_detection{1,active_ch}{:,2}]);
+    no_bursts(j) = size([burst_detection{1,active_ch}],1);
+    %bin_vec      = 0:1:max_length;
+    hist_vec             = hist([burst_detection{1,active_ch}{:,2}],bin_vec);
+    %log_burst_length      = log([burst_detection{1,active_ch}{:,2}]);
+    %log_burst_length_hist = hist(log_burst_length,log_burst_length_vec);
+    hsub(j)               = subplot(no_columns,no_rows,j);
+    bar(bin_vec,hist_vec);
+    %bar(log_burst_length_vec,log_burst_length_hist./no_bursts(j));
+    %xlabel('ln burst length (nr of spikes) ','FontSize',12);
+    xlabel('Burst length (nr of spikes) ','FontSize',12);
+    ylabel('occurrences','FontSize',12);
+    title(['channel ',num2str(hw2cr(active_ch-1)),', total ',num2str(no_bursts(j)),' bursts'],'FontSize',12);
+    %set(gca,'xtick',log_axis_ticks,'xticklabel',log_axis_label);
+    %xlim([0 log_axis_ticks(end)]);
+    %clear bin_vec
+    clear hist_vec
+    %log_burst_length_prob{j} = log_burst_length_hist./no_bursts(j);
+end
+title(hsub(1),{['dataset: ',datname,', recording length: ',num2str(recording_length_hrs),', start at ',num2str(starttime_hrs) ' hrs'];...
+    [];['channel ',num2str(hw2cr(bursting_channels(1)-1)),', total '...
+   ,num2str(no_bursts(1)),' bursts']},'FontSize',12,'Interpreter','none');
+%current_fig=gcf;
+%waitfor(current_fig);
+
+
+
+% %go on with the ISIdistribution in the bursts, for each channel in a
+% %subplot, units should be msec
+% 
+% %the isi_inburst_distribution{1,j}{k,1}(l) cell holds the isi between spike l+1 and l, for the kth burst on the active channel j 
+% for j = 1:no_bursting_ch
+%     active_ch = bursting_channels(j)
+%     for k = 1:size([burst_detection{1,active_ch}],1) %cycles through all burst in this channel
+%         for l = 1:length([burst_detection{1,active_ch}{k,3}])-1  %cycles through the spike times
+%             isi_inburst_distribution{1,j}{k,1}(l) = (burst_detection{1,active_ch}{k,3}(l+1) - burst_detection{1,active_ch}{k,3}(l) );  
+%         end
+%     end
+% end
+% 
+% %first catenate the isis for all bursts for each channel seperately,
+% %then make a histogram for the different interval lengths
+% isi_distr_subfig=figure
+% for j = 1:no_bursting_ch
+%     active_ch=bursting_channels(j);
+%     isi_cat=[];
+%     isi_cat=cat(1,isi_cat,[isi_inburst_distribution{1,j}{:,1}]');
+%     isi_cat=isi_cat.*1000;                                                   %to obtain msec values
+%     total_isis(j)=length([isi_inburst_distribution{1,j}{:,:}]);
+%     n=hist(isi_cat,0:max(isi_cat));
+%     max_occurrence(j)=max(n);
+%     hsub(j)=subplot(no_columns, no_rows,j);
+%     bar(0:max(isi_cat),n);
+%     xlabel(['ISI length [msec]'],'FontSize',12);
+%     ylabel(['occurrences'],'Fontsize',12);
+%     title(['channel ',num2str(hw2cr(active_ch-1))],'FontSize',12);
+%     xlim([-10 100]);
+% end
+% title(hsub(1),{['dataset: ',datname,', recording length: ',num2str(recording_length_hrs),', start at ',num2str(starttime_hrs) ' hrs'];['InterSpikeInterval length distribution for spikes in bursts']; ...
+%     ['channel ',num2str(hw2cr(bursting_channels(1)-1))]},'FontSize',12,'Interpreter','none');  
+% 
+% % %scale the ylimits according to the number of occured isi
+% %   max_number_isi=max(total_isis)
+% %   isi_ratio=total_isis./max_number_isi
+% %       for i=1:no_bursting_ch
+% %           set(hsub(i),'ylim',([0 1.1*(max_occurrence(i)*isi_ratio(i))]));
+% %       end
+
+
+
+
+burst_onset=cell(1,no_bursting_ch);
+for j =1:no_bursting_ch
+    active_ch=bursting_channels(j);
+    for k = 1:size([burst_detection{1,active_ch}],1 )
+        burst_onset{1,j}{k,1}=burst_detection{1,active_ch}{k,3}(1);   %this is the burst onset for channel j, burst k
+    end
+end
+
+
+%%%%%%%
+%look at the individual channels again and plot e.g. burst intervals, take
+%burst_onset cell where all the start point for the network burst are
+%stored
+burst_intervals_ch      = cell(1,no_bursting_ch);
+burst_intervals_ch_hist = cell(1,no_bursting_ch);
+ln_bin_vec=-5:0.15:5;
+burst_int_vec = 0:0.5:50;
+for j=1:no_bursting_ch
+    active_ch=bursting_channels(j);
+    for k = 1:size([burst_onset{1,j}],1)-1
+    burst_intervals_ch{1,j}{k,1} = (burst_onset{1,j}{k+1,1} - burst_detection{1,active_ch}{k,3}(end));  %give this in secs
+    end
+    ln_burst_intervals_ch{1,j}      = log([burst_intervals_ch{1,j}{:}]);
+    max_int(j)                      = max([burst_intervals_ch{1,j}{:,1}]);
+    burst_intervals_ch_hist{1,j}    = hist([burst_intervals_ch{1,j}{:,1}],burst_int_vec);
+    ln_burst_intervals_ch_hist{1,j} = hist(ln_burst_intervals_ch{j},ln_bin_vec);
+end
+
+
+x_tick_label = [0.05 0.16 0.5 1.6 5 16 50];
+x_tick       = log(x_tick_label);
+burst_int_distr_subfig=screen_size_fig();
+for i =1 : no_bursting_ch
+    active_ch = bursting_channels(i);
+    hsub(i)   = subplot(no_columns, no_rows, i);
+    bar(burst_int_vec,burst_intervals_ch_hist{1,i})
+    %bar(ln_bin_vec,ln_burst_intervals_ch_hist{i});
+    %set(gca,'xtick', x_tick,'xticklabel', x_tick_label);
+    %xlabel('ln interburst interval [sec] ','FontSize',12);
+    xlabel('interburst interval [sec] ','FontSize',12);
+    ylabel('occurrences','FontSize',12);
+    %xlim([-3 5])
+    title(['channel ',num2str(hw2cr(active_ch-1)),', total ',num2str(no_bursts(i)),' bursts'],'FontSize',12);
+end
+
+title(hsub(1),{['dataset: ',datname,', recording length: ',num2str(recording_length_hrs),', start at ',num2str(starttime_hrs) ' hrs'];['Interburst Interval length distribution'];['channel ',num2str(hw2cr(bursting_channels(1)-1)),', total '...
+    ,num2str(no_bursts(1)),' bursts']},'FontSize',12,'Interpreter','none');
+
+
+
+%save_file_name = 'temp.mat';
+%NR_bursts      = no_bursts;
+%save(save_file_name,'log_ISI_vec', 'log_ISI_return','log_burst_length_vec', 'log_burst_length_prob','ln_bin_vec','ln_burst_intervals_ch_hist','NR_bursts');
+
+%sprintf('Saved the relevant vectors in %s', save_file_name)
+
+
+
+% %sort the burst onsets according to the time of appearance. first construct
+% %a vector with burst_onset time in column 1 and channel in column2, then
+% %sort this vector with sort
+% burst_onset_sort=[];
+% for j =1:no_bursting_ch
+%     active_ch=bursting_channels(j)
+%         onset_sort(:,1)=[burst_onset{1,j}{:,1}]';
+%         onset_sort(:,2)=active_ch.*ones(length([burst_onset{1,j}]),1);  %BE CAREFUL, THIS CHANNEL NUMBERING IS HW CHANNEL +1
+%         onset_sort(:,3)=1:length([burst_onset{1,j}]);                    % this are just the number of appearance, important for later indexing                
+%         burst_onset_sort=cat(1,burst_onset_sort, onset_sort);
+%         clear onset_sort;
+% end
+% %now re sort the onset times and also the channels in the 2nd column,
+% %this procedure was used previously, the 3rd column gives the burst number
+% %at the respective channel
+% [burst_onset_resort, sort_ind]=sort(burst_onset_sort,1,'ascend');
+%  burst_onset_resort(:,2)=burst_onset_sort(sort_ind(:,1),2);
+%  burst_onset_resort(:,3)=burst_onset_sort(sort_ind(:,1),3);
+% 
+%  burst_onset_sort=burst_onset_resort;
+%  clear burst_onset_resort;
+%  
+%  total_num_bursts=length(burst_onset_sort);
+%  inter_burst_int=zeros(total_num_bursts-1,2);
+%  for i = 1:total_num_bursts-1
+%      inter_burst_int(i,1)=burst_onset_sort(i+1,1)-burst_onset_sort(i,1);
+%      inter_burst_int(i,2)=burst_onset_sort(i,2);                            %the respective channel where the burst occurs
+%  end
+%  
+%  
+%  %Now it;s time to set some variables that define a networkburst
+%  MIN_DELAY       = 0.075;   %is in sec
+%  MIN_DELAY_EXTRA = 0.15    %ther may be one interval that is larger  than MIN_DELAY, but smaller than this value
+%  MIN_NO_ELEC     = 4;            %how many electrodes ahould at least be affected
+%  
+%  %indices are the indices in inter_burst_int, successive numbers indicate
+%  %successive burst (on diff. electrodes) with the given min_delay. E.g. 2
+%  %successive indices mean 3 successive bursts that have a delay smaller
+%  %than MIN_DELAY each, and where there may be even one interval larger than MIN_DELAY but smaller than MIN_DELAY_EXTRA
+%  
+%  
+%  indices_normal        = find(inter_burst_int(:,1)<MIN_DELAY);
+%  indices_extra         = find(inter_burst_int(:,1)<MIN_DELAY_EXTRA);
+%  %the set of different indices:
+%  setdiff_indices       = setdiff(indices_extra, indices_normal);
+%  %find those indices that are interspaced by only one index, i.e where
+%  %there are two inter_burst_int larger than MIN_DELAY, but smaller than
+%  %MIN_DELAY_EXTRA
+%  setdiff_indices_one_interspaced                  = find(diff(setdiff_indices)==1);
+%  %delete those indices
+%  setdiff_indices(setdiff_indices_one_interspaced) = [];
+%  %combine the found indices
+%  indices  = [indices_normal;setdiff_indices];
+%  indices  = sort(indices);
+%  %network_burst=cell(100,4);
+%  
+%  k=1;
+%  no_network_bursts=0;
+%  network_burst=cell(1,5);
+%  while k < length(indices)-(MIN_NO_ELEC-2);
+%      if indices(k+MIN_NO_ELEC-2)-indices(k) == MIN_NO_ELEC-2  %if indices are interspaced by 1
+%          
+%          %mak the additionallast check if the beginning of this detected nb
+%          %is larger than the end of the last nb
+%            if no_network_bursts>1 &  burst_onset_sort(indices(k),1) < max(network_burst{no_network_bursts,5}) 
+%                %jump on to the next index check, don;t count this
+%                %"detected"nb as a real nb
+%                k=k+1;
+%                continue
+%            end
+%              %network burst start detected at index k
+%              no_network_bursts=no_network_bursts+1;
+%              last_index=k+MIN_NO_ELEC-2;
+%              while (indices(last_index+1)-indices(last_index) == 1 & last_index<length(indices)-1 )    %if the next indices are also interspaced by one
+%                  last_index=last_index+1;
+%              end
+%              %after this while loop, the index for the end of the burst is
+%              %last_index, the start for the next search is last_index+1, i.e.
+%              %set k=last_index for 1 before the end of the if loop
+%              %write some information
+%              network_burst{no_network_bursts,1} = burst_onset_sort(indices(k):indices(last_index)+1,2);  %this gives the involved channels, add 1 because now we are taking the index in burst_onset_sort, which gives absolute values rather than interval values
+%              network_burst{no_network_bursts,2} = burst_onset_sort(indices(k):indices(last_index)+1,1);  % this are the onset times for each channel
+%              network_burst{no_network_bursts,3} = inter_burst_int(indices(k:last_index),1);               %this gives the intervals between the diff. burts  onsets, of course this is one entry less than the others
+%              network_burst{no_network_bursts,4} = burst_onset_sort(indices(k):indices(last_index)+1,3);  % this give the burstnumber on each involved channel, can be used for later indexing
+% 
+%             nb_channels          = network_burst{no_network_bursts,1};                                   %this are the channels that compose the network burst
+%             nb_channels_burst_nr = network_burst{no_network_bursts,4};  %this are the burst nrs for indexing in burst detection for each cahnnel
+%             nb_end_times=zeros(1,length(nb_channels));
+%             for jj=1:length(nb_channels)
+%             nb_end_times(jj)     = burst_detection{1,nb_channels(jj)}{nb_channels_burst_nr(jj),3}(end);
+%             end
+%             network_burst{no_network_bursts,5} = nb_end_times;            %this gives the end times of the individual bursts that constitute the nb 
+%             
+% 
+%              k=last_index+1;  %go on by checking the next index
+% 
+%          else
+%              k=k+1;
+%          end
+%  end
+% 
+% 
+% 
+% network_burst_onset   = zeros(no_network_bursts-1,2);
+% inter_netw_burst_int  = zeros(1,no_network_bursts-1);
+% inter_netw_burst_gap  = zeros(1,no_network_bursts-1);
+%  for i=1:length([network_burst])-1
+%      network_burst_onset(i,1) = network_burst{i,1}(1);  %the  channel that starts in the networkburst
+%      network_burst_onset(i,2) = network_burst{i,2}(1);  % the time when the netwburst starts
+%      inter_netw_burst_int(i)  = (network_burst{i+1,2}(1) - network_burst{i,2}(1));  %give this in seconds, the interval from the beginning to the end
+%      which_channel_ends       =  network_burst{i,1}(end);
+%      which_burst_nr_ends      =  network_burst{i,4}(end);
+%      inter_netw_burst_gap(i)  =  network_burst{i+1,2}(1) - burst_detection{1,which_channel_ends}{which_burst_nr_ends,3}(end); 
+%  end
+%  
+% %  %plot a histogram of the network burst interval distribution
+% %  inter_netwburst_int_fig=figure;
+% %  netw_burst_hist=hist(inter_netw_burst_int,0:1:max(inter_netw_burst_int));
+% %  bar(0:1:max(inter_netw_burst_int), netw_burst_hist);
+% %  title({['dataset: ',datname,', recording length: ',num2str(recording_length_hrs),', start at ',num2str(starttime_hrs) ' hrs'];...
+% %         ['Distribution of Inter_network_burst intervals'];[' total of ', num2str(length([network_burst])),' network bursts']},'FontSize',12,'Interpreter','none');
+% %     xlabel(['Inter Network Burst Interval [sec]'],'Fontsize',12);
+% %     ylabel(['occurrences'], 'Fontsize',12);
+% 
+% 
+% 
+% %plot a figure with some raster but also some lines indicaating network
+% %burst onset
+% 
+% raster_nb_onset_figure=screen_size_fig();
+% start_plot =  3600*0;
+% end_plot   =  3600*0.3;
+% sequence_ind=find(ls.time>start_plot & ls.time<end_plot);
+% plot(ls.time(sequence_ind),ls.channel(sequence_ind),'or','markersize',2,'markerfacecolor','r');
+% 
+% nb_ind           = find(network_burst_onset(:,2) > start_plot & network_burst_onset(:,2) < end_plot);
+% nb_marker_times  = network_burst_onset(nb_ind,2);
+% nb_marker_lines  = line([nb_marker_times' ; nb_marker_times'],[-1 64]);
+% set(nb_marker_lines(:),'Color','k')
+% ylim([-1 64]);
+% xlim([start_plot end_plot]);
+% xlabel('time [sec]');
+% ylabel('(hw) electrode');
+% title({['datname: ', num2str(datname)];['raster plot and detected network bursts (black lines indicating onsets)']},'Interpreter', 'none')
+% 
+% 
+% 
+%     
+%     
+% 
+% 
+% 
+% 
+%     
+%     
+% 

@@ -1,0 +1,247 @@
+%based on the information about NBs, investigate spatio-temporal spreading
+% of activity. By means of finding a particular set of NB, e.g. where
+% always a special electrode fires first, and then looking at the avergae
+% firing pattern in the period after (or before) that time.
+% A plot should have time on the x axis (in small bins, 1 msec), electrode
+% on the y axis (only choosen ones) and a colorscale for the avergae firing
+% rate. Therefore an imagesc is necessary
+
+
+
+
+function NB_spatio_temporal_propagation(datname,network_burst,burst_detection, EL, EL_start_cond_time, EL_end_cond_time, NB_first_time, NB_last_time,BIN_WIDTH)
+
+nr_EL=length(EL);
+NB_sp_temp_fig = screen_size_fig;
+
+
+for el_cycle =1:nr_EL
+
+    hw_EL = cr2hw(EL(el_cycle));
+
+    nr_NB   = size(network_burst,1);
+    NB_cond = [];
+    cond_NB_ct = 0;
+    for ii=1:nr_NB
+        %check if the particular electrode is at all taking part in this burst
+        if  find(network_burst{ii,1}==hw_EL+1)
+            el_pos        = find(network_burst{ii,1}==hw_EL+1);
+            NB_onset_time = network_burst{ii,2}(1);
+
+            %check if the onset time of this NB is during the period of
+            %consideration
+            if NB_onset_time >= NB_first_time*3600 & NB_onset_time <= NB_last_time*3600
+
+                %check if the time when the resp. electrode starts firing
+                %in this NB is according to the given condition
+                rel_firing_time = network_burst{ii,2}(el_pos) - NB_onset_time;
+                if  rel_firing_time >= EL_start_cond_time & rel_firing_time <=EL_end_cond_time
+
+                    %if all these conditions are met, increase the counter
+                    cond_NB_ct=cond_NB_ct+1;
+                    NB_cond(cond_NB_ct)= ii;
+                end
+            end
+        end
+    end
+    %%%%%%%%%%%NB_cond stores those NB indices that fulfill the given conditions 
+
+
+
+
+
+    %find first of all a set of the most often participating channels
+    EL_set  = [];
+    for ii=1:nr_NB;
+        EL_set = cat(1,EL_set,network_burst{ii,1});
+    end    
+    el_group                      = hist(EL_set,0:59);
+    active_EL                     = find(el_group > nr_NB/4)-2 ;  %because  I initially store hw-channel_nr+1 and have here again  an index that again runs from 0 to 59, I need to substartct to to get to hw-channel_nr
+
+
+    active_EL_MEA                 = hw2cr(active_EL);
+    [active_EL_MEA_sort sort_ind] = sort(active_EL_MEA);
+    active_EL                     = active_EL(sort_ind);
+
+    nr_active_EL = length(active_EL); 
+    %active_EL stores the hardware channel nrs which have the most bursts. 
+
+
+
+
+
+    %cycle through each detected NB and look if the electrodes are firing and
+    %store their firing pattern from burst_detection. The index for the resp. burst can be taken
+    %from network_burst{..,4}.
+
+    NB_sp_temp_firing = cell(cond_NB_ct,nr_active_EL);
+    for kk=1:cond_NB_ct;
+        NB_ind   = NB_cond(kk);
+        NB_onset = network_burst{NB_ind,2}(1);
+
+        %the set of bursting EL in this NB
+        el_set = network_burst{NB_ind,1};
+
+        %cycle through the active EL
+        for mm=1:nr_active_EL
+
+            %which one of the active_EL fires in this NB
+            if find(el_set==active_EL(mm)+1)
+                el_pos_ind   = find(el_set==active_EL(mm)+1);
+                %find the index of the resp. burst on this electrode in
+                %burst_detection
+                el_burst_ind = network_burst{NB_ind,4}(el_pos_ind);
+                %find the rel. firing times onthsi channel for this burst
+                el_spikes    = burst_detection{1,active_EL(mm)+1}{el_burst_ind,3} - NB_onset;
+                NB_sp_temp_firing{kk,mm} = cat(2,NB_sp_temp_firing{kk,mm}, el_spikes);
+            end
+        end
+    end
+
+
+
+
+
+
+
+
+
+    %if (rem(nr_active_EL,2))
+         %subplot_row = ceil(nr_active_EL/2);           %for the PSTH
+         subplot_row = nr_active_EL;                    %for the histogram plot
+
+    %else
+     %   subplot_row = ceil(nr_active_EL/2)+1;
+    %end
+
+
+
+    %NB_sp_temp_fig = screen_size_fig;
+
+
+    %bin_size    = 0.005;
+    time_vec    = 0:BIN_WIDTH:2;
+    all_ch_rate = zeros(nr_active_EL,length(time_vec));
+    for ii=1:nr_active_EL
+
+        all_ch_rel_spikes{ii}   = [NB_sp_temp_firing{:,ii}];
+        all_ch_rate(ii,:)       = hist(all_ch_rel_spikes{ii},time_vec);
+        all_ch_rate(ii,:)       = all_ch_rate(ii,:)/(cond_NB_ct*BIN_WIDTH);
+
+
+        %h_sub(ii)=subplot(subplot_row,2,ii);
+        %h_sub(ii)=subplot(subplot_row,1,ii);             %for the histogram plot
+        h_sub(ii) = subplot(nr_EL,nr_active_EL,(el_cycle-1)*nr_active_EL + ii );
+        %plot(time_vec,all_ch_rate(ii,:));
+        bar(time_vec,all_ch_rate(ii,:));
+        xlim([-0.01 BIN_WIDTH*25]);
+        title({['channel ', num2str(hw2cr(active_EL(ii)))]});
+        xlabel('time [sec]' );
+        ylabel('firing rate' );
+
+        %ylims        = get(gca,'ylim');
+        ylims        = max(all_ch_rate(ii,2:end-1));
+        y_limits(ii) = ylims(1);
+    end
+
+    set(h_sub(:),'ylim',[0 1.2*max(y_limits)]);
+    subplot(nr_EL,nr_active_EL,(el_cycle-1)*nr_active_EL +1);
+    ylabel({[' NB onset on ch ', num2str(EL(el_cycle))];[' firing rate']},'FontSize', 12);
+
+end
+   
+    subplot(nr_EL,nr_active_EL,1)
+    title({['datname: ', num2str(datname),', hr ', num2str(NB_first_time),' to ', num2str(NB_last_time),' of recording' ];...
+           ['Firing rates after onset of NB. Different rows have different onset electrode of the NB' ];... 
+           ['Bin width ', num2str(BIN_WIDTH*1000),' msec. Channel: ', num2str(hw2cr(active_EL(1)))]},'Interpreter', 'none');
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+ %%%%%%%%%%%%%%%%%%%%%
+ %OLD FASHIONED:
+   
+   
+   
+   
+   
+%    
+%    %make the first bin empty when I detect NBs on the start
+%    if EL_start_cond_time ==0 & EL_end_cond_time==0
+%        el_pos                = find(active_EL==cr2hw(EL));
+%        all_ch_rate(el_pos,1) = 0;
+%    end
+%        
+%        
+% 
+% screen_size_fig(); 
+% im_sub=subplot(1,1,1);
+% 
+% WINDOW_SIZE  = 200 %in msec
+% nr_ind       = WINDOW_SIZE/1000/bin_size;
+% max_rates    = max(all_ch_rate(:,1:end-1),[],2);
+% max_max_rate = max(max_rates);
+% %the image sc plot should be normalized to maximal rate, because of
+% %interest is the temporal delay and not the abs firing rate
+% for ii=1:nr_active_EL
+%     %all_ch_rate_norm(ii,:) = all_ch_rate(ii,:)/max_rates(ii);
+%     all_ch_rate_norm(ii,:)  = all_ch_rate(ii,:)/max_max_rate;
+%     max_ind                 = find(all_ch_rate_norm(ii,1:end-1)==max(all_ch_rate_norm(ii,1:end-1)));
+%     max_time_ind(ii)        = max_ind(1);
+% end
+% 
+% 
+% colormap(jet)
+% im_handle = imagesc(all_ch_rate_norm(:,1:nr_ind));
+% colorbar
+% 
+% hold on;
+% plot(max_time_ind,1:nr_active_EL,'k*', 'MarkerSize', 16);
+% 
+% set(im_sub,'xlim',[0 nr_ind])
+% set(im_sub,'XtickLabel',get(im_sub,'Xtick')*bin_size);
+% set(im_sub,'YtickLabel',num2str(hw2cr(active_EL)'));
+% 
+% xlabel(' time r.t. start of NB [sec]' )
+% ylabel(' Channel nr' );
+% 
+% title({['datname: ', num2str(datname),' hr ', num2str(NB_first_time),' to ', num2str(NB_last_time),' of recording'];...
+%     [' color-coded normalized (max. firing rate) firing rates in Network bursts, taking all those NBs '];...
+%     ['when a burst (in a NB) on ch ', num2str(EL),' after ', num2str(EL_start_cond_time),'  and before ', num2str(EL_end_cond_time),'  sec r.t. the start of the NB has started ' ]},'Interpreter', 'none');
+% colorbar;
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+disp(' end');
+
+
+
+

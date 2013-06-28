@@ -1,0 +1,113 @@
+%%%%To read from stored trigger files, create a function that reads my
+%%%%trigger information from the file. I have to specify the file location,
+%%%%open the file, define the start of the read position, and probably read
+%%%%every line separatly. I should fill an array (or cell) with the trigger
+%%%%information stored and return this information
+%
+%NOTE: Currently, it is possible to read from a file and extract the stim times of arbitrary many single-site stimuli, but only
+%one (!) multi-site stimuli. This has to be changes probably as soon as the
+%experiments include several different multi-site stimulations.
+%
+%INPUT:
+%TRIG_FILENAME_PATH: Exact path with filename of the triggerf file to read
+%
+%
+%OUTPUT:
+%Stim_times: a cell matrix, stores in each row the stim times and resp stim channel.
+
+
+function Stim_times = Read_triggerfile(TRIG_FILENAME_PATH)
+
+
+%%%open the file for reading in text mode
+logfile_fid = fopen(TRIG_FILENAME_PATH,'rt');
+if logfile_fid == -1
+    error('Can not open specified file')
+    return
+end
+
+%read the text from the beginning on and read as long as i com,e to the
+%real stimulation triggers
+while 1
+    str_line = fgetl(logfile_fid);
+    if ~isempty(findstr(str_line,'stimulation'))
+        %step one line forward, then break this loop
+        str_line = fgetl(logfile_fid);
+        break;
+    end
+end
+
+curr_pos=ftell(logfile_fid);
+
+
+
+Nr_lines_read = 0;
+while 1
+    str_line = fgetl(logfile_fid);
+    %if the eof is reached
+    if ~ischar(str_line)
+        %disp('reached end of line');
+        break
+    end
+    
+    Nr_lines_read = Nr_lines_read+1;
+    num_line      = str2num(str_line);
+    %store the trigger time in the first column
+    Trigger_data{Nr_lines_read,1} = num_line(1)/25000;
+    if length(num_line)>2
+        Trigger_data{Nr_lines_read,2} = num_line(2:end);
+    else
+         Trigger_data{Nr_lines_read,2} = num_line(2);
+    end
+end
+
+Nr_triggers = length(Trigger_data);
+
+
+%make a separation for stim times whee only one channel was stimulated
+%compared to when more than one was stimulated
+Nr_stim_chs         = cellfun(@length, Trigger_data(:,2));
+Simult_stimch_ind   = find(Nr_stim_chs>=2);
+Single_stimch_ind   = setdiff(1:Nr_triggers,Simult_stimch_ind);
+
+%From the stimulation trials where only one channel was stimulated,
+%differentiate between the different channels
+
+[sorted_ch sort_ind] = sort([Trigger_data{Single_stimch_ind,2}]);
+Ch_sorted_ind = Single_stimch_ind(sort_ind);
+%Ch_sorted_ind stores the trial nrs when the trials are already sorted
+%according to the stim channel
+
+%find that position in sorted_ch, where the actual channel nr changes
+continuous_break       = find(diff(sorted_ch)>0);
+Nr_diff_single_stim_ch = length(continuous_break)+1;
+
+%assign a vector which stores the starting and last index in sort_ind when the trials
+%are sorted according to the stim channel
+Trial_indices = [1 continuous_break(1)];
+if Nr_diff_single_stim_ch >2
+    for ii = 2:Nr_diff_single_stim_ch-1
+        Trial_indices(ii,:) = [continuous_break(ii-1)+1 continuous_break(ii)]
+    end
+    Trial_indices(Nr_diff_single_stim_ch,:) = [continuous_break(end)+1 length(sort_ind)]
+else
+    Trial_indices(2,:) = [continuous_break(1)+1 length(sort_ind)];
+end
+
+%%Trial_indices stores for each stimchannel the first and last index in
+%%Ch_sort_ind.
+
+
+
+
+%i can now in principle assign the stim times
+for ii=1:Nr_diff_single_stim_ch
+    Stim_times{ii,1} = [Trigger_data{Ch_sorted_ind(Trial_indices(ii,1):Trial_indices(ii,2)),1}];
+    Stim_times{ii,2} = Trigger_data{Ch_sorted_ind(Trial_indices(ii,1)),2};
+end
+
+%%%For instances of simultanously stimulated channels, assigne the stim
+%%%times
+Stim_times{Nr_diff_single_stim_ch+1,1} = [Trigger_data{Simult_stimch_ind,1}];
+Stim_times{Nr_diff_single_stim_ch+1,2} = Trigger_data{Simult_stimch_ind(1),2};
+

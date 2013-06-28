@@ -1,0 +1,69 @@
+%by means of a sample dataset, create channel conversions, from meabench to
+%MCS linear. Then to 8x8 MEA grid, then generate a colormap of the MEA
+%grid. If necessary, also make conversion to 6*10 MEA grid.
+
+Dataset.name       = '24_09_08_1256_random_postburst.spike';
+Dataset.CID        = 1256;
+Dataset.DIV        = 99;   %to be corrected
+Dataset.MEA        = 10470;
+Dataset.MEAT_grid  = 500;  %can be 200 (8x8 MEA) or 200 (6x10 MEA)
+%
+%and many more information
+%
+
+datname = Dataset.name;
+%load the data
+%ls_hw is the original data, with channel nos in hardware notation
+ls_hw   = loadspike_longcutouts_noc_bigfiles(datname,2,25);
+
+%make the conversion to MCS 8x8 LINEAR Electrode ID (i..e from 1:63)
+[ls_lin_ch_id] = meab2lin_8x8_id(ls_hw);
+
+%I can generate channelmaps for the 8x8 and 6x10 electrode layout
+%this returns a 8x8 matrix with the linear electrode ID at the acc.
+%position on the MEA grid
+chmap_8x8_60 = channelmap8x8_60;
+
+%for the 6x10 MEA
+chmap_6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
+
+
+
+%I can also create colormaps for the respective electrode layout
+%A colormap is actually nothing else than a (nr_channles,3)-dimensional
+%matrix, where each row determines the value of red, green and blue to
+%color the electrode
+colmap_8x8_60 = colormap8x8_60;
+
+%for the 6x10 MEA
+colmap_6x10_ch8x8_60 = colormap6x10_ch8x8_60;
+
+
+%plot simple colormaps for 8x8 and 6x10 MEAs
+
+colmap_fig_h = screen_size_fig();
+
+sub_h(1) = subplot(2,2,1);
+%plot the channelmap matrix with the imagesc function and use the
+%respective colormap
+imagesc(chmap_8x8_60);
+colormap(sub_h(1),colmap_8x8_60);
+title('8x8 MEA','Fontsize',14);
+set(gca,'Tickdir','out');
+axis square
+
+
+
+sub_h(2) = subplot(2,2,2);
+%plot the channelmap matrix with the imagesc function for the 6x10 MEA and
+%use the colormap for the 6x10 MEA
+
+imagesc(chmap_6x10_ch8x8_60);
+colormap(sub_h(2),colmap_6x10_ch8x8_60);
+title('6x10 MEA','Fontsize',14);
+set(gca,'Tickdir','out');
+axis square
+
+
+
+

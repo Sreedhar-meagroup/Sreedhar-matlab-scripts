@@ -1,0 +1,27 @@
+% this plots the different probabilities for having k neurons in a circular
+% area of radius r.  radi are on the plot given in um. assuming  randomly (poisson) distributed neurons on the MEA, with a settable rate-factor
+% in the range between approx 70:120 or so. As determined and suggested by Samora from his analysis on the morphological
+%pictures
+
+
+
+
+neurons_per_mm2=100;
+r=30:5:100
+for i=1:15
+     radius=r(i);
+     radius=radius/1000;
+     nu=radius^2*pi*neurons_per_mm2
+    for k=0:5
+        p(i,k+1)=exp(-nu)*(nu^k)/factorial(k);
+    end;
+end
+hfig=figure
+plot(0:5,p(:,:))  %plots a set of lines with the radius as a parameter
+
+legend_h=get(hfig,'Children');
+legend(legend_h,num2str(r'));
+
+title({['prob. for no. of neurons in a circular area of radius r'];['assuming discrete poisson process, rate-factor ',num2str(neurons_per_mm2),'neurons per mm^2']});
+xlabel('no of neurons')
+ylabel('probability')

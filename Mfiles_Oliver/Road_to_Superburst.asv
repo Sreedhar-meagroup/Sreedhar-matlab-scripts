@@ -1,0 +1,69 @@
+% way to go to make superburst detyection
+
+
+file_nr  = 36;
+ 
+
+global datname ls begin_time end_time;
+datname  = datnames(file_nr).name
+ls       = loadspike_longcutouts_noc_bigfiles(datname,2,25);
+
+
+
+begin_time  = 0
+%end_time    = ls.time(end)/3600;
+end_time    = 2;
+[array_rate]= Superburst_array_rate(ls, begin_time,end_time);
+
+
+
+
+%the ginput function allows to set the points of superbursts
+%interactiveley, i.e. I choose the x-values (and y-values, but those are
+%not so important) by clicking on the plot
+
+subplot(2,1,1);
+title_handle = get(gca,'title');
+title_string = get(title_handle,'string');
+title_string = [title_string; ['Give the time- (and rate-) values of superbursts by clicking at the respective points on the plot, hit enter when ready']];
+title(gca, title_string);
+
+%determine the periods of high rate by manula input
+[time_val rate_val] = ginput();
+%because the time_val is in hrs
+high_count_times    = time_val*3600;
+
+
+%detection of periods with highest rates and plot extracted rate profiles
+[SB_times] = Superburst_selection(high_count_times);
+
+
+%make a manual detection of the subursts
+[Superburst]       = Subburst_manual_detect(ls,SB_times, network_burst,NB_onset)
+
+
+%plot the results, mark on-a nd offsets
+Plot_superburst_raster(datname,ls,Superburst);
+
+
+Bin_width     = 0.2;
+Kernel_extend = 40;
+%[Superburst_rate Avg_rate] = Superburst_spatio_temp_ch_wise(datname,ls,Superburst,b_ch_mea,Bin_width,Kernel_extend)
+[Superburst_rate Avg_rate time_vec] = Superburst_spatio_temp_ch_wise(datname,ls,Superburst,[37 53 61 86],Bin_width,Kernel_extend)
+%phase plane plots of subbursts
+
+%SB_ana_matname = strcat(datname,'_SB_analysis.mat');
+%save(SB_ana_matname,'datname','begin_time','end_time','Superburst','Superburst_rate', 'Avg_rate','time_vec','Bin_width','Kernel_extend');
+%phase plane for which Subburst
+SUBBURST_NR=1
+%vector for which superburst the Subburst should be generated
+Superburst_nrs=[1:9];
+
+phase_plane=Subburst_phase_plane(super_burst,SUBBURST_NR,Superburst_nrs);
+
+
+
+
+%save the whole workspace
+Superburst_save_analysis();
+
