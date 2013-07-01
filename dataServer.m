@@ -7,7 +7,7 @@
 
 datRoot = {%'130610_4205','130610_4217','130613_4239','130614_4224',...
            %'130614_4237','130617_4222',...
-           '130612_4223','130612_4225'};
+           '130628_4243'};
 maxT = 30; % window for correlogram in ms
 NBS_res = cell(size(datRoot,2),2);
 %run this part whenever you have new spontaneous recordings

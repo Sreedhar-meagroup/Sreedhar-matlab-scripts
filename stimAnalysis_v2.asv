@@ -154,9 +154,10 @@ for ii = 1:nStimSites
                 end
                 if count ==0, count=1; end
                 subplot(6,10,jj)
-                shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-                axis([-100 500 -0.5 2.5])
-                line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
+                shadedErrorBar(bins,mean(frMat,1),std(frMat),'k',1)
+                %plot(bins,frMat/count,'k','linewidth',2)
+                axis([-100 500 -0.5 2])
+                line([0 0],[0 max(2,max(mean(frMat,1)))],'Color','r');
                 if ~or(mod(jj,10)==1,jj>50)
                     set(gca,'YTickLabel',[]);
                     set(gca,'XTickLabel',[]);
@@ -174,6 +175,99 @@ for ii = 1:nStimSites
         set(h,'Visible','on');
 end
 
+%%
 
-%% Move this later: here I will make a choice and try to sort trials based on pre-stimulus inactivity
-
+% line([inAnalog{2}(1:5:length(inAnalog{2})) ;inAnalog{2}(1:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','r','LineWidth',1)
+% line([inAnalog{2}(2:5:length(inAnalog{2})) ;inAnalog{2}(2:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','g','LineWidth',1)
+% line([inAnalog{2}(3:5:length(inAnalog{2})) ;inAnalog{2}(3:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','c','LineWidth',1)
+% line([inAnalog{2}(4:5:length(inAnalog{2})) ;inAnalog{2}(4:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','k','LineWidth',1)
+% line([inAnalog{2}(5:5:length(inAnalog{2})) ;inAnalog{2}(5:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','m','LineWidth',1)
+% xlabel('Time (s)');
+% ylabel('Channel #');
+% title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'] (hw1)']);
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% for ii=0:63
+%     if ii<60
+%         inAChannel{ii+1,1} = spike2.time(spike2.channel==ii);
+%     else
+%         inAnalog{ii-59,1} = spike2.time(spike2.channel==ii);
+%     end
+% end
+% % stim site text filil undu; in this case it was 35 cr
+% nStimSites = 5;
+% stimSites = cr2hw([35, 21, 46, 41, 58]);
+% for ii = 0:59
+%     for jj = 1: length(inAnalog{2})
+%     periStim{ii+1,jj} = inAChannel{ii+1}(and(inAChannel{ii+1}>inAnalog{2}(jj)-0.05, inAChannel{ii+1}<inAnalog{2}(jj)+0.5));
+%     end
+% end
+% 
+% 
+% figure(1); 
+% for ii = 1:60
+%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','linewidth',1)
+%     hold on
+% end
+% line([inAnalog{2}(1:5:length(inAnalog{2})) ;inAnalog{2}(1:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','r','LineWidth',1)
+% line([inAnalog{2}(2:5:length(inAnalog{2})) ;inAnalog{2}(2:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','g','LineWidth',1)
+% line([inAnalog{2}(3:5:length(inAnalog{2})) ;inAnalog{2}(3:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','c','LineWidth',1)
+% line([inAnalog{2}(4:5:length(inAnalog{2})) ;inAnalog{2}(4:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','k','LineWidth',1)
+% line([inAnalog{2}(5:5:length(inAnalog{2})) ;inAnalog{2}(5:5:length(inAnalog{2}))],repmat([0;60],size(inAnalog{2}(1:15))),'Color','m','LineWidth',1)
+% xlabel('Time (s)');
+% ylabel('Channel #');
+% title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'] (hw1)']);
+% 
+% for ii = 1:nStimSites
+%     stimResp{ii}= periStim(:,ii:5:length(inAnalog{2}));
+%     stimTimes{ii} = inAnalog{2}(ii:5:length(inAnalog{2}));
+% end
+% 
+% nSpikesInEachChannel = cellfun(@length,stimResp{1});
+% sumOfSpikesInEachChannel = sum(nSpikesInEachChannel,2);
+% [sortedSumOfSpikes, sortedIndx] = sort(sumOfSpikesInEachChannel,'descend');
+% 
+% %%
+% bins = -50: 10: 500;
+% for st = 1:5
+%     figure(st+1)
+%     for ch = 1:12
+%         count = 0;
+%         frsum = zeros(size(bins));
+%         for ii = 1:15
+%             spikes = stimResp{st}{sortedIndx(ch),ii}-stimTimes{st}(ii);
+%             if ~isempty(spikes)
+%                 fr = zeros(size(bins));
+%                 for jj = 1:length(bins)-1
+%                     fr(jj) = length(spikes(and(spikes>=bins(jj)*1e-3,spikes<(bins(jj+1)*1e-3))));
+%                 end
+%                 frsum = frsum+ fr;
+%                 count = count + 1;
+%             end
+%         end
+%         subplot(3,4,ch)
+%         plot(bins,frsum/count,'k','linewidth',2)
+%         axis([-50 500 0 2])
+%         line([0 0],[0 max(2,max(frsum/count))],'Color','r');
+%         if ch == 1
+%            set(gca,'XTickLabel',[]);
+%            ylabel('sp/bin')
+%         elseif ch == 12
+%             set(gca,'YTickLabel',[]);
+%             xlabel('time [ms]')
+%         else
+%             set(gca,'XTickLabel',[]);
+%             set(gca,'YTickLabel',[]);
+%         end
+%     end
+%  end
