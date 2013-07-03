@@ -135,3 +135,33 @@ surf(X,Y,A); shading interp
 xlabel('Time (s)')
 ylabel('Channel#')
 zlabel('Voltage (\muV)')
+%%
+datRoot = '130311_4106';
+datName = [datRoot,'_spontaneous.spike'];
+spikes=loadspike(datName,2,25);
+burst_detection = burstDetAllCh_sk(spikes);
+[bursting_channels_mea, network_burst, network_burst_onset] = Networkburst_detection(datName,spikes,burst_detection,10);
+
+count= 1;
+for ii =1:size(network_burst,1)
+    if network_burst{ii,1}(1) == 2
+        target(count,1) = network_burst{ii,1}(1);
+        target(count,2) = network_burst{ii,2}(1);
+        count = count + 1;
+    end
+end
+
+relevantSpikes = cell(size(target,1),1);
+numOfRelevantSpikes = zeros(60,1);
+for ii = 1:size(target,1)
+    for jj = 0:59
+       spikesInThatChannel = spikes.time(spikes.channel==jj);
+           spikeTime = target(ii,2);
+           spikesInThatChannel = spikesInThatChannel - spikeTime;
+           relevantSpikes{ii}{jj+1,1} = spikesInThatChannel(and(spikesInThatChannel>-1e-1,spikesInThatChannel<1e-1));
+           spikesInThatChannel = spikesInThatChannel + spikeTime;
+           numOfRelevantSpikes(jj+1,1) = size(relevantSpikes{jj+1,1},2);
+    end
+end
+% cfprobability(ii+1,jj+1) = numOfRelevantSpikes/(maxT/2*nSpikes(ii+1));
+% cfprobability(isnan(cfprobability))=0;

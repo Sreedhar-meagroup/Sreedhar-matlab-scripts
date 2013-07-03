@@ -4,7 +4,7 @@ h=gcf;
 set(h,'PaperPositionMode','auto'); 
 set(h,'PaperOrientation','landscape');
 set(h,'Position',[50 50 1200 800]);
-print(gcf, '-dpdf', 'test1.pdf')
+print(gcf, '-dpdf', 'test2.eps')
 
 
 % option 2 ----------------------------------------------------------------

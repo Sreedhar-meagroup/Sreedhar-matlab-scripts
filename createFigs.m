@@ -33,7 +33,7 @@ fpath = 'C:\Sreedhar\Lat_work\Closed_loop\misc\NBS_CFP_figs\';
         set(gca,'XTick',1:length(sort_ind),'xtickLabel',num2str(active_EL(EL_array(sort_ind))'+1));
         xlabel(' electrode' )
         ylabel(' Nr. of NB starts' );
-        title(['total of ', num2str(nr_NB),' NBs detected'])
+        title(['total of ', num2str(nr_NB),' NBs detected (hw+1)'])
         saveas(gcf, fullfile(fpath,[datRoot,'_NBS']), 'epsc');
         varargout{1} = datRoot; varargout{2} = hw2cr(active_EL(EL_array(sort_ind)));
     end

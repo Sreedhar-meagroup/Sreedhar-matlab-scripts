@@ -138,7 +138,7 @@ title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'
 
 for ii = 1:nStimSites
     figure(2+ii)
-      for jj = 1:60
+    for jj = 1:60
         bins = -50: 10: 500;
                 count = 0;
                 for kk = 1:size(stimTimes{ii},2)
@@ -165,8 +165,9 @@ for ii = 1:nStimSites
                 elseif jj~=51
                     set(gca,'XTickLabel',[]);
                 end
+                set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
      end
-        set(gcf,'WindowButtonDownFcn','popsubplot')
+        
         set(gcf,'NextPlot','add');
         axes;
         h = title(['Mean PSTHs following stimulation at ',num2str(stimSites(ii)),'(hw). [mean #spikes vs time(ms)]']);
