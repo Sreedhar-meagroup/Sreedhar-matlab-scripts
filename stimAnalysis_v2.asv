@@ -157,13 +157,12 @@ ylabel('Channel #');
 title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'] (hw+1)']);
 
 %% Binning, averaging and plotting the PSTHs
-listOfCounts = cell(1,nStimSites);
+
 for ii = 1:nStimSites
     figure(2+ii)
     for jj = 1:60
         bins = -50: 10: 500;
         count = 0;
-        frMat = zeros(2,length(bins));
         for kk = 1:size(stimTimes{ii},2)
             spikes = periStim_selected{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
             if ~isempty(spikes)
@@ -175,7 +174,6 @@ for ii = 1:nStimSites
                 frMat(count,:) = fr;     
             end
         end
-        listOfCounts{1,ii}{jj,1} = count; 
         if count ==0, count=1; end
         
         %finding the right subplot position in a 6x10 array

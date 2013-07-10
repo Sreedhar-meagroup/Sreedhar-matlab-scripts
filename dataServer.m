@@ -1,9 +1,11 @@
  datRoot = { %'130308_4106',...
-             '130311_4105'}%,...
+             %'130311_4105'}%,...
              %'130311_4106',...
              %'130311_4108',...
 %            '130312_4096','130313_4104','130313_4107','130313_4109',...
-%            '130313_4120','130322_4115','130322_4121','130322_4124'};
+%            '130313_4120','130322_4115','130322_4121','130322_4124',...
+              %'130702_PID311_CID4244_MEA15570_DIV25',...
+              '130708_PID311_CID4247_MEA15522_DIV31'};
 
 
 % create a reg exp solution to the filename problem.
@@ -15,11 +17,11 @@ maxT = 30; % window for correlogram in ms
 NBS_res = cell(size(datRoot,2),2);
 %run this part whenever you have new spontaneous recordings
 for count = 1:size(datRoot,2)
-    %createNBSMat(datRoot{count});
-    createCFPMat(datRoot{count},maxT);
-    [NBS_res{count,1}, NBS_res{count,2}] = createFigs(datRoot{count},'NBS');
+     createNBSMat(datRoot{count});
+    %createCFPMat(datRoot{count},maxT);
+    [NBS_res{count,1}, NBS_res{count,2}] = createFigs(datRoot{count},'NBS'); %cr
 end
 % run this part when you need figures from the mat files
 % for count = 1:size(datRoot,2)
-     createFigs(datRoot{count},'NBS','CFP',maxT);
+     %createFigs(datRoot{count},'NBS','CFP',maxT);
 % end

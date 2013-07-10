@@ -1,4 +1,4 @@
-function [channelmap6x10_ch8x8_60]=channelmap6x10_8x8_60()
+function [channelmap6x10_ch8x8_60]=channelmap6x10_ch8x8_60()
 % creates a 6x10 matrix with electrode numbers from 1:60
 % the electrode numbers reflect the SOURCECHANNELNUMBERs
 % MEA:

@@ -7,6 +7,8 @@ function varargout = createFigs(datRoot,varargin)
 % spontaneous activity
 % 3. createFigs(datRoot,'NBS','CFP', maxT) -- creates a histogram as in (1),
 % a correlogram as in (2), and overlays a column-wise sum in (1) as well.
+% varargout is a cell array of the filename and the stimchanneles in RC
+% format.
 if nargin > 1
     nr_inputs = nargin;
         switch nr_inputs
@@ -23,7 +25,7 @@ if nargin > 1
         end
 end
     
-fpath = 'C:\Sreedhar\Lat_work\Closed_loop\misc\NBS_CFP_figs\';
+fpath = 'C:\Sreedhar\Lat_work\Closed_loop\NBS_CFP_figs\';
     
     if strcmp(task,'NBS') || strcmp(task,'both')
         dat_NBS = [datRoot,'_NBS.mat'];

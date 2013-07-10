@@ -30,6 +30,7 @@ end
 count_n = count/length(red_states_dec);
 %% plots
 figure(1)
+%[counts,timeVec] = hist(spikes.time,[0:ceil(max(spikes.time))]);
 bar(b,count_n,3), axis tight
 xlabel('States','FontSize',12)
 ylabel('Probability','FontSize',12)
@@ -45,3 +46,21 @@ semilogy(red_states_dec,'.'); axis tight
 xlabel('temporal progression','FontSize',12)
 ylabel('state values in dec (logscale)','FontSize',12)
 title(datRoot,'FontSize',12)
+
+%%
+vec = [1 2 4 8 16 32 64 128 256 512];
+figure(4)
+for ii = 1:length(vec)
+    plot(ii,count_n(b==vec(ii)),'*-')
+    hold on
+end
+plot([1:10], 0.1*ones(1,10)); hold off
+
+%%
+figure(5)
+for ii = 0:10
+    prob(ii+1) = 1/nchoosek(10,ii);
+end
+plot([0:10],prob,'*-');
+figure(6)
+semilogy([0:10],prob,'*-');
