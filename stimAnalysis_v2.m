@@ -25,6 +25,7 @@
 %--------------------------------------------------------------------------------------
 
 datName = '130625_4205_stimEfficacy.spike';
+%datName = '130703_PID311_CID4244_MEA15570_DIV26_stimEfficacy.spike';
 datRoot = datName(1:strfind(datName,'.')-1);
 thisDirectory = mfilename('fullpath');
 thisDirectory=thisDirectory(1:find(thisDirectory=='\',1,'last'));
@@ -150,6 +151,7 @@ for ii = 1:nStimSites
             clr = 'm';
     end
 line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',1);
+plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 end
 hold off;
 xlabel('Time (s)');
@@ -157,25 +159,88 @@ ylabel('Channel #');
 title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'] (hw+1)']);
 
 %% Binning, averaging and plotting the PSTHs
-listOfCounts = cell(1,nStimSites);
+% listOfCounts = cell(1,nStimSites);
+% for ii = 1:nStimSites
+%     figure(2+ii)
+%     for jj = 1:60
+%         bins = -50: 10: 500;
+%         count = 0;
+%         frMat = zeros(2,length(bins));
+%         for kk = 1:size(stimTimes{ii},2)
+%             shiftedSp = periStim_selected{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
+%             if ~isempty(shiftedSp)
+%                 fr = zeros(size(bins));
+%                 for mm = 1:length(bins)-1
+%                     fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
+%                 end
+%                 count = count + 1;
+%                 frMat(count,:) = fr;     
+%             end
+%         end
+%         listOfCounts{1,ii}{jj,1} = count; 
+%         if count ==0, count=1; end
+%         
+%         %finding the right subplot position in a 6x10 array
+%         ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
+%         [row, col] = find(ch6x10_ch8x8_60 == jj);
+%         pos = 6*(row-1) + col;
+%         subplot(10,6,pos)
+%         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
+%         axis([-100 500 -0.5 2.5])
+%         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
+%         text(375,1.7,num2str(jj),'FontAngle','italic');
+%         if ~or(mod(pos,6)==1,pos>54)
+%             set(gca,'YTickLabel',[]);
+%             set(gca,'XTickLabel',[]);
+%         elseif pos>55
+%             set(gca,'YTickLabel',[]);
+%         elseif pos~=55
+%             set(gca,'XTickLabel',[]);
+%         end
+%         set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
+%      end
+%         % Add a title to the whole plot
+%         set(gcf,'NextPlot','add');
+%         axes;
+%         h = title(['Mean PSTHs following stimulation at ',num2str(stimSites(ii)+1),'(hw+1). [mean #spikes vs time(ms)]']);
+%         set(gca,'Visible','off');
+%         set(h,'Visible','on');
+%         
+% %         %print as a landscape eps figure
+% %         h=gcf;
+% %         set(h,'PaperPositionMode','auto'); 
+% %         set(h,'PaperOrientation','landscape');
+% %         set(h,'Position',[50 50 1200 800]);
+% %         print(gcf, '-depsc', [fPath,datRoot,'_',num2str(stimSites(ii)+1),'.eps']); % hw+1
+% end
+
+
+%% Debugging routines
+% figure(8)
+% for ii = 1:50
+%     plot(periStim_selected{5}{37}{ii,1}-stimTimes{5}(1,ii), ones(size(periStim_selected{5}{37}{ii,1}))*ii,'.','linewidth',1)
+%     hold on
+% end
+%%%% Binning, averaging and plotting the PSTHs
+listOfCounts_all = cell(1,nStimSites);
 for ii = 1:nStimSites
-    figure(2+ii)
+    figure(7+ii)
     for jj = 1:60
         bins = -50: 10: 500;
         count = 0;
         frMat = zeros(2,length(bins));
         for kk = 1:size(stimTimes{ii},2)
-            spikes = periStim_selected{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
-            if ~isempty(spikes)
+            shiftedSp = periStim{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
+            %if ~isempty(spikes)
                 fr = zeros(size(bins));
                 for mm = 1:length(bins)-1
-                    fr(mm) = length(spikes(and(spikes>=bins(mm)*1e-3,spikes<(bins(mm+1)*1e-3))));
+                    fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
                 end
                 count = count + 1;
                 frMat(count,:) = fr;     
-            end
+            %end
         end
-        listOfCounts{1,ii}{jj,1} = count; 
+        listOfCounts_all{1,ii}{jj,1} = count; 
         if count ==0, count=1; end
         
         %finding the right subplot position in a 6x10 array
@@ -204,19 +269,47 @@ for ii = 1:nStimSites
         set(gca,'Visible','off');
         set(h,'Visible','on');
         
-        %print as a landscape eps figure
-        h=gcf;
-        set(h,'PaperPositionMode','auto'); 
-        set(h,'PaperOrientation','landscape');
-        set(h,'Position',[50 50 1200 800]);
-        print(gcf, '-depsc', [fPath,datRoot,'_',num2str(stimSites(ii)+1),'.eps']); % hw+1
+%         %print as a landscape eps figure
+%         h=gcf;
+%         set(h,'PaperPositionMode','auto'); 
+%         set(h,'PaperOrientation','landscape');
+%         set(h,'Position',[50 50 1200 800]);
+%         print(gcf, '-depsc', [fPath,datRoot,'_',num2str(stimSites(ii)+1),'.eps']); % hw+1
 end
 
-
-%% Debugging routines
-figure(8)
+%%
+%59 il stim um  16 il responses um nokkam
+art_bin = cell(60,1);
+for jj = 1:60
+    for kk = 1: length(stimTimes{5})
+        shiftedSp = periStim{5}{jj}{kk,1}-stimTimes{5}(1,kk);
+        art_bin{jj,1}{kk,1} = shiftedSp(and(shiftedSp>=0,shiftedSp<10*1e-3));
+    end
+end
+figure(13)
 for ii = 1:50
-    plot(periStim_selected{5}{37}{ii,1}-stimTimes{5}(1,ii), ones(size(periStim_selected{5}{37}{ii,1}))*ii,'.','linewidth',1)
-    hold on
+    realTime = art_bin{16}{ii} + stimTimes{5}(ii);
+    for jj = 1:length(realTime)
+        indxOfSpk = find(and(spikes.time == realTime, spikes.channel==15));
+        subplot(5,10,ii)
+        plot(spikes.context(:,indxOfSpk));
+        hold on;
+        plot(ones(124,1)*(spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
+        axis tight;
+    end
 end
 
+figure(14)
+
+for ii = 1:50
+    realTime = art_bin{16}{ii} + stimTimes{5}(ii);
+    for jj = 1:length(realTime)
+        lots = find(and(spikes.time ~= realTime, spikes.channel==12));
+        indxOfSpk = lots(1+ round(length(lots)*rand(1,1)));
+        subplot(5,10,ii)
+        plot(spikes.context(:,indxOfSpk));
+        hold on;
+        plot(ones(124,1)*(-spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
+        axis tight;
+    end
+end
