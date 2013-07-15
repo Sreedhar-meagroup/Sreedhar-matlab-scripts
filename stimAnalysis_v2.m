@@ -26,25 +26,26 @@
 
 datName = '130625_4205_stimEfficacy.spike';
 %datName = '130703_PID311_CID4244_MEA15570_DIV26_stimEfficacy.spike';
-datRoot = datName(1:strfind(datName,'.')-1);
-thisDirectory = mfilename('fullpath');
-thisDirectory=thisDirectory(1:find(thisDirectory=='\',1,'last'));
-
-spikes=loadspike(datName,2,25);
-fPath = 'C:\Sreedhar\Lat_work\Closed_loop\StimRespAnalysis\';
-cd(fPath);
-if exist(datRoot,'dir') ~= 7
-    mkdir(datRoot);
-else
-    fPath = [fPath,datRoot,'\'];
-end
-cd(thisDirectory);
+ datRoot = datName(1:strfind(datName,'.')-1);
+% thisDirectory = mfilename('fullpath');
+% thisDirectory=thisDirectory(1:find(thisDirectory=='\',1,'last'));
+% 
+ spikes=loadspike(datName,2,25);
+handles = zeros(1,7);
+% fPath = 'C:\Sreedhar\Lat_work\Closed_loop\StimRespAnalysis\';
+% cd(fPath);
+% if exist(datRoot,'dir') ~= 7
+%     mkdir(datRoot);
+% else
+%     fPath = [fPath,datRoot,'\'];
+% end
+% cd(thisDirectory);
 %% Global rate; (fig(1): global firing rate)
 % sliding window; bin width = 1s
 [counts,timeVec] = hist(spikes.time,[0:ceil(max(spikes.time))]);
-figure(1); bar(timeVec,counts);
-axis tight; xlabel('Time (s)'); ylabel('# spikes'); title('Global firing rate (bin= 1s)');
-saveas(gcf, fullfile(fPath,[datRoot,'_GFR']), 'epsc');
+figure(1); subplot(3,1,1); bar(timeVec,counts);
+axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
+%saveas(gcf, fullfile(fPath,[datRoot,'_GFR']), 'epsc');
 
 %% Stimulus locations and time
 %Splitting spikes and stim info into channels and analog cells.
@@ -132,9 +133,13 @@ end
 
 
 %% Figure 2: General raster
-figure(2); 
-for ii = 1:60
-    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','linewidth',1)
+gfr_rstr_h = figure(1); 
+handles(1) = gfr_rstr_h;
+subplot(3,1,2:3)
+
+for ii = 1:60 
+    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
+    axis tight;
     hold on
 end
 for ii = 1:nStimSites
@@ -150,7 +155,8 @@ for ii = 1:nStimSites
         case 5
             clr = 'm';
     end
-line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',1);
+%line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
+patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.3, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 end
 hold off;
@@ -223,8 +229,11 @@ title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'
 % end
 %%%% Binning, averaging and plotting the PSTHs
 listOfCounts_all = cell(1,nStimSites);
+
 for ii = 1:nStimSites
-    figure(7+ii)
+    psth_h = genvarname(['psth_',num2str(ii)]);
+    eval([psth_h '= figure(', num2str(1+ii), ');']);
+    handles(ii+1) = eval(psth_h);
     for jj = 1:60
         bins = -50: 10: 500;
         count = 0;
@@ -276,40 +285,42 @@ for ii = 1:nStimSites
 %         set(h,'Position',[50 50 1200 800]);
 %         print(gcf, '-depsc', [fPath,datRoot,'_',num2str(stimSites(ii)+1),'.eps']); % hw+1
 end
+%% saving the figures
+saveFigs('stimAnalysis', datRoot,handles, stimSites);
 
 %%
 %59 il stim um  16 il responses um nokkam
-art_bin = cell(60,1);
-for jj = 1:60
-    for kk = 1: length(stimTimes{5})
-        shiftedSp = periStim{5}{jj}{kk,1}-stimTimes{5}(1,kk);
-        art_bin{jj,1}{kk,1} = shiftedSp(and(shiftedSp>=0,shiftedSp<10*1e-3));
-    end
-end
-figure(13)
-for ii = 1:50
-    realTime = art_bin{16}{ii} + stimTimes{5}(ii);
-    for jj = 1:length(realTime)
-        indxOfSpk = find(and(spikes.time == realTime, spikes.channel==15));
-        subplot(5,10,ii)
-        plot(spikes.context(:,indxOfSpk));
-        hold on;
-        plot(ones(124,1)*(spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
-        axis tight;
-    end
-end
-
-figure(14)
-
-for ii = 1:50
-    realTime = art_bin{16}{ii} + stimTimes{5}(ii);
-    for jj = 1:length(realTime)
-        lots = find(and(spikes.time ~= realTime, spikes.channel==12));
-        indxOfSpk = lots(1+ round(length(lots)*rand(1,1)));
-        subplot(5,10,ii)
-        plot(spikes.context(:,indxOfSpk));
-        hold on;
-        plot(ones(124,1)*(-spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
-        axis tight;
-    end
-end
+% art_bin = cell(60,1);
+% for jj = 1:60
+%     for kk = 1: length(stimTimes{5})
+%         shiftedSp = periStim{5}{jj}{kk,1}-stimTimes{5}(1,kk);
+%         art_bin{jj,1}{kk,1} = shiftedSp(and(shiftedSp>=0,shiftedSp<10*1e-3));
+%     end
+% end
+% figure(13)
+% for ii = 1:50
+%     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
+%     for jj = 1:length(realTime)
+%         indxOfSpk = find(and(spikes.time == realTime, spikes.channel==15));
+%         subplot(5,10,ii)
+%         plot(spikes.context(:,indxOfSpk));
+%         hold on;
+%         plot(ones(124,1)*(spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
+%         axis tight;
+%     end
+% end
+% 
+% figure(14)
+% 
+% for ii = 1:50
+%     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
+%     for jj = 1:length(realTime)
+%         lots = find(and(spikes.time ~= realTime, spikes.channel==12));
+%         indxOfSpk = lots(1+ round(length(lots)*rand(1,1)));
+%         subplot(5,10,ii)
+%         plot(spikes.context(:,indxOfSpk));
+%         hold on;
+%         plot(ones(124,1)*(-spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
+%         axis tight;
+%     end
+% end
