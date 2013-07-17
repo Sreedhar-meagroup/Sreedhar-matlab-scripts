@@ -55,7 +55,7 @@ end
 
 nStimSites = 5;
 str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
-stimSites = str2num(str{1}); % in cr
+stimSites = str2num(str{1}); % 0-59
 %stimSites = cr2hw([35, 21, 46, 41, 58]);
 stimTimes = cell(1,5);
 for ii = 1:nStimSites
@@ -151,7 +151,7 @@ end
 hold off;
 xlabel('Time (s)');
 ylabel('Channel #');
-title(['Raster plot indicating stimulation at channels [',num2str(cr2hw(stimSites)+1),'] (hw+1)']);
+title(['Raster plot indicating stimulation at channels [',num2str(stimSites+1),'] (hw+1)']);
 
 %% Binning, averaging and plotting the PSTHs with 1s pre-stim silence
 % listOfCounts = cell(1,nStimSites);
