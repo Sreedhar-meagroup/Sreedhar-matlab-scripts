@@ -4,10 +4,10 @@ switch context
     case 'stimAnalysis'
         thisDirectory = mfilename('fullpath');
         thisDirectory=thisDirectory(1:find(thisDirectory=='\',1,'last'));
-        [~, name] = system(hostname');
+        [~, name] = system('hostname');
         if strcmpi(strtrim(name),'sree-pc')
             fPath = 'D:\Codes\Lat_work\Closed_loop\StimRespAnalysis\';
-        elseif strcmp(strtrim(name),'petunia')
+        elseif strcmpi(strtrim(name),'petunia')
             fPath = 'C:\Sreedhar\Lat_work\Closed_loop\StimRespAnalysis\';
         end
         cd(fPath);
