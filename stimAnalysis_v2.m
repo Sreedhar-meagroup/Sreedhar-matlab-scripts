@@ -35,11 +35,11 @@ end
 %datName = '130625_4205_stimEfficacy.spike';
 %datName = '130703_PID311_CID4244_MEA15570_DIV26_stimEfficacy.spike';
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes=loadspike(datName,2,25);
+spikes=loadspike(datName);
 handles = zeros(1,7);
 %% Fig 1a: global firing rate
 % sliding window; bin width = 1s
-[counts,timeVec] = hist(spikes.time,[0:ceil(max(spikes.time))]);
+[counts,timeVec] = hist(spikes.time,0:ceil(max(spikes.time)));
 figure(1); subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
