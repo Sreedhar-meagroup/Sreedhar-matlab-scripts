@@ -23,16 +23,23 @@
 % Statistics Toolbox                                    Version 7.5        (R2011a)
 % Wavelet Toolbox                                       Version 4.7        (R2011a)
 %--------------------------------------------------------------------------------------
-[datName,~]=uigetfile('*.spike','Select MEABench Data file','D:\Codes\mat_work\MB_data');
+[~, name] = system('hostname');
+if strcmpi(strtrim(name),'sree-pc')
+    srcPath = 'D:\Codes\mat_work\MB_data';
+elseif strcmpi(strtrim(name),'petunia')
+    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\StimRecSite\StimPolicy2';
+end
+
+[datName,~]=uigetfile('*.spike','Select MEABench Data file',srcPath);
 %datName = '130627_4225_stimEfficacy.spike';
 %datName = '130625_4205_stimEfficacy.spike';
 %datName = '130703_PID311_CID4244_MEA15570_DIV26_stimEfficacy.spike';
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes=loadspike(datName,2,25);
+spikes=loadspike(datName);
 handles = zeros(1,7);
 %% Fig 1a: global firing rate
 % sliding window; bin width = 1s
-[counts,timeVec] = hist(spikes.time,[0:ceil(max(spikes.time))]);
+[counts,timeVec] = hist(spikes.time,0:ceil(max(spikes.time)));
 figure(1); subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
@@ -147,6 +154,11 @@ for ii = 1:nStimSites
 %line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
 patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
+
+% code for the tiny rectangle
+Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
+Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
+patch(Xcoords,Ycoords, 'r', 'EdgeColor','none', 'FaceAlpha',0.2);
 end
 hold off;
 xlabel('Time (s)');
@@ -257,7 +269,7 @@ for ii = 1:nStimSites
         % Add a title to the whole plot
         set(gcf,'NextPlot','add');
         axes;
-        h = title(['Mean PSTHs following stimulation at ',num2str(stimSites(ii)+1),'(hw+1). [mean #spikes vs time(ms)]']);
+        h = title(['Mean PSTHs following stimulation at ',num2str(cr2hw(stimSites(ii))+1),'(hw+1). [mean #spikes vs time(ms)]']);
         set(gca,'Visible','off');
         set(h,'Visible','on');
 end

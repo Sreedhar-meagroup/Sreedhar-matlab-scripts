@@ -2,7 +2,7 @@
 function varargout = createFigs(datRoot,varargin)
 % createFigs is useful for three figure rendering tasks.
 % 1. createFigs(datRoot,'NBS') -- creates a histogram of the network burst
-% starts
+% starts :)
 % 2. createFigs(datRoot,'CFP', maxT) -- creates a correlogram of the
 % spontaneous activity
 % 3. createFigs(datRoot,'NBS','CFP', maxT) -- creates a histogram as in (1),
