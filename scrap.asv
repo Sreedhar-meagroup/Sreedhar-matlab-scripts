@@ -169,17 +169,7 @@ end
 
 str = inputdlg('Enter a list of numbers separated by spaces or commas');
 numbers = str2num(str{1});
-%% context analysis, 130627_4225_stimEfficacy.spike, spk1500
-%spk1500 = 
-% 
-%        time: 114.5192
-%      sample: 2862980
-%     context: [1x1 struct]
-%      thresh: [1x1 struct]
-%        mean: [1x1 struct]
-%         min: [1x1 struct]
-%         max: [1x1 struct]
-
+%% context analysis
 figure(1);
 plot(spk1500.context.uV,'.')
 axis tight;
