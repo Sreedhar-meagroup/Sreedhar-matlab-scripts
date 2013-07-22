@@ -37,25 +37,16 @@ end
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike(datName,2,25);
 handles = zeros(1,7);
-%% Fig 1a: global firing rate
-% sliding window; bin width = 1s
-[counts,timeVec] = hist(spikes.time,0:ceil(max(spikes.time)));
-figure(1); subplot(3,1,1); bar(timeVec,counts);
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
 %% Stimulus locations and time
-%Splitting spikes and stim info into channels and analog cells.
+%Get stim info into analog cells.
 %stimTimes is 1x5 cell; each cell has 1x50 stimTimes for each site
 
-inAChannel = cell(60,1);
 inAnalog = cell(4,1);
-for ii=0:63
-    if ii<60
-        inAChannel{ii+1,1} = spikes.time(spikes.channel==ii);
-    else
-        inAnalog{ii-59,1} = spikes.time(spikes.channel==ii);
-    end
+for ii=60:63
+    inAnalog{ii-59,1} = spikes.time(spikes.channel==ii);
 end
+
 
 % the following info shall in future versions automatically gathered from the log file...
 % working on that script stim_efficacy.m
@@ -68,6 +59,20 @@ stimTimes = cell(1,5);
 for ii = 1:nStimSites
     stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
 end
+
+
+%% Cleaning the spikes and getting them into cells
+cleanSpks = cleanspikes(spikes);
+inAChannel = cell(60,1);
+for ii=0:59
+    inAChannel{ii+1,1} = cleanSpks.time(cleanSpks.channel==ii);
+end
+
+%% Fig 1a: global firing rate
+% sliding window; bin width = 1s
+[counts,timeVec] = hist(cleanSpks.time,0:ceil(max(cleanSpks.time)));
+figure(1); subplot(3,1,1); bar(timeVec,counts);
+axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
 
 %% Peristimulus spike trains for each stim site and each channel
@@ -235,7 +240,7 @@ for ii = 1:nStimSites
         frMat = zeros(2,length(bins));
         for kk = 1:size(stimTimes{ii},2)
             shiftedSp = periStim{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
-            %if ~isempty(spikes)
+            %if ~isempty(cleanSpks)
                 fr = zeros(size(bins));
                 for mm = 1:length(bins)-1
                     fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
@@ -290,11 +295,11 @@ end
 % for ii = 1:50
 %     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
 %     for jj = 1:length(realTime)
-%         indxOfSpk = find(and(spikes.time == realTime, spikes.channel==15));
+%         indxOfSpk = find(and(cleanSpks.time == realTime, cleanSpks.channel==15));
 %         subplot(5,10,ii)
-%         plot(spikes.context(:,indxOfSpk));
+%         plot(cleanSpks.context(:,indxOfSpk));
 %         hold on;
-%         plot(ones(124,1)*(spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
+%         plot(ones(124,1)*(cleanSpks.thresh(indxOfSpk)+mean(cleanSpks.context(:,indxOfSpk))),'r');
 %         axis tight;
 %     end
 % end
@@ -304,12 +309,12 @@ end
 % for ii = 1:50
 %     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
 %     for jj = 1:length(realTime)
-%         lots = find(and(spikes.time ~= realTime, spikes.channel==12));
+%         lots = find(and(cleanSpks.time ~= realTime, cleanSpks.channel==12));
 %         indxOfSpk = lots(1+ round(length(lots)*rand(1,1)));
 %         subplot(5,10,ii)
-%         plot(spikes.context(:,indxOfSpk));
+%         plot(cleanSpks.context(:,indxOfSpk));
 %         hold on;
-%         plot(ones(124,1)*(-spikes.thresh(indxOfSpk)+mean(spikes.context(:,indxOfSpk))),'r');
+%         plot(ones(124,1)*(-cleanSpks.thresh(indxOfSpk)+mean(cleanSpks.context(:,indxOfSpk))),'r');
 %         axis tight;
 %     end
 % end

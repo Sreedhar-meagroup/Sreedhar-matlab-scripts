@@ -170,23 +170,68 @@ end
 str = inputdlg('Enter a list of numbers separated by spaces or commas');
 numbers = str2num(str{1});
 %% context analysis, 130627_4225_stimEfficacy.spike, spk1500
-%spk1500 = 
+% spk1500 = 
 % 
-%        time: 114.5192
-%      sample: 2862980
-%     context: [1x1 struct]
-%      thresh: [1x1 struct]
-%        mean: [1x1 struct]
-%         min: [1x1 struct]
-%         max: [1x1 struct]
+%       time: 114.5192
+%     sample: 2862980
+%         uV: [1x1 struct]
+%        dig: [1x1 struct]
+
+
+spk1500.time = spikes1.time(1500);
+spk1500.sample = spikes2.time(1500);
+spk1500.uV.context = spikes1.context(:,1500);
+spk1500.uV.height = spikes1.height(1500);
+spk1500.uV.width = spikes1.width(1500);
+spk1500.uV.thresh = spikes1.thresh(1500);
+spk1500.uV.mean = mean(spikes1.context(:,1500));
+spk1500.uV.min = min(spikes1.context(:,1500));
+spk1500.uV.max = max(spikes1.context(:,1500));
+spk1500.uV.rms1 = spk1500.uV.thresh/7; 
+spk1500.dig.context = spikes2.context(:,1500);
+spk1500.dig.height = spikes2.height(1500);
+spk1500.dig.width = spikes2.width(1500);
+spk1500.dig.thresh = spikes2.thresh(1500);
+spk1500.dig.mean = mean(spikes2.context(:,1500));
+spk1500.dig.min = min(spikes2.context(:,1500));
+spk1500.dig.max = max(spikes2.context(:,1500));
+spk1500.dig.rms1 = spk1500.dig.thresh/7;
 
 figure(1);
-plot(spk1500.context.uV,'.')
+plot(spk1500.uV.context,'.')
 axis tight;
 hold on;
-line([0 124],[spk1500.mean.uV, spk1500.mean.uV],'Color','k');
-line([0,124], ones(1,2)*(spk1500.mean.uV-spk1500.thresh.uV),'color','r')
-line([0,124], ones(1,2)*(spk1500.mean.uV+spk1500.thresh.uV),'color','r')
-line(50*[1,1], [spk1500.min.uV-10, spk1500.max.uV+10],'color','k')
-
+line([0 124],[spk1500.uV.mean, spk1500.uV.mean],'Color','k');
+line([0 124],[spk1500.uV.rms1, spk1500.uV.rms1],'Color','k','LineStyle','-');
+line([0,124], ones(1,2)*(spk1500.uV.mean-spk1500.uV.thresh),'color','r')
+line([0,124], ones(1,2)*(spk1500.uV.mean+spk1500.uV.thresh),'color','r')
+line(50*[1,1], [spk1500.uV.min-10, spk1500.uV.max+10],'color','k')
 grid
+
+figure(2);
+plot(spk1500.dig.context,'.')
+axis tight;
+hold on;
+line([0 124],[spk1500.dig.mean, spk1500.dig.mean],'Color','k');
+line([0 124],[spk1500.dig.rms1, spk1500.dig.rms1],'Color','k','LineStyle','-');
+line([0,124], ones(1,2)*(spk1500.dig.mean-spk1500.dig.thresh),'color','r')
+line([0,124], ones(1,2)*(spk1500.dig.mean+spk1500.dig.thresh),'color','r')
+line(50*[1,1], [spk1500.dig.min-10, spk1500.dig.max+10],'color','k')
+grid
+
+figure(3);
+plot(spikes1_clean.context(:,891),'.')
+axis tight;
+hold on;
+line([0 124],[0, 0],'Color','k');
+%line([0 124],[spk1500.uV.rms1, spk1500.uV.rms1],'Color','k','LineStyle','-');
+line([0,124], ones(1,2)*(spikes1_clean.thresh(891)),'color','r')
+line([0,124], ones(1,2)*(-spikes1_clean.thresh(891)),'color','r')
+line(50*[1,1], [-35, 6],'color','k')
+grid
+
+%% The cleaning lady
+isaux = find(spikes1.channel>=60);
+iselc = find(spikes1.channel<60);
+
+cleanSpks

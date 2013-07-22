@@ -45,8 +45,10 @@ if nargin<2
   testidx=[[5:13] [40:50]];
 end
 
+
 abstestidx=[1:74];
 abstestidx([1:min(testidx)-1])=0;
+
 abstestidx([max(testidx)+1:74])=0;
 %abstestidx(testidx)=0;
 abstestidx([23:28])=0;
