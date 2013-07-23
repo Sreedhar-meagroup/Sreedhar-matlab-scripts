@@ -231,7 +231,43 @@ line(50*[1,1], [-35, 6],'color','k')
 grid
 
 %% The cleaning lady
-isaux = find(spikes1.channel>=60);
-iselc = find(spikes1.channel<60);
-
-cleanSpks
+allIdx = 1:length(spikes.time);
+stimIdx = find(spikes.channel>=60);
+rejIdx = allIdx(and(~ismember(allIdx,stimIdx),~ismember(allIdx,idx)));
+rejCtxts = spikes.context(:,rejIdx);
+rchoice = zeros(24,1);
+for ii = 1: 1
+    rchoice(ii) =  round(1 + (length(rejIdx)-1)*rand(1));
+    rawctxt = rejCtxts(:,rchoice(ii));
+    first = rawctxt(15:35);
+    last = rawctxt(40:60);
+    dc1 = mean(first);
+    dc2 = mean(last);
+    v1 = var(first);
+    v2 = var(last);
+    dc = (dc1*v2+dc2*v1)/(v1+v2+1e-10); % == (dc1/v1 + dc2/v1) / (1/v1 + 1/v2)
+    rejCtxts(:,rchoice(ii)) = rawctxt - dc;
+    peak = mean(rejCtxts(50:51,rchoice(ii)));
+    %subplot(3,5,ii)
+    plot(rejCtxts(:,rchoice(ii)));
+    %axis tight
+    line([0 124],[0, 0],'Color','k');
+    line(50*[1,1], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'color','k');
+    line([37,37], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'color','r');
+    line([63,63], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'color','r');
+    line([45,45], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'linestyle','--','color','r');
+    line([55,55], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'linestyle','--','color','r');
+    line([25,25], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'color','k');
+    line([75,75], [min(rejCtxts(:,rchoice(ii)))-5, max(rejCtxts(:,rchoice(ii)))+5],'color','k');
+    
+    line([0 124],[peak*.5, peak*.5],'LineStyle',':');
+    line([0 124],[peak*.9, peak*.9],'LineStyle','--');
+    line([0 124],spikes.thresh(rejIdx(rchoice(ii)))*ones(1,2));
+    line([0 124],-spikes.thresh(rejIdx(rchoice(ii)))*ones(1,2));
+    
+    %set(gca,'Xticklabel',[]);
+    set(gca,'XTick',0:25:125);
+    set(gca,'XTicklabel',-2:3);
+    xlabel(['Time [ms]; timestamp: ',num2str(rejIdx(rchoice(ii)))]);
+    ylabel('Voltage [\muV]');
+end

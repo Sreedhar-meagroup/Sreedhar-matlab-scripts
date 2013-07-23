@@ -1,10 +1,10 @@
-function cleanSpks = cleanspikes(spikes, testidx, relthresh)
+function [spks, idx] = cleanspikes(spikes, testidx, relthresh)
 % This is a modified version of the earlier clean context fn, cleanctxt(). --
 % SSK@22.07.2013
-% cleanSpks = CLEANSPIKES(spikes) returns cleaned up spikes and DC offset corrected spike contexts:
+% [spks,idx] = CLEANSPIKES(spikes) returns cleaned up spikes and DC offset corrected spike contexts:
 % SPIKES is the structure returned by loadspike('filename',2,25). Other
 % arguments are optional.
-
+% IDX is the ids of the selected spikes
 % i)DC offset correction:
 % - Twenty values around -1ms and 20 around +2 ms are 
 %   averaged and used to compute DC offset.
@@ -25,7 +25,7 @@ function cleanSpks = cleanspikes(spikes, testidx, relthresh)
 %   value. This test is modified on its outer edges by the edges of
 %   testidx, but cannot be modified independently.
 
-% Returns: cleanSpks: a structure similar to spikes, but with only the
+% Returns: spks: a structure similar to spikes, but with only the
 % accepted spikes, with DC subtracted contexts.
 
 % Requirements: spikes must be as read from loadspike('filename',2,25), i.e. 124xN (or
@@ -98,9 +98,9 @@ end
 ctxts=ctxts(:,1:out);
 idx=idx(1:out);
 
-cleanSpks.time = spikes.time(idx);
-cleanSpks.channel = spikes.channel(idx);
-cleanSpks.height = spikes.height(idx);
-cleanSpks.width = spikes.width(idx);
-cleanSpks.context = ctxts;
-cleanSpks.thresh = spikes.thresh(idx);
+spks.time = spikes.time(idx);
+spks.channel = spikes.channel(idx);
+spks.height = spikes.height(idx);
+spks.width = spikes.width(idx);
+spks.context = ctxts;
+spks.thresh = spikes.thresh(idx);

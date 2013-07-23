@@ -62,15 +62,15 @@ end
 
 
 %% Cleaning the spikes and getting them into cells
-cleanSpks = cleanspikes(spikes);
+spks = cleanspikes(spikes);
 inAChannel = cell(60,1);
 for ii=0:59
-    inAChannel{ii+1,1} = cleanSpks.time(cleanSpks.channel==ii);
+    inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
 
 %% Fig 1a: global firing rate
 % sliding window; bin width = 1s
-[counts,timeVec] = hist(cleanSpks.time,0:ceil(max(cleanSpks.time)));
+[counts,timeVec] = hist(spks.time,0:ceil(max(spks.time)));
 figure(1); subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
@@ -240,7 +240,7 @@ for ii = 1:nStimSites
         frMat = zeros(2,length(bins));
         for kk = 1:size(stimTimes{ii},2)
             shiftedSp = periStim{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
-            %if ~isempty(cleanSpks)
+            %if ~isempty(spks)
                 fr = zeros(size(bins));
                 for mm = 1:length(bins)-1
                     fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
@@ -295,11 +295,11 @@ end
 % for ii = 1:50
 %     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
 %     for jj = 1:length(realTime)
-%         indxOfSpk = find(and(cleanSpks.time == realTime, cleanSpks.channel==15));
+%         indxOfSpk = find(and(spks.time == realTime, spks.channel==15));
 %         subplot(5,10,ii)
-%         plot(cleanSpks.context(:,indxOfSpk));
+%         plot(spks.context(:,indxOfSpk));
 %         hold on;
-%         plot(ones(124,1)*(cleanSpks.thresh(indxOfSpk)+mean(cleanSpks.context(:,indxOfSpk))),'r');
+%         plot(ones(124,1)*(spks.thresh(indxOfSpk)+mean(spks.context(:,indxOfSpk))),'r');
 %         axis tight;
 %     end
 % end
@@ -309,12 +309,12 @@ end
 % for ii = 1:50
 %     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
 %     for jj = 1:length(realTime)
-%         lots = find(and(cleanSpks.time ~= realTime, cleanSpks.channel==12));
+%         lots = find(and(spks.time ~= realTime, spks.channel==12));
 %         indxOfSpk = lots(1+ round(length(lots)*rand(1,1)));
 %         subplot(5,10,ii)
-%         plot(cleanSpks.context(:,indxOfSpk));
+%         plot(spks.context(:,indxOfSpk));
 %         hold on;
-%         plot(ones(124,1)*(-cleanSpks.thresh(indxOfSpk)+mean(cleanSpks.context(:,indxOfSpk))),'r');
+%         plot(ones(124,1)*(-spks.thresh(indxOfSpk)+mean(spks.context(:,indxOfSpk))),'r');
 %         axis tight;
 %     end
 % end
