@@ -140,6 +140,7 @@ subplot(3,1,2:3)
 
 for ii = 1:60 
     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
+    %'ob','markersize',2,'markerfacecolor','b'
     axis tight;
     hold on
 end
@@ -156,16 +157,17 @@ for ii = 1:nStimSites
         case 5
             clr = 'm';
     end
-%line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
+line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
 patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 
 % code for the tiny rectangle
 Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
 Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
-patch(Xcoords,Ycoords, 'r', 'EdgeColor','none', 'FaceAlpha',0.2);
+patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
 end
 hold off;
+set(gca,'TickDir','Out');
 xlabel('Time (s)');
 ylabel('Channel #');
 title(['Raster plot indicating stimulation at channels [',num2str(cr2hw(stimSites)+1),'] (hw+1)']);
@@ -258,9 +260,10 @@ for ii = 1:nStimSites
         pos = 6*(row-1) + col;
         subplot(10,6,pos)
         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-        axis([-100 500 -0.5 2.5])
+        axis([-100 500 -0.5 1.5])
+        
         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
-        text(375,1.7,num2str(jj),'FontAngle','italic');
+        text(375,1.0,num2str(jj),'FontAngle','italic');
         if ~or(mod(pos,6)==1,pos>54)
             set(gca,'YTickLabel',[]);
             set(gca,'XTickLabel',[]);

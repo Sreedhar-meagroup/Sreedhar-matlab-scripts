@@ -120,8 +120,7 @@ if ~isnan(range)
     y.height(iselc) = y.height(iselc) .* range/2048;
     y.thresh(iselc) = y.thresh(iselc) .* range/2048;
     y.context(:,iselc) = y.context(:,iselc) .* range/2048;
-    %y.context = y.context-range; % dc offset correction shall be taken up
-    %in cleanctxt_new() -- SSK @22.07.2013
+    y.context = y.context-range;
     y.height(isaux) = y.height(isaux) .* auxrange/2048;
     y.thresh(isaux) = y.thresh(isaux) .* auxrange/2048;
     y.context(:,isaux) = y.context(:,isaux) .* auxrange/2048;

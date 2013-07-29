@@ -1,17 +1,11 @@
-function [spks, idx] = cleanspikes(spikes, testidx, relthresh)
+function [spks, selIdx, rejIdx] = cleanspikes(spikes, testidx, relthresh)
 % This is a modified version of the earlier clean context fn, cleanctxt(). --
 % SSK@22.07.2013
 % [spks,idx] = CLEANSPIKES(spikes) returns cleaned up spikes and DC offset corrected spike contexts:
 % SPIKES is the structure returned by loadspike('filename',2,25). Other
 % arguments are optional.
 % IDX is the ids of the selected spikes
-% i)DC offset correction:
-% - Twenty values around -1ms and 20 around +2 ms are 
-%   averaged and used to compute DC offset.
-% - These two estimates are weighted according to their inverse variance.
-% - The DC offset is subtracted.
-
-% ii) relthresh test (-1:-0.5ms and 0.5:1ms)
+% i) relthresh test (-1:-0.5ms and 0.5:1ms)
 % - If any sample in the above mentioned interval is more than half the peak
 %   the spike is rejected.
 % - Use arguments testidx  and relthresh to modify this test:
@@ -72,23 +66,37 @@ ctxts=zeros(124,N);
 out = 0;
 
 for in = 1:N
-  first = contexts(15:35,in);
-  last = contexts(40:60,in);
-  dc1 = mean(first);
-  dc2 = mean(last);
-  v1 = var(first);
-  v2 = var(last);
-  dc = (dc1*v2+dc2*v1)/(v1+v2+1e-10); % == (dc1/v1 + dc2/v1) / (1/v1 + 1/v2)
-  now = contexts(:,in) - dc;
+  now = contexts(:,in);
   peak = mean(now(50:51));
+  
   if peak<0
-    bad = length(find(now(testidx) <= relthresh*peak));
+      bad = length(find(now(testidx) <= relthresh*peak));
   else
-    bad = length(find(now(testidx) >= relthresh*peak));
+      bad = length(find(now(testidx) >= relthresh*peak));
   end
+  
   if bad == 0
-    bad = length(find(abs(now(abstestidx)) >= 0.9*abs(peak)));
+      if peak<0
+          bad = length(find(now(abstestidx) <= 0.9*peak));
+          if bad
+            breach = find(now(abstestidx) <= 0.9*peak,1,'first');
+            if abs(peak-max(now(50:55+breach-20)))> 3*spikes.thresh(in)/7;
+                bad = 0;
+            end            
+          end
+          
+      
+        else
+          bad = length(find(now(abstestidx) >= 0.9*peak));
+          if bad
+            breach = find(now(abstestidx) >= 0.9*peak,1,'first');
+            if abs(peak-min(now(50:55+breach-20)))> 3*spikes.thresh(in)/7;
+               bad = 0;
+            end            
+          end  
+      end  
   end
+  
   if bad == 0
     out = out+1;
     ctxts(:,out) = now;
@@ -96,11 +104,15 @@ for in = 1:N
   end
 end
 ctxts=ctxts(:,1:out);
-idx=idx(1:out);
+selIdx=idx(1:out);
 
-spks.time = spikes.time(idx);
-spks.channel = spikes.channel(idx);
-spks.height = spikes.height(idx);
-spks.width = spikes.width(idx);
+spks.time = spikes.time(selIdx);
+spks.channel = spikes.channel(selIdx);
+spks.height = spikes.height(selIdx);
+spks.width = spikes.width(selIdx);
 spks.context = ctxts;
-spks.thresh = spikes.thresh(idx);
+spks.thresh = spikes.thresh(selIdx);
+
+allIdx = 1:length(spikes.time);
+stimIdx = find(spikes.channel>=60);
+rejIdx = allIdx(and(~ismember(allIdx,stimIdx),~ismember(allIdx,idx)));

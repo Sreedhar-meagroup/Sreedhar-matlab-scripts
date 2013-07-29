@@ -1,3 +1,4 @@
+
 %The Network burst detection was transfered to a function, the algorithm is
 %the same
 %
@@ -48,13 +49,13 @@
 
 
 
-function [bursting_channels_mea network_burst network_burst_onset] = Networkburst_detection(datname,ls,burst_detection,nr_bursting_ch,varargin)
+function [bursting_channels_mea, network_burst, network_burst_onset, network_burst_ends] = Networkburst_detection_sk(datname,ls,burst_detection,nr_bursting_ch,varargin)
 
 
 %set some variables that define a networkburst
  MIN_DELAY       = 0.075;         %is in sec
  MIN_DELAY_EXTRA = 0.15;           %ther may be one interval that is larger  than MIN_DELAY, but smaller than this value
- MIN_NO_ELEC     = 3;             %how many electrodes ahould at least be affected
+ MIN_NO_ELEC     = 3;             %how many electrodes should at least be affected
  
 if nargin>4
     nr_inputs = nargin;
@@ -179,14 +180,14 @@ end
             for jj=1:length(nb_channels)
             nb_end_times(jj)     = burst_detection{1,nb_channels(jj)}{nb_channels_burst_nr(jj),3}(end);
             end
-            network_burst{no_network_bursts,5} = nb_end_times;            %this gives the end times of the individual bursts that constitute the nb 
+            network_burst{no_network_bursts,5} = nb_end_times';            %this gives the end times of the individual bursts that constitute the nb 
             
 
              k=last_index+1;  %go on by checking the next index
 
          else
              k=k+1;
-         end
+     end
  end
  
  
@@ -226,15 +227,18 @@ inter_netw_burst_gap   = zeros(1,no_network_bursts-1);
 
 
 
-%plot a figure with some raster but also some lines indicaating network
+%plot a figure with some raster but also some lines indicating network
 %burst onset
 
-raster_nb_onset_figure=screen_size_fig();
+%raster_nb_onset_figure=screen_size_fig();
+raster_nb_onset_figure=figure();
+subplot(3,1,2:3)
+%set(gcf,'Renderer','OpenGL');
 start_plot    =  ls.time(1);
-end_plot      =  start_plot+5400;
-sequence_ind  = find(ls.time>start_plot & ls.time<end_plot);
-
-plot(ls.time(sequence_ind),ls.channel(sequence_ind),'ok','markersize',2,'markerfacecolor','k');
+%end_plot      =  start_plot+5400;
+end_plot = ls.time(end);
+sequence_ind  = find(ls.time>=start_plot & ls.time<=end_plot);
+plot(ls.time(sequence_ind),ls.channel(sequence_ind)+1,'ok','markersize',2,'markerfacecolor','k');
 
 nb_onset_ind      = find(network_burst_onset(:,2) > start_plot & network_burst_onset(:,2) < end_plot);
 nb_end_ind        = find(network_burst_ends(:,1) > start_plot & network_burst_ends(:,1) < end_plot);
@@ -247,30 +251,17 @@ nb_end_marker_times  = network_burst_ends(nb_end_ind,1);
 nb_end_marker_lines  = line([nb_end_marker_times' ; nb_end_marker_times'],[-1 64]);
 
 %set the markers in different color
-set(nb_onset_marker_lines(:),'Color','r');
-set(nb_end_marker_lines(:),'Color','b');
+ set(nb_onset_marker_lines(:),'Color','r');
+ set(nb_end_marker_lines(:),'Color','b');
 
-ylim([-1 64]);
+%  Xcoords = [nb_onset_marker_times';nb_onset_marker_times';nb_end_marker_times';nb_end_marker_times'];
+%  Ycoords = 60*repmat([0;1;1;0],size(nb_onset_marker_times'));
+%  patch(Xcoords,Ycoords, 'r', 'EdgeColor','none', 'FaceAlpha',0.2);
+
+ylim([0 61]);
 xlim([start_plot end_plot]);
+set(gca,'TickDir','Out');
 xlabel('time [sec]');
 ylabel('(hw) electrode');
-title({['datname: ', num2str(datname)];['raster plot and detected network bursts (black lines indicating onsets)'];...
-    ['Shown is an example for hr. ', num2str(start_plot/3600),' to ',num2str(end_plot/3600),' of recording']},'Interpreter', 'none')
-
-
-
- 
- 
-
-
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+title({['datname: ', num2str(datname)];['raster plot and detected network bursts (red lines indicating onsets)'];...
+    ['Shown is an example for ', num2str(end_plot),'s of recording']},'Interpreter', 'none')
