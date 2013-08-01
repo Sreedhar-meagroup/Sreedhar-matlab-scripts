@@ -68,11 +68,27 @@ out = 0;
 for in = 1:N
   now = contexts(:,in);
   peak = mean(now(50:51));
-  
-  if peak<0
-      bad = length(find(now(testidx) <= relthresh*peak));
-  else
-      bad = length(find(now(testidx) >= relthresh*peak));
+ % signtest() determines if the signs of the peak and the threshold match.
+ bad = signtest(peak, spikes.thresh(in));
+ 
+  if bad == 0
+      if peak<0
+          bad = length(find(now(testidx) <= relthresh*peak));
+          if bad
+            breach = find(now(testidx) <= relthresh*peak,1,'first');
+            if abs(peak-max(now(50:63+breach-13)))> 6*spikes.thresh(in)/7;
+                bad = 0;
+            end            
+          end
+      else
+          bad = length(find(now(testidx) >= relthresh*peak));
+          if bad
+            breach = find(now(testidx) >= relthresh*peak,1,'first');
+            if abs(peak-min(now(50:63+breach-13)))> 6*spikes.thresh(in)/7;
+                bad = 0;
+            end            
+          end      
+      end
   end
   
   if bad == 0
@@ -83,10 +99,8 @@ for in = 1:N
             if abs(peak-max(now(50:55+breach-20)))> 3*spikes.thresh(in)/7;
                 bad = 0;
             end            
-          end
-          
-      
-        else
+          end     
+      else
           bad = length(find(now(abstestidx) >= 0.9*peak));
           if bad
             breach = find(now(abstestidx) >= 0.9*peak,1,'first');
@@ -116,3 +130,17 @@ spks.thresh = spikes.thresh(selIdx);
 allIdx = 1:length(spikes.time);
 stimIdx = find(spikes.channel>=60);
 rejIdx = allIdx(and(~ismember(allIdx,stimIdx),~ismember(allIdx,idx)));
+end
+
+function bad = signtest(peak, thresh)
+bad = 0;
+   if peak<0
+        if peak > -thresh
+            bad = 1;
+        end
+    else
+        if peak < thresh
+            bad = 1;
+        end
+   end
+end
