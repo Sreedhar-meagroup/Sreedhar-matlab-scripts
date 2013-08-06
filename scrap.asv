@@ -291,4 +291,3 @@ for ii = 1:60
         nSpikesInBursts(ii) = sum(cellfun(@double,burst_detection{ii}(:,2)));
     end
 end
-nSpikesOutBursts = nSpikesInEachChannel - nSpikesInBursts;

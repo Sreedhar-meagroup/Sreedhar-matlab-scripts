@@ -70,8 +70,9 @@ if nargin >1
     end
 end
 
-burst_detection=cell(1,61);
-for channel=0:60;
+%burst_detection=cell(0,61);
+burst_detection=cell(1,60);
+for channel=0:59; % canged counter from 1:60 to 0:59 ssk@05.08.2013
     channel;
     channel_spikes_ind  = find(ls.channel==channel);
     channel_spike_times = ls.time(channel_spikes_ind);
