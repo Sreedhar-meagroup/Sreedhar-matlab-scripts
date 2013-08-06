@@ -8,9 +8,9 @@ spks_samples = cleanspikes(spikes_samples);
 %% Generate `states'
 inAChannel = cell(60,1);
 binWidth = 10; %in ms
-states = zeros(10,ceil(max(spks.time)/(25*binWidth))); % each states is now a column; 250 samples correspond to 10ms
+states = zeros(10,ceil(max(spks_samples.time)/(25*binWidth))); % each states is now a column; 250 samples correspond to 10ms
 for ii=0:59
-    inAChannel{ii+1,1} = spks.time(spks.channel==ii);
+    inAChannel{ii+1,1} = spks_samples.time(spks_samples.channel==ii);
 end
 nSpikesInEachChannel = cellfun(@length,inAChannel);
 [sortedNSpikes, sortedIndx] = sort(nSpikesInEachChannel,'descend');
@@ -35,7 +35,7 @@ end
 count_n = count/length(red_states_dec);
 %% plots
 figure(1)
-%[counts,timeVec] = hist(spks.time,[0:ceil(max(spks.time))]);
+%[counts,timeVec] = hist(spks_samples.time,[0:ceil(max(spks_samples.time))]);
 bar(b,count_n,3), axis tight
 xlabel('States','FontSize',12)
 ylabel('Probability','FontSize',12)
