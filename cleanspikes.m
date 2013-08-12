@@ -127,6 +127,8 @@ spks.width = spikes.width(selIdx);
 spks.context = ctxts;
 spks.thresh = spikes.thresh(selIdx);
 
+disp(['Percentage of spikes removed: ',num2str(100*(length(spikes.time)-length(spks.time))/length(spikes.time)), '%']);
+
 allIdx = 1:length(spikes.time);
 stimIdx = find(spikes.channel>=60);
 rejIdx = allIdx(and(~ismember(allIdx,stimIdx),~ismember(allIdx,idx)));

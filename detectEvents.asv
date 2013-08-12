@@ -193,9 +193,7 @@ lspkid = lspkid(lspkid<length(IEI));
 % EVENTID(lspkid(find((eventtime(lspkid+1)-eventtime(lspkid))<=min_IEI))+1)=EVENTID(lspkid(find((eventtime(lspkid+1)-eventtime(lspkid))<=min_IEI)));
 EVENTID(lspkid(find(IEI(lspkid)<=min_IEI))+1)=EVENTID(lspkid(find(IEI(lspkid)<=min_IEI)));
 EVENTID=EVENTID(1:N); %if events range over the limit the cumsum procedure (offsets are shifted by one to the right) will increase the size of EVENTID by one therefore take entries from 1:N 
-end
-
-function [NETWORKEVENTID,NETWORKEVENTONSETS,NETWORKEVENTOFFSETS]=eventdetection_networkevents2(SPIKETIME,EVENTID,max_ISI,varargin)
+function [NETWORKEVENTID,NETWORKEVENTONSETS,NETWORKEVENTOFFSETS]=eventdetection_networkevents2(spiketime,eventid,max_ISI,varargin)
 %
 % detect network events based on spike train data. 
 % (pre-processing using event detection is required).
@@ -291,5 +289,3 @@ NETWORKEVENTID(offsetsid)=1:length(onsetsid);
 % onset and offset times
 NETWORKEVENTONSETS  = SPIKETIME(onsetsid);
 NETWORKEVENTOFFSETS = SPIKETIME(offsetsid);
-end
-end
