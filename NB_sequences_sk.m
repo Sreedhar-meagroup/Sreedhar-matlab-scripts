@@ -183,7 +183,7 @@ end
     EL_array=1:nr_active_EL;
     
     %Added to save NBStart data -- 21.05.2013
-    save(['C:\Sreedhar\Mat_work\Closed_loop\NBS_CFP_mats\',datname,'_NBS'],'nr_starts','sort_ind','EL_array','active_EL','nr_NB');
+  %  save(['C:\Sreedhar\Mat_work\Closed_loop\NBS_CFP_mats\',datname,'_NBS'],'nr_starts','sort_ind','EL_array','active_EL','nr_NB');
     
     bar(EL_array,nr_starts(sort_ind));
     if exist('plot_handle')
@@ -209,5 +209,5 @@ end
     
 %   Define the Electrode vector that goes with the nr_starts vector, for
 %   return values
-  EL_return = hw2cr(active_EL);
+  EL_return = hw2cr(active_EL(EL_array(sort_ind))); % the electodes in the sorted order
 

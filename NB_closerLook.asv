@@ -61,7 +61,7 @@ end
 %% 4. Oliver's code
 [Delay_hist_fig nr_starts, EL_return] = NB_sequences_sk(datRoot,network_burst, 0,1,bursting_channels_mea);
 
-%% 5. Occurence probability distribution
+%% 5. Probability distribution
  prob_chart = zeros(60,1); % probability chart shall denote the probability that a channel is the first in a burst
 % for ii = 1:size(NB_slices,1)
 %     prob_chart(NB_slices{ii}.channel(1)+1) = prob_chart(NB_slices{ii}.channel(1)+1) + 1;
@@ -86,5 +86,4 @@ for ii = 1:size(NB_slices,1)
         not_incl(end+1) = ii;
     end
 end
-prob_chart = prob_chart/(size(NB_slices,1)-numel(not_incl));
-figure; bar(prob_chart)
+prob_chart = prob_chart/(size(NB_slices,1)-size();

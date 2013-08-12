@@ -57,14 +57,14 @@ rawText = fileread([datRoot,'.log']);
 stimSitePattern = 'MEA style: ([\d\d ]+)';
 [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
-stimSites = str2num(cell2mat(strtrim(token_data{1})))
+stimSites = str2num(cell2mat(strtrim(token_data{1})));
 % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
 % stimSites = str2num(str{1}); % in cr
 % %stimSites = cr2hw([35, 21, 46, 41, 58]);
-% stimTimes = cell(1,5);
-% for ii = 1:nStimSites
-%     stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
-% end
+ stimTimes = cell(1,5);
+for ii = 1:nStimSites
+    stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
+end
 
 
 %% Cleaning the spikes and getting them into cells
