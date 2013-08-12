@@ -39,7 +39,7 @@ hold on;
 % patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
 % end
 for ii = 1:60 
-    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',2);
+    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
     %'ob','markersize',2,'markerfacecolor','b'
     axis tight;
 end

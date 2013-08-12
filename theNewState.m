@@ -1,5 +1,16 @@
-datRoot = '130628_4242';
-datName = [datRoot,'_spontaneous.spike'];
+[~, name] = system('hostname');
+if strcmpi(strtrim(name),'sree-pc')
+    srcPath = 'D:\Codes\mat_work\MB_data';
+elseif strcmpi(strtrim(name),'petunia')
+    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\StimRecSite\StimPolicy2';
+end
+
+[datName,~]=uigetfile('*.spike','Select MEABench Data file',srcPath);
+
+%datRoot = '130628_4242';
+%datName = [datRoot,'_spontaneous.spike'];
+%datName = [datRoot,'_stimEfficacy.spike'];
+datRoot = datName(1:strfind(datName,'.')-1);
 spikes = loadspike(datName,2,25);
 spks = cleanspikes(spikes);
 spikes_samples = loadspike(datName,2); %timestamps loaded as samples

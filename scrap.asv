@@ -293,7 +293,7 @@ for ii = 1:60
 end
 nSpikesOutBursts = nSpikesInEachChannel - nSpikesInBursts;
 
-%% sample code to detect stim sites from log file
+%%
 rawText = fileread('130627_4225_stimEfficacy.log');
 stimSitePattern = 'MEA style: ([\d\d ]+)';
 [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
