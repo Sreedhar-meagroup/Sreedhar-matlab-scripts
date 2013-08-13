@@ -1,13 +1,19 @@
 %Network bursts: a closer look
-datRoot = '130627_4241';
-datName = [datRoot,'_spontaneous.spike'];
-spikes=loadspike(datName,2,25);
-spks = spikes; %cleanspikes(spikes); Work on this later
+[~, name] = system('hostname');
+if strcmpi(strtrim(name),'sree-pc')
+    srcPath = 'D:\Codes\mat_work\MB_data';
+elseif strcmpi(strtrim(name),'petunia')
+    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\StimRecSite\StimPolicy2';
+end
+
+[datName,pathName]=uigetfile('*.spike','Select MEABench Data file',srcPath);spikes=loadspike(datName,2,25);
+datRoot = datName(1:strfind(datName,'.')-1);
+spks = cleanspikes(spikes); % Work on this later
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-%% Burts detection part
+%% Burst detection part
 burst_detection = burstDetAllCh_sk(spikes);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
     = Networkburst_detection_sk(datName,spikes,burst_detection,10);
@@ -61,7 +67,7 @@ end
 %% 4. Oliver's code
 [Delay_hist_fig nr_starts, EL_return] = NB_sequences_sk(datRoot,network_burst, 0,1,bursting_channels_mea);
 
-%% 5. Probability distribution
+%% 5. Occurence probability distribution
  prob_chart = zeros(60,1); % probability chart shall denote the probability that a channel is the first in a burst
 % for ii = 1:size(NB_slices,1)
 %     prob_chart(NB_slices{ii}.channel(1)+1) = prob_chart(NB_slices{ii}.channel(1)+1) + 1;
@@ -86,4 +92,5 @@ for ii = 1:size(NB_slices,1)
         not_incl(end+1) = ii;
     end
 end
-prob_chart = prob_chart/(size(NB_slices,1)-size();
+prob_chart = prob_chart/(size(NB_slices,1)-numel(not_incl));
+figure; bar(prob_chart)

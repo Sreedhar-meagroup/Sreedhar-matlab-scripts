@@ -1,13 +1,19 @@
 %Network bursts: a closer look
-datRoot = '130627_4241';
-datName = [datRoot,'_spontaneous.spike'];
-spikes=loadspike(datName,2,25);
-spks = spikes; %cleanspikes(spikes); Work on this later
+[~, name] = system('hostname');
+if strcmpi(strtrim(name),'sree-pc')
+    srcPath = 'D:\Codes\mat_work\MB_data';
+elseif strcmpi(strtrim(name),'petunia')
+    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\StimRecSite\StimPolicy2';
+end
+
+[datName,pathName]=uigetfile('*.spike','Select MEABench Data file',srcPath);spikes=loadspike(datName,2,25);
+datRoot = datName(1:strfind(datName,'.')-1);
+spks = cleanspikes(spikes); % Work on this later
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-%% Burts detection part
+%% Burst detection part
 burst_detection = burstDetAllCh_sk(spikes);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
     = Networkburst_detection_sk(datName,spikes,burst_detection,10);

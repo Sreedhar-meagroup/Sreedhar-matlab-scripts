@@ -91,8 +91,8 @@ values_by_nOnes{nOnesRequired+1}(end+1) = ii;
 end
 
 for ii = 1:nBits+1
-    values_by_nOnes{ii}(2,:) = zeros(size(values_by_nOnes{ii}(1,:)));
-    for jj = 1:size(values_by_nOnes{ii},2)
+    for jj = 1:length(values_by_nOnes{ii})
+        values_by_nOnes{ii}(2,:) = zeros(size(values_by_nOnes{ii}(1,:)));
         if count_n(b==values_by_nOnes{ii}(1,jj))
             values_by_nOnes{ii}(2,jj) = count_n(b==values_by_nOnes{ii}(1,jj));
         end
@@ -102,7 +102,7 @@ end
 figure;
 for ii = 1:nBits+1
     subplot(3,4,ii)
-    plot(values_by_nOnes{ii}(2,:),'.');
+    plot(values_by_nOnes{ii}(2,:));
 end
 
 
