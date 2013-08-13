@@ -27,11 +27,11 @@ handles(1) = gfr_rstr_h;
 fig1ha(2) = subplot(3,1,2:3);
 linkaxes(fig1ha, 'x');
 hold on;
-rasterplot2(spks.time,spks.channel,'b-')
-% for ii = 1:60 
-%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.');
-%     %axis tight;
-% end
+%rasterplot2(spks.time,spks.channel,'b-')
+for ii = 1:60 
+    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',5);
+    axis tight;
+end
 hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
