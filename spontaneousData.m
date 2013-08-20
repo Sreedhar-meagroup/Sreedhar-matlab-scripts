@@ -10,7 +10,7 @@ datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike(datName,2,25);
 
 %% Cleaning spikes, getting them into channels
-spks = cleanspikes(spikes);
+[spks, selIdx, rejIdx] = cleanspikes(spikes);
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
@@ -27,11 +27,11 @@ handles(1) = gfr_rstr_h;
 fig1ha(2) = subplot(3,1,2:3);
 linkaxes(fig1ha, 'x');
 hold on;
-%rasterplot2(spks.time,spks.channel,'b-')
-for ii = 1:60 
-    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',5);
-    axis tight;
-end
+rasterplot2(spks.time,spks.channel,'b-')
+% for ii = 1:60 
+%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
+%     axis tight;
+% end
 hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
@@ -99,10 +99,17 @@ end
 % marking ignored channels in red in the raster
 figure(1); subplot(3,1,2:3)
 hold on;
-for ii = 1: size(ch2ignore,2)
-    plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
-end
-hold off
+line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore]+0.375,'Color','k','LineWidth',.1);    
+% igspks = [];
+% igchnnls = [];
+% for ii = 1: size(ch2ignore,2)
+%     igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
+%     igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
+%    %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
+% end
+% rasterplot2(igspks,igchnnls,'r-')
+%hold off
+
 
 %% `Patch'ing the network event
 figure(1); subplot(3,1,2:3)
@@ -112,3 +119,10 @@ Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
 Ycoords = 60*repmat([0;1;1;0],size(NB_ends'));
 patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
 hold off;
+%%
+figure(1);subplot(3,1,2:3)
+hold on;
+badspikes = spikes.time(rejIdx);
+badchannels = spikes.channel(rejIdx);
+rasterplot2(badspikes, badchannels,'r-');
+

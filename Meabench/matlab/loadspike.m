@@ -120,7 +120,7 @@ if ~isnan(range)
     y.height(iselc) = y.height(iselc) .* range/2048;
     y.thresh(iselc) = y.thresh(iselc) .* range/2048;
     y.context(:,iselc) = y.context(:,iselc) .* range/2048;
-    y.context = y.context-range;
+    y.context = y.context-range; %uncomment to change to 683 shift spike contexts
     y.height(isaux) = y.height(isaux) .* auxrange/2048;
     y.thresh(isaux) = y.thresh(isaux) .* auxrange/2048;
     y.context(:,isaux) = y.context(:,isaux) .* auxrange/2048;
@@ -138,3 +138,14 @@ if ~isnan(freq)
   y.time = y.time ./ (freq*1000);
   y.width = y.width ./ freq;
 end
+
+% Uncomment this section to use computed dc shifting instead of a 683 shift
+% (see line 123)
+%   first=y.context(1:15,:);
+%   last= y.context(110:124,:);
+%   dc1=mean(first);
+%   dc2=mean(last);
+%   v1=var(first);
+%   v2=var(last);
+%   dc=(dc1.*v2+dc2.*v1)/(v1+v2+1e-10); % == (dc1/v1 + dc2/v1) / (1/v1 + 1/v2)
+%   y.context=y.context - dc; 

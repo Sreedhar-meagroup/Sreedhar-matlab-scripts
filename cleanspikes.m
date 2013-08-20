@@ -66,6 +66,7 @@ ctxts=zeros(124,N);
 out = 0;
 
 for in = 1:N
+    
   now = contexts(:,in);
   peak = mean(now(50:51));
  % signtest() determines if the signs of the peak and the threshold match.
@@ -75,18 +76,30 @@ for in = 1:N
       if peak<0
           bad = length(find(now(testidx) <= relthresh*peak));
           if bad
-            breach = find(now(testidx) <= relthresh*peak,1,'first');
-            if abs(peak-max(now(50:63+breach-13)))> 6*spikes.thresh(in)/7;
-                bad = 0;
-            end            
+            breach = find(now(testidx) <= relthresh*peak);
+            if breach(1)> 50
+                if abs(peak-max(now(50:63+breach(1)-13)))> 6*spikes.thresh(in)/7;
+                    bad = 0;
+                end
+            else
+                if abs(peak-max(now(25+breach(end):50)))> 6*spikes.thresh(in)/7;
+                    bad = 0;
+                end                
+            end
           end
       else
           bad = length(find(now(testidx) >= relthresh*peak));
           if bad
-            breach = find(now(testidx) >= relthresh*peak,1,'first');
-            if abs(peak-min(now(50:63+breach-13)))> 6*spikes.thresh(in)/7;
-                bad = 0;
-            end            
+            breach = find(now(testidx) >= relthresh*peak);
+            if breach(1) > 50
+                if abs(peak-min(now(50:63+breach(1)-13)))> 6*spikes.thresh(in)/7;
+                    bad = 0;
+                end
+            else
+                if abs(peak-min(now(25+breach(end):50)))> 6*spikes.thresh(in)/7;
+                    bad = 0;
+                end                
+            end                
           end      
       end
   end
@@ -95,18 +108,30 @@ for in = 1:N
       if peak<0
           bad = length(find(now(abstestidx) <= 0.9*peak));
           if bad
-            breach = find(now(abstestidx) <= 0.9*peak,1,'first');
-            if abs(peak-max(now(50:55+breach-20)))> 3*spikes.thresh(in)/7;
-                bad = 0;
-            end            
+            breach = find(now(abstestidx) <= 0.9*peak);
+            if breach(1) > 50
+                if abs(peak-max(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/7;
+                    bad = 0;
+                end
+            else
+                if abs(peak-max(now(25+breach(end):50)))> 3*spikes.thresh(in)/7;
+                    bad = 0;
+                end                
+            end      
           end     
       else
           bad = length(find(now(abstestidx) >= 0.9*peak));
           if bad
-            breach = find(now(abstestidx) >= 0.9*peak,1,'first');
-            if abs(peak-min(now(50:55+breach-20)))> 3*spikes.thresh(in)/7;
-               bad = 0;
-            end            
+            breach = find(now(abstestidx) >= 0.9*peak);
+            if breach(1) > 50
+                if abs(peak-min(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/7;
+                    bad = 0;
+                end
+            else
+                if abs(peak-min(now(25+breach(end):50)))> 3*spikes.thresh(in)/7;
+                    bad = 0;
+                end                
+            end      
           end  
       end  
   end

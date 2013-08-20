@@ -59,7 +59,7 @@ ylabel('state values in dec','FontSize',12)
 title(datRoot,'FontSize',12,'Interpreter','none')
 
 figure(3)
-semilogy(red_states_dec,'.'); axis tight
+semilogy(red_states_dec,'.','markersize',4); axis tight
 xlabel('temporal progression','FontSize',12)
 ylabel('state values in dec (logscale)','FontSize',12)
 title(datRoot,'FontSize',12, 'Interpreter','none')
@@ -102,7 +102,10 @@ end
 figure;
 for ii = 1:nBits+1
     subplot(3,4,ii)
-    plot(values_by_nOnes{ii}(2,:),'.');
+    plot(values_by_nOnes{ii}(2,:),'.','markersize',5);
+    hold on
+    plot((1:size(values_by_nOnes{ii},2)),prob(ii)*ones(1,size(values_by_nOnes{ii},2)),'r');
+    axis tight
 end
 
 

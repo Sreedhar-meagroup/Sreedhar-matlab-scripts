@@ -23,7 +23,7 @@ SPIKECHANNEL = SPIKECHANNEL(id);
 [~, id] = sort([1:length(SPIKETIME),1:length(SPIKETIME),1:length(SPIKETIME)]);
 tvec = [SPIKETIME;SPIKETIME;SPIKETIME];
 tvec = tvec(id);
-lvec = [SPIKECHANNEL;SPIKECHANNEL;SPIKECHANNEL]+[zeros(size(SPIKECHANNEL));ones(size(SPIKECHANNEL));nan(size(SPIKECHANNEL))];
+lvec = [SPIKECHANNEL;SPIKECHANNEL;SPIKECHANNEL]+[zeros(size(SPIKECHANNEL));0.75*ones(size(SPIKECHANNEL));nan(size(SPIKECHANNEL))];
 lvec = lvec(id);
 % ------------------------------------------------------------
 

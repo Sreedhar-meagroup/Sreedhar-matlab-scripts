@@ -7,7 +7,7 @@ if size(choice,2) == 1
     ylabel('Voltage [\muV]');
 else
     for ii = 1:size(choice,2)
-        subplot(floor(sqrt(size(choice,2))),ceil(sqrt(size(choice,2))),ii);
+        subplot(floor(sqrt(size(choice,2))),ceil(size(choice,2)/floor(sqrt(size(choice,2)))),ii);
         plotContexts(spikes, choice(ii));
     end
     [ax1,h1] = suplabel('Time [ms]');
