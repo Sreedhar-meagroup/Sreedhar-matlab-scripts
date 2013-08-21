@@ -1,4 +1,4 @@
-function []=rasterplot2(SPIKETIME,SPIKECHANNEL,varargin)
+function [h]=rasterplot2(SPIKETIME,SPIKECHANNEL,varargin)
 % plot a rasterplot with vertical lines for spikes
 % okujeni 8/5/13
 % ------------------------------------------------------------
@@ -28,7 +28,7 @@ lvec = lvec(id);
 % ------------------------------------------------------------
 
 if nargin==3,
-    plot(tvec,lvec,LineStyle);
+    h = plot(tvec,lvec,LineStyle);
 else
-    plot(tvec,lvec,LineStyle,'Color',Color,'LineWidth',LineWidth);
+    h = plot(tvec,lvec,LineStyle,'Color',Color,'LineWidth',LineWidth);
 end
