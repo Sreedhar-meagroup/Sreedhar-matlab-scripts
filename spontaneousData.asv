@@ -37,7 +37,7 @@ hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
 ylabel('Channel #');
-title('Raster plot of spontaneous activity');
+title(['Raster plot of spontaneous activity');
 zoom xon;
 
 %% Burst detection part

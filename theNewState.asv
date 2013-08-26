@@ -97,21 +97,23 @@ for ii = 1:nBits+1
 end
 
 fh7 = figure;
+ha = tight_subplot(2,2,[.01 .03],[.1 .01],[.01 .01]);
 for ii = 2:5%1:nBits+1
-    subplot(2,2,ii-1)
+%     subplot(2,2,ii-1)
+    axes(ha(ii-1));
     plot(values_by_nOnes{ii}(2,:),'--.','markersize',5);
     hold on;
     xlim([0 size(values_by_nOnes{ii},2)]);
     xax = get(gca,'XLim');
     %(1:size(values_by_nOnes{ii},2))
     plot(linspace(xax(1),xax(2),size(values_by_nOnes{ii},2)),prob(ii)*ones(1,size(values_by_nOnes{ii},2)),'r');
-    title(['Class:',num2str(ii-1)],'FontSize',12);
+    title(['Class:',num2str(ii-1)],'FontSize',14);
     %axis tight
 end
 [ax1,h1] = suplabel('Various possible words in each case arranged in ascending order');
 [ax2,h2] = suplabel('Probability','y');
-set(h1,'FontSize',12);
-set(h2,'FontSize',12);
+set(h1,'FontSize',14);
+set(h2,'FontSize',14);
 tightfig;
 %%
 % fr profile of a single channel.
