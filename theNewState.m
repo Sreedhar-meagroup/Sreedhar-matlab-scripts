@@ -15,7 +15,7 @@ spks_samples = cleanspikes(spikes_samples);
 
 %% Generate `states'
 inAChannel = cell(60,1);
-binWidth = 5; %in ms
+binWidth = 10; %in ms
 states = zeros(10,ceil(max(spks_samples.time)/(25*binWidth))); % each states is now a column; 250 samples correspond to 10ms
 for ii=0:59
     inAChannel{ii+1,1} = spks_samples.time(spks_samples.channel==ii);
@@ -91,7 +91,8 @@ for ii = 1:nBits+1
     values_by_nOnes{ii}(2,:) = zeros(size(values_by_nOnes{ii}(1,:)));
     for jj = 1:size(values_by_nOnes{ii},2)
         if count_n(b==values_by_nOnes{ii}(1,jj))
-            values_by_nOnes{ii}(2,jj) = count_n(b==values_by_nOnes{ii}(1,jj));
+%             values_by_nOnes{ii}(2,jj) = count_n(b==values_by_nOnes{ii}(1,jj));
+            values_by_nOnes{ii}(2,jj) = count(b==values_by_nOnes{ii}(1,jj));
         end
     end
 end

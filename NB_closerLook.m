@@ -13,11 +13,11 @@ inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-final_tally = zeros(15,7);
+final_tally = zeros(20,7);
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spikes);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
-    = Networkburst_detection_sk(datName,spikes,burst_detection,15);
+    = Networkburst_detection_sk(datName,spikes,burst_detection,20);
 %% harking back 50ms from the current NB onset definition and redefining
 %onset boundaries.
 mod_NB_onsets = zeros(length(NB_onsets),1);
@@ -137,3 +137,10 @@ for ii = 1:size(final_tally,2)
 end
 dist_matrix = dist_matrix + triu(dist_matrix)';
 figure; imagesc(dist_matrix); colorbar;
+
+
+set(gca,'Yticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; 'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',16)
+set(gca,'Xticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; 'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',16)
+xticklabel_rotate;
+axis square
+% set(gca,'fontsize',16)
