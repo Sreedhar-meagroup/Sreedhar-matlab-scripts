@@ -29,11 +29,11 @@ handles(1) = gfr_rstr_h;
 fig1ha(2) = subplot(3,1,2:3);
 linkaxes(fig1ha, 'x');
 hold on;
-rasterplot2(spks.time,spks.channel,'b-');
-% for ii = 1:60 
-%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
-%     axis tight;
-% end
+% rasterplot2(spks.time,spks.channel,'b-');
+for ii = 1:60 
+    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
+    axis tight;
+end
 hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
@@ -114,13 +114,13 @@ line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore]+0.375,'Co
 
 
 %% `Patch'ing the network event
-figure(1); subplot(3,1,2:3)
-hold on;
-%line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
-Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
-Ycoords = 60*repmat([0;1;1;0],size(NB_ends'));
-patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
-hold off;
+% figure(1); subplot(3,1,2:3)
+% hold on;
+% %line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
+% Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
+% Ycoords = 60*repmat([0;1;1;0],size(NB_ends'));
+% patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
+% hold off;
 %%
 figure(1);subplot(3,1,2:3)
 hold on;

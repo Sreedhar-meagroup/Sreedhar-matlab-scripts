@@ -106,7 +106,7 @@ for ii = 1:nBits+1
     xlim([0 size(values_by_nOnes{ii},2)]);
     xax = get(gca,'XLim');
     %(1:size(values_by_nOnes{ii},2))
-    %plot(linspace(xax(1),xax(2),size(values_by_nOnes{ii},2)),prob(ii)*ones(1,size(values_by_nOnes{ii},2)),'r');
+    plot(linspace(xax(1),xax(2),size(values_by_nOnes{ii},2)),prob(ii)*ones(1,size(values_by_nOnes{ii},2)),'r');
     title(['Class:',num2str(ii-1)],'FontSize',12);
     %axis tight
 end
@@ -123,23 +123,23 @@ end
 
 %skewing the uniform probabilities
 
-nSpikesInChosen = sum(nSpikesInEachChannel(sortedIndx(1:nBits)));
-weights2skew = nSpikesInEachChannel(sortedIndx(1:nBits))/nSpikesInChosen; %from MSB to LSB
+% nSpikesInChosen = sum(nSpikesInEachChannel(sortedIndx(1:nBits)));
+% weights2skew = nSpikesInEachChannel(sortedIndx(1:nBits))/nSpikesInChosen; %from MSB to LSB
+% 
+% set(0,'CurrentFigure',fh7);
+% for ii = 1:nBits+1
+%     bin_words = dec2bin(values_by_nOnes{ii}(1,:)); %list of binary words in each class
+%     pseudoExpectation = zeros(size(bin_words,1),1);
+%     for jj = 1:size(bin_words,1)
+%         ones_pos = find(bin_words(jj,:) == '1');
+%         pseudoExpectation(jj,1) = prod(weights2skew(ones_pos));
+%     end
+%     subplot(3,4,ii)
+%     plot(pseudoExpectation,'--.r');
+% end
 
-set(0,'CurrentFigure',fh7);
-for ii = 1:nBits+1
-    bin_words = dec2bin(values_by_nOnes{ii}(1,:)); %list of binary words in each class
-    pseudoExpectation = zeros(size(bin_words,1),1);
-    for jj = 1:size(bin_words,1)
-        ones_pos = find(bin_words(jj,:) == '1');
-        pseudoExpectation(jj,1) = prod(weights2skew(ones_pos));
-    end
-    subplot(3,4,ii)
-    plot(pseudoExpectation,'--.k');
-end
-
-[ax1,h1] = suplabel('Various possible words in each case arranged in ascending order');
+[ax1,h1] = suplabel('Various possible words in each class arranged in ascending order');
 [ax2,h2] = suplabel('Probability','y');
 set(h1,'FontSize',12);
 set(h2,'FontSize',12);
-tightfig;
+% tightfig;
