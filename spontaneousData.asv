@@ -1,13 +1,14 @@
 %function spontaneousData
-[~, name] = system('hostname');
-if strcmpi(strtrim(name),'sree-pc')
-    srcPath = 'D:\Codes\mat_work\MB_data';
-elseif strcmpi(strtrim(name),'petunia')
-    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\Spontaneous';
-end
-[datName,~]=uigetfile('*.spike','Select MEABench Data file',srcPath);
+% [~, name] = system('hostname');
+% if strcmpi(strtrim(name),'sree-pc')
+%     srcPath = 'D:\Codes\mat_work\MB_data';
+% elseif strcmpi(strtrim(name),'petunia')
+%     srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\Spontaneous';
+% end
+% [datName,~]=uigetfile('*.spike','Select MEABench Data file',srcPath);
+[datName,pathName] = chooseDatFile();
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes=loadspike(datName,2,25);
+spikes=loadspike([pathName,datName],2,25);
 
 %% Cleaning spikes, getting them into channels
 [spks, selIdx, rejIdx] = cleanspikes(spikes);
