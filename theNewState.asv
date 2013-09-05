@@ -142,23 +142,19 @@ spks_samples_51 = inAChannel{sortedIndx(1)};
 % zoom xon;
 % set(ah8,'XLim',[0,2500]);
 
-%% attempt 1: in terms of ISIs
 spks_time_51 = spks_samples_51/25e3;
 isi_ch51 = [0, diff(spks_time_51)];
 datForHist = [spks_time_51',isi_ch51']; %[y,x] format
 nbins = [10,100]; %[nxbins,nybins] format
 figure;
 n = hist3(matrixForHist,nbins);
+n1 = log10(n);
+n1(abs(n1)==Inf) = 0;
 % n1( size(n,1) + 1 ,size(n,2) + 1 ) = 0; 
 xb = linspace(min(isi_ch51),max(isi_ch51),size(n,1));
 yb = linspace(min(spks_time_51),max(spks_time_51),size(n,2));
-h = pcolor(xb,yb,n');
-% colormap gray
+h = pcolor(xb,yb,n1');
+colormap gray
 set(h, 'EdgeColor', 'none');
 ch = colorbar;
 
-%% attempt 2: in terms of ISIs
-spks_time_51 = spks_samples_51/25e3;
-[nSpksPerBin,timeVec] = hist(spks_time_51,0:100e-3:max(spks_time_51)); %100ms bins
-freq = nSpksPerBin/100e-3;
-plot(timeVec,freq,'.','markersize',3);

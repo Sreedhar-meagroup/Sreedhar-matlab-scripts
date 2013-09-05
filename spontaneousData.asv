@@ -1,4 +1,4 @@
-function varargout = spontaneousData(datName,pathName)
+varargout = function spontaneousData(datName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile();
@@ -127,5 +127,6 @@ bad_h = rasterplot2(badspikes, badchannels,'r-');
 hold off;
 set(bad_h, 'Visible','off');
 
-%% when used as a function, what variables are to be returned
+
 varargout{1} = ch2ignore;
+end
