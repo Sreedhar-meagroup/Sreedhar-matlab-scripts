@@ -129,3 +129,5 @@ set(bad_h, 'Visible','off');
 
 %% when used as a function, what variables are to be returned
 varargout{1} = ch2ignore;
+varargout{2} = [mod_NB_onsets, NB_ends];
+

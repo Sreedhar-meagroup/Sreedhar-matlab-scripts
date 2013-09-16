@@ -1,7 +1,7 @@
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile();
 end
-ch2ignore = spontaneousData(datName,pathName);
+[ch2ignore, NBextremes] = spontaneousData(datName,pathName);
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes = loadspike([pathName,datName],2,25);
 spks = cleanspikes(spikes);
@@ -29,7 +29,7 @@ states(ii,ceil(inAChannel{sortedIndx(ii)}/(25*binWidth))) = 1;
 end
 states_str = num2str(states'); %each state is now a row
 states_dec = bin2dec(states_str); % each state is now an integer
-nullstateidx = find(states_dec ==0);
+nullstateidx = find(states_dec == 0);
 nulltemp = [nullstateidx(1); nullstateidx(find(diff(nullstateidx)>1)+1)];  
 for ii = 1: length(nulltemp)
     nullstateidx(nullstateidx==nulltemp(ii)) = [];
@@ -157,8 +157,29 @@ h = pcolor(xb,yb,n');
 set(h, 'EdgeColor', 'none');
 ch = colorbar;
 
-%% attempt 2: in terms of ISIs
-spks_time_51 = spks_samples_51/25e3;
-[nSpksPerBin,timeVec] = hist(spks_time_51,0:100e-3:max(spks_time_51)); %100ms bins
-freq = nSpksPerBin/100e-3;
-plot(timeVec,freq,'.','markersize',3);
+%% Looking at words within bursts in each channel
+wordsInNB = cell(size(NBextremes,1),1); % cell of the size of the number of NBs. Each cell stores the...
+naiveFreqInt = zeros(10,size(NBextremes,1)); % sum of active bits holder 
+% bits of each of the 10 chosen channels during that particular NB.
+for ii = 1:size(NBextremes,1)
+    nbStartBin = floor(NBextremes(ii,1)*25e3/250) + 1;
+    nbStopBin = floor(NBextremes(ii,2)*25e3/250) + 1;
+    wordsInNB{ii} = states(:,nbStartBin:nbStopBin);
+    naiveFreqInt(:,ii) = sum(wordsInNB{ii},2); % naive freq interpretation as the sum of active bits
+end
+
+allPairsOfChannels = nchoosek(1:nBits,2);
+allRatios = zeros(size(allPairsOfChannels,1),size(NBextremes,1));
+for ii = 1: size(allPairsOfChannels,1)
+    allRatios(ii,:) = naiveFreqInt(allPairsOfChannels(ii,2),:)./naiveFreqInt(allPairsOfChannels(ii,1),:);
+end
+
+%plotting all 45 ratio combinations
+for ii = 1:size(allPairsOfChannels,1)
+    if ~mod(ii-1,9), figure; end
+    subplot(3,3,mod(ii-1,9)+1)
+    plot(allRatios(ii,:),'.','markersize',4);
+    title([num2str(allPairsOfChannels(ii,2)),'/',num2str(allPairsOfChannels(ii,1))]);
+end
+
+% think about doing some curve fitting into the plotted data
