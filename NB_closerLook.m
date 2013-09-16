@@ -1,23 +1,20 @@
 %Network bursts: a closer look
-[~, name] = system('hostname');
-if strcmpi(strtrim(name),'sree-pc')
-    srcPath = 'D:\Codes\mat_work\MB_data';
-elseif strcmpi(strtrim(name),'petunia')
-    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\Spontaneous\';
+if ~exist('datName','var')
+    [datName,pathName] = chooseDatFile();
 end
 
-[datName,pathName]=uigetfile('*.spike','Select MEABench Data file',srcPath);spikes=loadspike(datName,2,25);
 datRoot = datName(1:strfind(datName,'.')-1);
+spikes=loadspike([pathName,datName],2,25);
 spks = cleanspikes(spikes); % Work on this later
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-final_tally = zeros(20,7);
+final_tally = zeros(5,7);
 %% Burst detection part
-burst_detection = burstDetAllCh_sk(spikes);
+burst_detection = burstDetAllCh_sk(spks);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
-    = Networkburst_detection_sk(datName,spikes,burst_detection,20);
+    = Networkburst_detection_sk(datName,spks,burst_detection,5);
 %% harking back 50ms from the current NB onset definition and redefining
 %onset boundaries.
 mod_NB_onsets = zeros(length(NB_onsets),1);
@@ -109,7 +106,7 @@ not_incl = [];
 for ii = 1:size(NB_slices,1)
     ch_unique = unique_us(NB_slices{ii}.channel);
     %ch_non_unique = NB_slices{ii}.channel;
-    if length(ch_unique>=5)
+    if length(ch_unique)>=5
     %if length(ch_non_unique>=5)
         temp = ismember([1:60]', ch_unique(1:5)+1);
         %temp = ismember([1:60]', ch_non_unique(1:5)+1);
@@ -124,23 +121,44 @@ final_tally(:,7) = b(1:size(final_tally,1));
 
 %% A distance matrix
 dist_matrix = zeros(size(final_tally,2));
+% distance as absolute value of difference in ranks
+% for ii = 1:size(final_tally,2)
+%     for jj = ii:size(final_tally,2)
+%         for kk = 1:size(final_tally,1)
+%             if ~isempty(find(final_tally(:,jj) == final_tally(kk,ii)))              
+%                 dist_matrix(ii,jj) = dist_matrix(ii,jj) + abs((kk - find(final_tally(:,jj) == final_tally(kk,ii))));
+%             else
+%                 dist_matrix(ii,jj) = dist_matrix(ii,jj) + abs((kk - size(final_tally,1)));
+%             end
+%         end
+%     end
+% end
+
+% distance as Euclidean distance in a 5D space of rank differences
 for ii = 1:size(final_tally,2)
     for jj = ii:size(final_tally,2)
         for kk = 1:size(final_tally,1)
-            if length(find(final_tally(:,jj) == final_tally(kk,ii)))              
-                dist_matrix(ii,jj) = dist_matrix(ii,jj) + abs((kk - find(final_tally(:,jj) == final_tally(kk,ii))));
+            if ~isempty(find(final_tally(:,jj) == final_tally(kk,ii),1))              
+                dist_matrix(ii,jj) = dist_matrix(ii,jj) + (kk - find(final_tally(:,jj) == final_tally(kk,ii)))^2;
             else
-                dist_matrix(ii,jj) = dist_matrix(ii,jj) + abs((kk - size(final_tally,1)));
+                dist_matrix(ii,jj) = dist_matrix(ii,jj) + (kk - size(final_tally,1))^2; %size(final_tally,1)^2;
             end
         end
     end
 end
 dist_matrix = dist_matrix + triu(dist_matrix)';
+dist_matrix = dist_matrix.^0.5./sqrt(125);
 figure; imagesc(dist_matrix); colorbar;
 
-
-set(gca,'Yticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; 'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',16)
-set(gca,'Xticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; 'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',16)
+set(gca,'Xtick',1:7);
+set(gca,'Ytick',1:7);
+set(gca,'Xticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; ...
+    'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',14);
+set(gca,'Yticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; ...
+    'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',14);
 xticklabel_rotate;
-axis square
-% set(gca,'fontsize',16)
+set(gca,'TickDir','Out');
+axis square;
+
+export_fig('C:\Sreedhar\Lat_work\Closed_loop\misc\work_documentation\figures\test','-eps','-transparent')
+
