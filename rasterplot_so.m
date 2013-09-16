@@ -1,4 +1,4 @@
-function [h]=rasterplot2(SPIKETIME,SPIKECHANNEL,varargin)
+function [h]=rasterplot_so(SPIKETIME,SPIKECHANNEL,varargin)
 % plot a rasterplot with vertical lines for spikes
 % okujeni 8/5/13
 % ------------------------------------------------------------

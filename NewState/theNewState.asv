@@ -188,7 +188,7 @@ end
 spikesInChPerNB = cell(10,size(NBextremes,1));
 % bits of each of the 10 chosen channels during that particular NB.
 for ii = 1:size(NBextremes,1)
-arrayfun(@(x) length(find(NB_slices{ii}.channel == x)),sortedIndx(1:10)-1)
+
 end
 
 allPairsOfChannels = nchoosek(1:nBits,2);

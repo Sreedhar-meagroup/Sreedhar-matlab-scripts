@@ -118,6 +118,7 @@ Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
 Ycoords = 60*repmat([0;1;1;0],size(NB_ends'));
 patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
 hold off;
+
 %% Visualizing rejected spikes
 figure(handles(1));subplot(3,1,2:3)
 hold on;
