@@ -98,14 +98,15 @@ for ii = 1:nBits+1
 end
 
 fh7 = figure;
-for ii = 1:nBits+1
-    subplot(3,4,ii)
-    plot(values_by_nOnes{ii}(2,:)/sum(values_by_nOnes{ii}(2,:)),'.','markersize',5);
+for ii = 2:5%1:nBits+1
+%     subplot(3,4,ii)
+    subplot(2,2,ii-1)
+    plot(values_by_nOnes{ii}(2,:)/sum(values_by_nOnes{ii}(2,:)),'linewidth',2)%,'.','markersize',5);
     hold on;
     xlim([0 size(values_by_nOnes{ii},2)]);
     xax = get(gca,'XLim');
-    plot(linspace(xax(1),xax(2),size(values_by_nOnes{ii},2)),prob(ii)*ones(1,size(values_by_nOnes{ii},2)),'r');
-    title(['Class:',num2str(ii-1)],'FontSize',12);
+    plot(linspace(xax(1),xax(2),size(values_by_nOnes{ii},2)),prob(ii)*ones(1,size(values_by_nOnes{ii},2)),'r','LineWidth',2);
+    title(['Words with ',num2str(ii-1), 'active bits'],'FontSize',16);
     %axis tight
 end
 
@@ -115,21 +116,22 @@ nSpikesInChosen = sum(nSpikesInEachChannel(sortedIndx(1:nBits)));
 weights2skew = nSpikesInEachChannel(sortedIndx(1:nBits))/nSpikesInChosen; %from MSB to LSB
 
 set(0,'CurrentFigure',fh7);
-for ii = 1:nBits+1
+for ii = 2:5 % 1:nBits+1
     bin_words = dec2bin(values_by_nOnes{ii}(1,:)); %list of binary words in each class
     pseudoExpectation = zeros(size(bin_words,1),1);
     for jj = 1:size(bin_words,1)
         ones_pos = find(bin_words(jj,:) == '1');
         pseudoExpectation(jj,1) = prod(weights2skew(ones_pos));
     end
-    subplot(3,4,ii)
-    plot(pseudoExpectation,'.k','MarkerSize',5);
+%     subplot(3,4,ii)
+    subplot(2,2,ii-1);
+    plot(pseudoExpectation,'k','LineWidth',2)%,'.k','MarkerSize',5);
 end
 
-[ax1,h1] = suplabel('Various possible words in each class arranged in ascending order');
+[ax1,h1] = suplabel('All possible words arranged of each type arranged in ascending order');
 [ax2,h2] = suplabel('Probability','y');
-set(h1,'FontSize',12);
-set(h2,'FontSize',12);
+set(h1,'FontSize',16);
+set(h2,'FontSize',16);
 % tightfig;
 
 %% fr profile of a single channel.
@@ -185,22 +187,27 @@ end
 % think about doing some curve fitting into the plotted data
 
 %% Looking at no: of spikes within bursts in each channel
-spikesInChPerNB = cell(10,size(NBextremes,1));
+nSpikesInChPerNB = zeros(10,size(NBextremes,1));
 % bits of each of the 10 chosen channels during that particular NB.
 for ii = 1:size(NBextremes,1)
-arrayfun(@(x) length(find(NB_slices{ii}.channel == x)),sortedIndx(1:10)-1)
+nSpikesInChPerNB(:,ii) = arrayfun(@(x) length(find(NB_slices{ii}.channel == x)),sortedIndx(1:10)-1);
 end
 
 allPairsOfChannels = nchoosek(1:nBits,2);
 allRatios = zeros(size(allPairsOfChannels,1),size(NBextremes,1));
 for ii = 1: size(allPairsOfChannels,1)
-    allRatios(ii,:) = naiveFreqInt(allPairsOfChannels(ii,2),:)./naiveFreqInt(allPairsOfChannels(ii,1),:);
+    allRatios(ii,:) = nSpikesInChPerNB(allPairsOfChannels(ii,2),:)./nSpikesInChPerNB(allPairsOfChannels(ii,1),:);
 end
 
 %plotting all 45 ratio combinations
-for ii = 1:size(allPairsOfChannels,1)
+for ii = 1:1%size(allPairsOfChannels,1)
     if ~mod(ii-1,9), figure; end
     subplot(3,3,mod(ii-1,9)+1)
-    plot(allRatios(ii,:),'.','markersize',4);
+    temp = allRatios(ii,:);
+    temp(temp == Inf) = [];
+    shadedErrorBar(1:size(temp,2),mean(temp)*ones(size(temp)),std(temp)*ones(size(temp)),{'k','linewidth',0.5},0);
+    hold on;
+    plot(temp,'.','markersize',4); 
+    axis tight;
     title([num2str(allPairsOfChannels(ii,2)),'/',num2str(allPairsOfChannels(ii,1))]);
 end
