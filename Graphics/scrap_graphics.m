@@ -4,14 +4,14 @@ h=gcf;
 set(h,'PaperPositionMode','auto'); 
 set(h,'PaperOrientation','landscape');
 set(h,'Position',[50 50 1200 800]);
-print(gcf, '-depsc', 'test2.eps')
+print(gcf, '-depsc', 'art1.eps')
 
 
 % option 2 ----------------------------------------------------------------
 h=gcf;
 set(h,'PaperOrientation','landscape');
 set(h,'PaperPosition', [1 1 28 19]);
-print(gcf, '-dpdf', 'test2.pdf');
+print(gcf, '-dpdf', 'test4.pdf');
 
 % option 3 ----------------------------------------------------------------
 h=gcf;

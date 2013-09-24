@@ -23,17 +23,11 @@
 % Statistics Toolbox                                    Version 7.5        (R2011a)
 % Wavelet Toolbox                                       Version 4.7        (R2011a)
 %--------------------------------------------------------------------------------------
-[~, name] = system('hostname');
-if strcmpi(strtrim(name),'sree-pc')
-    srcPath = 'D:\Codes\mat_work\MB_data';
-elseif strcmpi(strtrim(name),'petunia')
-    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments2\StimRecSite\StimPolicy2';
+
+if ~exist('datName','var')
+    [datName,pathName] = chooseDatFile(3,'st');
 end
 
-[datName,~]=uigetfile('*.spike','Select MEABench Data file',srcPath);
-%datName = '130627_4225_stimEfficacy.spike';
-%datName = '130625_4205_stimEfficacy.spike';
-%datName = '130703_PID311_CID4244_MEA15570_DIV26_stimEfficacy.spike';
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike(datName,2,25);
 handles = zeros(1,7);
@@ -41,6 +35,8 @@ handles = zeros(1,7);
 %% Stimulus locations and time
 %Get stim info into analog cells.
 %stimTimes is 1x5 cell; each cell has 1x50 stimTimes for each site
+% I do this before cleaning the spikes because I do not want to clean off
+% the stim times in the analog channels.
 
 inAnalog = cell(4,1);
 for ii=60:63
@@ -57,7 +53,7 @@ rawText = fileread([datRoot,'.log']);
 stimSitePattern = 'MEA style: ([\d\d ]+)';
 [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
-stimSites = str2num(cell2mat(strtrim(token_data{1})));
+stimSites = str2num(cell2mat(strtrim(token_data{1}))); % cr
 % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
 % stimSites = str2num(str{1}); % in cr
 % %stimSites = cr2hw([35, 21, 46, 41, 58]);
@@ -67,16 +63,17 @@ for ii = 1:nStimSites
 end
 
 
-%% Cleaning the spikes and getting them into cells
-spks = cleanspikes(spikes);
+%% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
+[spks, selIdx, rejIdx] = cleanspikes(spikes);
+blankArtifacts(spks,stimTimes,1);
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
 
 %% Fig 1a: global firing rate
-% sliding window; bin width = 1s
-[counts,timeVec] = hist(spks.time,0:ceil(max(spks.time)));
+% sliding window; bin width = 100ms
+[counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
 figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
@@ -114,29 +111,29 @@ end
 
 %% Isolating the periStims that follow a period of silence > tSilence_s
 % periStim_selected has the same structure as periStim
-periStim_selected = cell(size(periStim));
-tSilence_s = 1;
-for ii = 1:nStimSites
-    [validRows, validCols] = find(silence_s{ii}>tSilence_s);
-    for jj = 1: size(validRows,1)
-        periStim_selected{ii}{validRows(jj),1}{validCols(jj),1} = periStim{ii}{validRows(jj)}{validCols(jj)};
-    end
-    
-% fixed a bug in retrospective
-% If by chance a channel did not have a valid response in the 50th trial,
-% that cell array would remain of length 49. There could be a more elegant
-% solution. But this patch works for the moment. buggyLength is the index of
-% such aberrant channels. diffLen is the deficit in length which is then
-% appropriately compensated.
-    
-        buggyLengths = find(cellfun(@length,periStim_selected{ii})<50);
-        if buggyLengths
-            for kk = 1:length(buggyLengths)
-                diffLen = length(stimTimes{ii}) - length(periStim_selected{ii}{buggyLengths(kk)});
-                periStim_selected{ii}{buggyLengths(kk)}{end+diffLen} = [];
-            end
-        end
-end
+% periStim_selected = cell(size(periStim));
+% tSilence_s = 1;
+% for ii = 1:nStimSites
+%     [validRows, validCols] = find(silence_s{ii}>tSilence_s);
+%     for jj = 1: size(validRows,1)
+%         periStim_selected{ii}{validRows(jj),1}{validCols(jj),1} = periStim{ii}{validRows(jj)}{validCols(jj)};
+%     end
+%     
+% % fixed a bug in retrospective
+% % If by chance a channel did not have a valid response in the 50th trial,
+% % that cell array would remain of length 49. There could be a more elegant
+% % solution. But this patch works for the moment. buggyLength is the index of
+% % such aberrant channels. diffLen is the deficit in length which is then
+% % appropriately compensated.
+%     
+%         buggyLengths = find(cellfun(@length,periStim_selected{ii})<50);
+%         if buggyLengths
+%             for kk = 1:length(buggyLengths)
+%                 diffLen = length(stimTimes{ii}) - length(periStim_selected{ii}{buggyLengths(kk)});
+%                 periStim_selected{ii}{buggyLengths(kk)}{end+diffLen} = [];
+%             end
+%         end
+% end
 
 
 %% Fig 1b: General raster
@@ -167,11 +164,12 @@ Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
 Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
 patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
 end
-for ii = 1:60 
-    plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
-    %'ob','markersize',2,'markerfacecolor','b'
-    axis tight;
-end
+rasterplot_so(spks.time,spks.channel,'b-');
+% for ii = 1:60 
+%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
+%     %'ob','markersize',2,'markerfacecolor','b'
+%     axis tight;
+% end
 
 hold off;
 set(gca,'TickDir','Out');
@@ -284,7 +282,7 @@ for ii = 1:nStimSites
         % Add a title to the whole plot
         set(gcf,'NextPlot','add');
         axes;
-        h = title(['Mean PSTHs following stimulation at ',num2str(cr2hw(stimSites(ii))+1),'(hw+1). [mean #spikes vs time(ms)]']);
+        h = title(['Mean PSTHs following stimulation at ',num2str(stimSites(ii)),'/',num2str(cr2hw(stimSites(ii))+1),'cr/(hw+1). [mean #spikes vs time(ms)]']);
         set(gca,'Visible','off');
         set(h,'Visible','on');
 end
