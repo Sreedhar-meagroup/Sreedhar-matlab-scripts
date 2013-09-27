@@ -16,4 +16,4 @@ for ii = 1:length(allStimTimes)
 end
 finalSize = size(spks.time,2);
 bl_spks = spks;
-disp(['Percentage of spikes blanked = ',num2str(100*(initialSize-finalSize)/initialSize),'%']);
+disp('Percentage of spikes blanked =',num2str(initialSize-)])
