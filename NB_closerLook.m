@@ -10,7 +10,7 @@ inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-final_tally = zeros(5,7);
+final_tally = zeros(5,7); % where channels are numbered 1-60.
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...

@@ -268,12 +268,7 @@ for ii = 1:nStimSites
         axis([-50 500 -0.5 1])
         
         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
-        if jj == cr2hw(stimSites(ii))+1
-            text(375,0.5,num2str(jj),'FontAngle','italic','Color',[1,0,0]);
-        else
-            text(375,0.5,num2str(jj),'FontAngle','italic');
-        end
-        
+        text(375,0.5,num2str(jj),'FontAngle','italic');
         if ~or(mod(pos,6)==1,pos>54)
             set(gca,'YTickLabel',[]);
             set(gca,'XTickLabel',[]);
@@ -283,21 +278,17 @@ for ii = 1:nStimSites
             set(gca,'XTickLabel',[]);
         end
         set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
-        set(gcf,'WindowStyle','docked');
     end
  [ax1,h1]=suplabel('time[ms]');
- set(h1,'FontSize',16);
  [ax2,h2]=suplabel('Mean #spikes','y');
- set(h2,'FontSize',16);
- [ax4,h3]=suplabel(['PSTH (stimulation at ',num2str(stimSites(ii)),'^{cr} / ',num2str(cr2hw(stimSites(ii))+1),'^{hw+1})'],'t');
- set(h3,'FontSize',16);
- %  set(h3,'FontSize',30)
-%     % Add a title to the whole plot
-%         set(gcf,'NextPlot','add');
-%         axes;
-%         h = title(['PSTHs following stimulation at ',num2str(stimSites(ii)),' / ',num2str(cr2hw(stimSites(ii))+1),' cr/(hw^{+1}). [mean #spikes vs time(ms)]']);
-%         set(gca,'Visible','off');
-%         set(h,'Visible','on');
+ [ax4,h3]=suplabel('PSTH (stimulation at ',num2str(stimSites(ii)),' / ',num2str(cr2hw(stimSites(ii))+1),' cr/(hw^{+1}))' ,'t');
+%  set(h3,'FontSize',30)
+    % Add a title to the whole plot
+        set(gcf,'NextPlot','add');
+        axes;
+        h = title(['PSTHs following stimulation at ',num2str(stimSites(ii)),' / ',num2str(cr2hw(stimSites(ii))+1),' cr/(hw^{+1}). [mean #spikes vs time(ms)]']);
+        set(gca,'Visible','off');
+        set(h,'Visible','on');
 end
 
 %% saving the figures
