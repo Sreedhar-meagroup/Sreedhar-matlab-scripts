@@ -19,24 +19,8 @@ gfr_rstr_h = figure();
 handles(1) = gfr_rstr_h;
 fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes');
-title(['Global firing rate (bin= 1s)            data:',datRoot],'Interpreter','none');
+title(['Global firing rate (bin= 100 ms)            data:',datRoot],'Interpreter','none');
 
-%% Fig 1b: General raster
-figure(handles(1));
-fig1ha(2) = subplot(3,1,2:3);
-linkaxes(fig1ha, 'x');
-hold on;
-rasterplot_so(spks.time,spks.channel,'b-');
-% for ii = 1:60 
-%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
-%     axis tight;
-% end
-hold off;
-set(gca,'TickDir','Out');
-xlabel('Time (s)');
-ylabel('Channel #');
-title('Raster plot of spontaneous activity');
-zoom xon;
 
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
@@ -110,15 +94,32 @@ ch2ignore= [];
 % % rasterplot_so(igspks,igchnnls,'r-')
 % %hold off
 
-
 %% `Patch'ing the network event
 figure(handles(1)); subplot(3,1,2:3)
 hold on;
 %line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
 Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
-Ycoords = 60*repmat([0;1;1;0],size(NB_ends'));
+Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
 patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
 hold off;
+%% Fig 1b: General raster
+figure(handles(1));
+fig1ha(2) = subplot(3,1,2:3);
+linkaxes(fig1ha, 'x');
+hold on;
+rasterplot_so(spks.time,spks.channel,'b-');
+% for ii = 1:60 
+%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
+%     axis tight;
+% end
+hold off;
+set(gca,'TickDir','Out');
+xlabel('Time (s)');
+ylabel('Channel #');
+title('Raster plot of spontaneous activity');
+zoom xon;
+pan xon;
+
 %% Visualizing rejected spikes
 figure(handles(1));subplot(3,1,2:3)
 hold on;

@@ -1,28 +1,44 @@
-if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile();
-end
-[ch2ignore, NBextremes, NB_slices] = spontaneousData(datName,pathName);
-datRoot = datName(1:strfind(datName,'.')-1);
-spikes = loadspike([pathName,datName],2,25);
-spks = cleanspikes(spikes);
-spikes_samples = loadspike([pathName,datName],2); %timestamps loaded as samples
-spks_samples = cleanspikes(spikes_samples);
+% The objective of this script is to generate binary words at and for each
+% NB instead of throughout the recording.
+
+We need mod_NB_onset, NB_ends, spks_samples, ch2ignore, NB_slices
 
 %% Generate `states'
 inAChannel = cell(60,1);
-binWidth = 10; %in ms
+binWidth = 1; %in ms
 nBits = 10;
-states = zeros(nBits,ceil(max(spks_samples.time)/(25*binWidth))); % each states is now a column; 250 samples correspond to 10ms
+states_NB = cell(size(mod_NB_onsets,1),1);
+states_NB_dec = cell(size(mod_NB_onsets,1),1);
 for ii=0:59
     inAChannel{ii+1,1} = spks_samples.time(spks_samples.channel==ii);
 end
 nSpikesInEachChannel = cellfun(@length,inAChannel);
 [sortedNSpikes, sortedIndx] = sort(nSpikesInEachChannel,'descend');
-sortedIndx = sortedIndx - 1; %converting to cahnnel numbers 0-59
+sortedIndx = sortedIndx - 1; %converting to cahnnel numbers 0-59 
 %silencing the channels to ignore (continously active ones)
 [~,indx2ignore] = ismember(ch2ignore,sortedIndx);
 sortedNSpikes(indx2ignore) = [];
 sortedIndx(indx2ignore) = [];
+
+for ii = 1: size(mod_NB_onsets,1)
+    nBinWords = ceil((NB_ends(ii) - mod_NB_onsets(ii))/(binWidth*1e-3));
+    states_NB{ii} =  zeros(nBits,nBinWords);
+    for jj = 1:nBits
+        temp1 = spks_samples.time(spks_samples.channel==sortedIndx(jj));
+        temp2 = temp1(temp1>=mod_NB_onsets(ii)*25e3 & temp1<=NB_ends(ii)*25e3);
+        if ~isempty(temp2), temp2 = temp2 - temp2(1);end
+        states_NB{ii}(jj,floor(temp2/(25*binWidth))+1) = 1;
+        states_NB_dec{ii}= bin2dec(num2str(states_NB{ii}'));
+    end
+end
+
+
+
+
+
+
+
+
 
 for ii = 1:nBits
 states(ii,ceil(inAChannel{sortedIndx(ii)}/(25*binWidth))) = 1;
