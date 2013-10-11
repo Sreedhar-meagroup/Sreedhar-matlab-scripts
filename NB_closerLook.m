@@ -156,9 +156,10 @@ set(gca,'Xticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; ...
     'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',14);
 set(gca,'Yticklabel',{'Oliver''s scheme'; 'Dividing into thirds'; ...
     'Ranks of first ten'; 'Three slabs'; 'P(1 spike)';'P(3 spikes)';'P(5 spikes)'},'FontSize',14);
-xticklabel_rotate;
+temp = xticklabel_rotate;
 set(gca,'TickDir','Out');
 axis square;
 
-export_fig('C:\Sreedhar\Lat_work\Closed_loop\misc\work_documentation\figures\test','-eps','-transparent')
+% export_fig('C:\Sreedhar\Lat_work\Closed_loop\misc\work_documentation\figures\test','-eps','-transparent')
 
+disp(['Oliver''s verdict: ', num2str(hw2cr(final_tally(:,4)-1)), ' (cr)'])
