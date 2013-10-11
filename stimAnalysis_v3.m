@@ -29,7 +29,7 @@ if ~exist('datName','var')
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes=loadspike(datName,2,25);
+spikes=loadspike([pathName,datName],2,25);
 handles = zeros(1,7);
 
 %% Stimulus locations and time
@@ -49,11 +49,13 @@ end
 
 nStimSites = 5;
 
-rawText = fileread([datRoot,'.log']);
-stimSitePattern = 'MEA style: ([\d\d ]+)';
-[matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
-    token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
-stimSites = str2num(cell2mat(strtrim(token_data{1}))); % cr
+% rawText = fileread([datRoot,'.log']);
+% stimSitePattern = 'MEA style: ([\d\d ]+)';
+% [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
+%     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
+% stimSites = str2num(cell2mat(strtrim(token_data{1}))); % cr
+stimSites = [56, 52, 14, 37, 23];
+
 % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
 % stimSites = str2num(str{1}); % in cr
 % %stimSites = cr2hw([35, 21, 46, 41, 58]);

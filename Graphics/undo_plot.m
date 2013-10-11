@@ -12,6 +12,6 @@ end
 figure(h);
 children = get(gca, 'children');
 	
-for i = 1 : n
-  delete(children(i));
+for ii = 1 : n
+  delete(children(ii));
 end
