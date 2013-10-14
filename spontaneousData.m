@@ -129,6 +129,28 @@ bad_h = rasterplot_so(badspikes, badchannels,'r-');
 hold off;
 set(bad_h, 'Visible','off');
 
+%% Plotting the IBI distribution
+IBIs = mod_NB_onsets(2:end) - NB_ends(1:end-1);
+[counts, timeVec] = hist(IBIs,1:1:max(IBIs));
+figure;
+subplot(1,2,1)
+bar(timeVec, counts/length(IBIs));
+axis square;
+set(gca, 'FontSize', 14)
+ylabel('probability')
+xlabel('IBI [s]')
+
+subplot(1,2,2)
+%plot(IBIs); hold on; plot(mean(IBIs)*ones(size(IBIs)),'r--');
+shadedErrorBar(1:length(IBIs),IBIs,std(IBIs)*ones(size(IBIs)),{'b','linewidth',0.5},0);
+hold on;
+plot(mean(IBIs)*ones(size(IBIs)),'r.', 'MarkerSize',3);
+axis square; axis tight
+set(gca, 'FontSize', 14)
+ylabel('time [s]')
+xlabel('IBI number')
+
+suptitle('Inter-Burst Interval(IBI) statistics');
 %% when used as a function, what variables are to be returned
 varargout{1} = ch2ignore;
 varargout{2} = [mod_NB_onsets, NB_ends];

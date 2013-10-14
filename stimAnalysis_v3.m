@@ -49,12 +49,11 @@ end
 
 nStimSites = 5;
 
-% rawText = fileread([datRoot,'.log']);
-% stimSitePattern = 'MEA style: ([\d\d ]+)';
-% [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
-%     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
-% stimSites = str2num(cell2mat(strtrim(token_data{1}))); % cr
-stimSites = [56, 52, 14, 37, 23];
+rawText = fileread([datRoot,'.log']);
+stimSitePattern = 'MEA style: ([\d\d ]+)';
+[matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
+    token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
+stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
 
 % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
 % stimSites = str2num(str{1}); % in cr
