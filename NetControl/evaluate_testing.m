@@ -51,7 +51,32 @@ end
 figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
+%% Fig 1b: General raster
+gfr_rstr_h = figure(1); 
+handles(1) = gfr_rstr_h;
+fig1ha(2) = subplot(3,1,2:3);
+linkaxes(fig1ha, 'x');
+hold on;
+%line([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)),'Color','r','LineWidth',0.1);
+patch([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
+plot(stimTimes,cr2hw(stimSite)+1,'r*');
 
+% code for the tiny rectangle
+Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
+Ycoords = 60*repmat([0;1;1;0],size(stimTimes));
+patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+
+rasterplot_so(spks.time,spks.channel,'b-');
+response.time = spks.time(spks.channel == cr2hw(recSite));
+response.channel = spks.channel(spks.channel == cr2hw(recSite));
+rasterplot_so(response.time,response.channel,'g-');
+hold off;
+set(gca,'TickDir','Out');
+xlabel('Time (s)');
+ylabel('Channel #');
+title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),'/'...
+    ,num2str(cr2hw(stimSite)+1),':',num2str(recSite),'/',num2str(cr2hw(recSite)+1),'(cr/hw^{+1})']);
+zoom xon;
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell structure.
 % Layer 1 is a 60x1 cell, each corresponding to a channel
@@ -88,3 +113,67 @@ respLengths_n = zeros(size(stimTimes));
 for ii = 1: size(stimTimes,2)
     respLengths_n(ii) =  length(find(periStimAtRecSite{ii}>stimTimes(ii)));
 end
+%% plot1
+figure();
+plot(respLengths_n);
+%shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
+hold on;
+plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
+plot(mean(respLengths_n) + std(respLengths_n)*ones(size(respLengths_n)),'r-');
+plot(mean(respLengths_n) - std(respLengths_n)*ones(size(respLengths_n)),'r-');
+%axis square; 
+%axis tight
+set(gca, 'FontSize', 14)
+xlabel('Stimulus number')
+ylabel('No: of spikes in response')
+title('Response during testing');
+
+%% plot2
+figure();
+plot(silence_s,'.');
+hold on;
+plot(mean(silence_s)*ones(size(silence_s)),'r.', 'MarkerSize',3);
+% plot(mean(silence_s) + std(silence_s)*ones(size(silence_s)),'r-');
+% plot(mean(silence_s) - std(silence_s)*ones(size(silence_s)),'r-');
+%axis square; 
+%axis tight
+set(gca, 'FontSize', 14)
+xlabel('Stimulus number')
+ylabel('Pre-stimulus inactivity [s]')
+title('Response during testing');
+
+%% plot3
+figure();
+plot(sort(silence_s),sort(respLengths_n));
+%axis square; 
+%axis tight
+set(gca, 'FontSize', 14)
+xlabel('Pre-stimulus inactivity [s]')
+ylabel('Response length (# spikes)')
+title('Response during testing');
+
+%% plot4
+% [sortedResp, respInd] = sort(respLengths_n);
+% figure();
+% hold on;
+% for ii = 1: size(stimTimes,2) 
+%     temp = periStimAtRecSite{respInd(ii)};
+%     plot(temp - stimTimes(respInd(ii)),ones(size(temp))*ii,'.','MarkerSize',4);
+% end
+% set(gca, 'FontSize', 14)
+% xlabel('Time relative to stimulus [s]')
+% ylabel('Sorted trials')
+% title('Response during testing');
+
+%% plot5
+% [sortedSil, silInd] = sort(silence_s);
+% figure();
+% hold on;
+% for ii = 1: size(stimTimes,2) 
+%     temp = periStimAtRecSite{silInd(ii)};
+%     plot(temp - stimTimes(silInd(ii)),ones(size(temp))*ii,'.','MarkerSize',4);
+% end
+% set(gca, 'FontSize', 14)
+% xlabel('Time relative to stimulus [s]')
+% ylabel('Sorted trials)')
+% title('Response during testing');
