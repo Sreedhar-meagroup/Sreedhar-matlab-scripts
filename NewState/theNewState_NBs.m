@@ -26,12 +26,13 @@ for ii = 1: size(mod_NB_onsets,1)
     for jj = 1:nBits
         temp1 = spks_samples.time(spks_samples.channel==sortedIndx(jj));
         temp2 = temp1(temp1>=mod_NB_onsets(ii)*25e3 & temp1<=NB_ends(ii)*25e3);
-        if ~isempty(temp2), temp2 = temp2 - temp2(1);end
+        if ~isempty(temp2), temp2 = temp2 - mod_NB_onsets(ii)*25e3;end
         states_NB{ii}(jj,floor(temp2/(25*binWidth))+1) = 1;
         states_NB_dec{ii}= bin2dec(num2str(states_NB{ii}'));
     end
 end
 
+%%
 
 
 

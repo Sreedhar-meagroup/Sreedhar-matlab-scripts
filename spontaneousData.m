@@ -1,4 +1,4 @@
-%function varargout = spontaneousData(datName,pathName)
+function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile();
@@ -51,48 +51,48 @@ outNB_channel = spks.channel(outIndices);
 
 %% Computing the channels to ignore
 ch2ignore= [];
-% %in network burst channel wise
-% spikesInNB = cell(60,1);
-% for ii=0:59
-%     spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
+%in network burst channel wise
+spikesInNB = cell(60,1);
+for ii=0:59
+    spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
+end
+
+% outside network bursts - channel wise
+spikesOutNB = cell(60,1);
+for ii=0:59
+    spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
+end
+
+nSpikesInNB = cellfun(@length, spikesInNB);
+nSpikesOutNB = cellfun(@length, spikesOutNB);
+nSpikesTotal = cellfun(@length,inAChannel);
+pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
+[sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
+ii = 1;
+ch2ignore = [];
+while 1
+    if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
+        if sortedpc(ii) > 20 
+            ch2ignore = [ch2ignore, sortedIdx(ii)];
+        else
+            break;
+        end
+    end
+    ii = ii + 1;
+end
+%marking ignored channels in red in the raster
+figure(handles(1)); subplot(3,1,2:3)
+hold on;
+line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
+% igspks = [];
+% igchnnls = [];
+% for ii = 1: size(ch2ignore,2)
+%     igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
+%     igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
+%    %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
 % end
-% 
-% % outside network bursts - channel wise
-% spikesOutNB = cell(60,1);
-% for ii=0:59
-%     spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
-% end
-% 
-% nSpikesInNB = cellfun(@length, spikesInNB);
-% nSpikesOutNB = cellfun(@length, spikesOutNB);
-% nSpikesTotal = cellfun(@length,inAChannel);
-% pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
-% [sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
-% ii = 1;
-% ch2ignore = [];
-% while 1
-%     if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
-%         if sortedpc(ii) > 20 
-%             ch2ignore = [ch2ignore, sortedIdx(ii)];
-%         else
-%             break;
-%         end
-%     end
-%     ii = ii + 1;
-% end
-% % marking ignored channels in red in the raster
-% figure(handles(1)); subplot(3,1,2:3)
-% hold on;
-% line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore]+0.375,'Color','k','LineWidth',.1);    
-% % igspks = [];
-% % igchnnls = [];
-% % for ii = 1: size(ch2ignore,2)
-% %     igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
-% %     igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
-% %    %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
-% % end
-% % rasterplot_so(igspks,igchnnls,'r-')
-% %hold off
+% rasterplot_so(igspks,igchnnls,'r-')
+% hold off
 
 %% `Patch'ing the network event
 figure(handles(1)); subplot(3,1,2:3)
@@ -129,6 +129,28 @@ bad_h = rasterplot_so(badspikes, badchannels,'r-');
 hold off;
 set(bad_h, 'Visible','off');
 
+%% Plotting the IBI distribution
+IBIs = mod_NB_onsets(2:end) - NB_ends(1:end-1);
+[counts, timeVec] = hist(IBIs,1:1:max(IBIs));
+figure;
+subplot(1,2,1)
+bar(timeVec, counts/length(IBIs));
+axis square;
+set(gca, 'FontSize', 14)
+ylabel('probability')
+xlabel('IBI [s]')
+
+subplot(1,2,2)
+%plot(IBIs); hold on; plot(mean(IBIs)*ones(size(IBIs)),'r--');
+shadedErrorBar(1:length(IBIs),IBIs,std(IBIs)*ones(size(IBIs)),{'b','linewidth',0.5},0);
+hold on;
+plot(mean(IBIs)*ones(size(IBIs)),'r.', 'MarkerSize',3);
+axis square; axis tight
+set(gca, 'FontSize', 14)
+ylabel('time [s]')
+xlabel('IBI number')
+
+suptitle('Inter-Burst Interval(IBI) statistics');
 %% when used as a function, what variables are to be returned
 varargout{1} = ch2ignore;
 varargout{2} = [mod_NB_onsets, NB_ends];

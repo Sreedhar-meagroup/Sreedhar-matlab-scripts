@@ -4,7 +4,11 @@ function bl_spks = blankArtifacts(spks,stimTimes,t)
 %         stimTimes --  the cell of stimulation times
 %         t ms -- the blanking window
 initialSize = size(spks.time,2);
-allStimTimes = [stimTimes{:}];
+if iscell(stimTimes)
+    allStimTimes = [stimTimes{:}];
+else
+    allStimTimes = stimTimes;
+end
 for ii = 1:length(allStimTimes)
     ind2remove = find(spks.time-allStimTimes(ii)>0 & spks.time-allStimTimes(ii)<t*1e-3);
     spks.time(ind2remove) = [];
