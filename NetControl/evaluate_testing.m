@@ -28,18 +28,18 @@ end
 % [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
 %     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
 % stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
-
-str = inputdlg('Enter the stimulation site (in cr)');
-stimSite = str2num(str{1}); % in cr
-str = inputdlg('Enter the recording site (in cr)'); % in cr
-recSite = str2num(str{1});
- 
-
+if ~exist('stimSite','var')
+    str = inputdlg('Enter the stimulation site (in cr)');
+    stimSite = str2num(str{1}); % in cr
+    str = inputdlg('Enter the recording site (in cr)'); % in cr
+    recSite = str2num(str{1});
+end
 stimTimes = inAnalog{2};
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
-[spks, selIdx, rejIdx] = cleanspikes(spikes);
-spks = blankArtifacts(spks,stimTimes,1);
+ [spks, selIdx, rejIdx] = cleanspikes(spikes); %  cleaning has been switched off since it is not available online.
+ spks = blankArtifacts(spks,stimTimes,1);
+%spks = spikes;
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
@@ -102,10 +102,6 @@ for jj = 1: size(stimTimes,2)
     silence_s(jj) = (stimTimes(jj) - previousTimeStamp);
 end
 
-
-%% Response lengths (in time)
-
-
 %% Response lengths (in no: of spikes)
 
 periStimAtRecSite = periStim{cr2hw(recSite)+1};
@@ -113,67 +109,81 @@ respLengths_n = zeros(size(stimTimes));
 for ii = 1: size(stimTimes,2)
     respLengths_n(ii) =  length(find(periStimAtRecSite{ii}>stimTimes(ii)));
 end
-%% plot1
+
+%% Response lengths (in time)
+respBurst = cell(size(stimTimes));
+respLengths_ms = zeros(size(stimTimes));
+for ii = 1:size(stimTimes,2)
+    temp = periStimAtRecSite{ii};
+    if isempty(temp), continue; end
+    
+    ISI = diff(temp);
+    breach = find(ISI>=0.1,1,'first');
+    if isempty(breach)
+        respBurst{ii} = temp;
+    else
+        respBurst{ii} = temp(1:breach);
+        if ISI(breach)<= 0.2
+            respBurst{ii}(end+1) = temp(breach+1);
+        end
+    end
+    respLengths_ms(ii) =  (respBurst{ii}(end) - stimTimes(ii))*1e3;
+end
+%% peristim long at recording site
+periStimAtRecSite_long = periStim{cr2hw(recSite)+1};
+
+%% Figures
+% plot1: No: of spikes in the responses
 figure();
 plot(respLengths_n);
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
 hold on;
 plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
-plot(mean(respLengths_n) + std(respLengths_n)*ones(size(respLengths_n)),'r-');
-plot(mean(respLengths_n) - std(respLengths_n)*ones(size(respLengths_n)),'r-');
+box off
+% plot(mean(respLengths_n) + std(respLengths_n)*ones(size(respLengths_n)),'r-');
+% plot(mean(respLengths_n) - std(respLengths_n)*ones(size(respLengths_n)),'r-');
 %axis square; 
 %axis tight
 set(gca, 'FontSize', 14)
 xlabel('Stimulus number')
 ylabel('No: of spikes in response')
-title('Response during testing');
+%title('Response during testing');
 
-%% plot2
+% plot2: Pre-stimulus inactivities
 figure();
-plot(silence_s,'.');
-hold on;
-plot(mean(silence_s)*ones(size(silence_s)),'r.', 'MarkerSize',3);
+plot(silence_s,'.','markersize',5);
+box off;
+%hold on;
+%plot(mean(silence_s)*ones(size(silence_s)),'r.', 'MarkerSize',3);
 % plot(mean(silence_s) + std(silence_s)*ones(size(silence_s)),'r-');
 % plot(mean(silence_s) - std(silence_s)*ones(size(silence_s)),'r-');
 %axis square; 
 %axis tight
-set(gca, 'FontSize', 14)
-xlabel('Stimulus number')
-ylabel('Pre-stimulus inactivity [s]')
-title('Response during testing');
+set(gca, 'FontSize', 14);
+xlabel('Stimulus number');
+ylabel('Pre-stimulus inactivity [s]');
+%title('Response during testing');
 
-%% plot3
+% plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
 figure();
-plot(sort(silence_s),sort(respLengths_n));
-%axis square; 
-%axis tight
-set(gca, 'FontSize', 14)
-xlabel('Pre-stimulus inactivity [s]')
-ylabel('Response length (# spikes)')
-title('Response during testing');
+[sortedSil, silInd] = sort(silence_s);
+plot(sortedSil, respLengths_n(silInd));
+box off;
+set(gca, 'FontSize', 14);
+xlabel('Pre-stimulus inactivity [s]');
+ylabel('Response length (# spikes)');
+%title('Response during testing');
 
-%% plot4
-% [sortedResp, respInd] = sort(respLengths_n);
-% figure();
-% hold on;
-% for ii = 1: size(stimTimes,2) 
-%     temp = periStimAtRecSite{respInd(ii)};
-%     plot(temp - stimTimes(respInd(ii)),ones(size(temp))*ii,'.','MarkerSize',4);
-% end
-% set(gca, 'FontSize', 14)
-% xlabel('Time relative to stimulus [s]')
-% ylabel('Sorted trials')
-% title('Response during testing');
+% plot4: Response lengths(ms) vs. pre-stimulus inactivities
+figure();
+[sortedSil, silInd] = sort(silence_s);
+plot(sortedSil, respLengths_ms(silInd));
+box off;
+set(gca, 'FontSize', 14);
+xlabel('Pre-stimulus inactivity [s]');
+ylabel('Response length [ms]');
+%title('Response during testing');
 
-%% plot5
-% [sortedSil, silInd] = sort(silence_s);
-% figure();
-% hold on;
-% for ii = 1: size(stimTimes,2) 
-%     temp = periStimAtRecSite{silInd(ii)};
-%     plot(temp - stimTimes(silInd(ii)),ones(size(temp))*ii,'.','MarkerSize',4);
-% end
-% set(gca, 'FontSize', 14)
-% xlabel('Time relative to stimulus [s]')
-% ylabel('Sorted trials)')
-% title('Response during testing');
+
+% export_fig('C:\Sreedhar\Lat_work\Brainlinks\NetControl_results...
+%\figures_317_4346_s1\rl_vs_sil','-eps','-transparent')

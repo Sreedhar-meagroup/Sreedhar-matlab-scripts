@@ -1,4 +1,4 @@
-function varargout = spontaneousData(datName,pathName)
+%function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile();
@@ -52,38 +52,38 @@ outNB_channel = spks.channel(outIndices);
 %% Computing the channels to ignore
 ch2ignore= [];
 %in network burst channel wise
-spikesInNB = cell(60,1);
-for ii=0:59
-    spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
-end
-
-% outside network bursts - channel wise
-spikesOutNB = cell(60,1);
-for ii=0:59
-    spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
-end
-
-nSpikesInNB = cellfun(@length, spikesInNB);
-nSpikesOutNB = cellfun(@length, spikesOutNB);
-nSpikesTotal = cellfun(@length,inAChannel);
-pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
-[sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
-ii = 1;
-ch2ignore = [];
-while 1
-    if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
-        if sortedpc(ii) > 20 
-            ch2ignore = [ch2ignore, sortedIdx(ii)];
-        else
-            break;
-        end
-    end
-    ii = ii + 1;
-end
-%marking ignored channels in red in the raster
-figure(handles(1)); subplot(3,1,2:3)
-hold on;
-line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
+% spikesInNB = cell(60,1);
+% for ii=0:59
+%     spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
+% end
+% 
+% % outside network bursts - channel wise
+% spikesOutNB = cell(60,1);
+% for ii=0:59
+%     spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
+% end
+% 
+% nSpikesInNB = cellfun(@length, spikesInNB);
+% nSpikesOutNB = cellfun(@length, spikesOutNB);
+% nSpikesTotal = cellfun(@length,inAChannel);
+% pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
+% [sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
+% ii = 1;
+% ch2ignore = [];
+% while 1
+%     if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
+%         if sortedpc(ii) > 20 
+%             ch2ignore = [ch2ignore, sortedIdx(ii)];
+%         else
+%             break;
+%         end
+%     end
+%     ii = ii + 1;
+% end
+% %marking ignored channels in red in the raster
+% figure(handles(1)); subplot(3,1,2:3)
+% hold on;
+% line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
 % igspks = [];
 % igchnnls = [];
 % for ii = 1: size(ch2ignore,2)
@@ -133,9 +133,10 @@ set(bad_h, 'Visible','off');
 IBIs = mod_NB_onsets(2:end) - NB_ends(1:end-1);
 [counts, timeVec] = hist(IBIs,1:1:max(IBIs));
 figure;
-subplot(1,2,1)
+%subplot(1,2,1)
 bar(timeVec, counts/length(IBIs));
-axis square;
+box off;
+%axis square;
 set(gca, 'FontSize', 14)
 ylabel('probability')
 xlabel('IBI [s]')
