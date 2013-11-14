@@ -15,7 +15,7 @@ end
 %% Fig 1a: global firing rate
 % sliding window; bin width = 100ms
 [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-gfr_rstr_h = figure();
+gfr_rstr_h = figure('name', 'Spontaneous activity','NumberTitle','off');
 handles(1) = gfr_rstr_h;
 fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes');
@@ -116,7 +116,7 @@ hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
 ylabel('Channel #');
-title('Raster plot of spontaneous activity');
+title(['Raster plot of spontaneous activity          ', num2str(length(network_burst)), ' NBs']);
 zoom xon;
 pan xon;
 
@@ -132,11 +132,11 @@ set(bad_h, 'Visible','off');
 %% Plotting the IBI distribution
 IBIs = mod_NB_onsets(2:end) - NB_ends(1:end-1);
 [counts, timeVec] = hist(IBIs,1:1:max(IBIs));
-figure;
-%subplot(1,2,1)
+figure('name', 'IBI statistics', 'NumberTitle', 'off');
+subplot(1,2,1)
 bar(timeVec, counts/length(IBIs));
 box off;
-%axis square;
+axis square; axis tight;
 set(gca, 'FontSize', 14)
 ylabel('probability')
 xlabel('IBI [s]')

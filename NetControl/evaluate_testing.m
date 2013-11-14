@@ -1,3 +1,4 @@
+
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(3,'st');
 end
@@ -77,6 +78,7 @@ ylabel('Channel #');
 title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),'/'...
     ,num2str(cr2hw(stimSite)+1),':',num2str(recSite),'/',num2str(cr2hw(recSite)+1),'(cr/hw^{+1})']);
 zoom xon;
+pan xon;
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell structure.
 % Layer 1 is a 60x1 cell, each corresponding to a channel
