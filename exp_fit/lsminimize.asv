@@ -1,0 +1,2 @@
+function g = lsminimize(C,y)
+g = sum((exp_model(y(2,:),C) - y(2,:)).^2);
