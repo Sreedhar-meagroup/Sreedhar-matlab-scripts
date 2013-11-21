@@ -1,4 +1,3 @@
-
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(3,'st');
 end
@@ -134,6 +133,45 @@ end
 %% peristim long at recording site
 periStimAtRecSite_long = periStim{cr2hw(recSite)+1};
 
+
+%% Burst detection part
+
+burst_detection = burstDetAllCh_sk(spks);
+[bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
+    = Networkburst_detection_sk(datName,spks,burst_detection,10);
+% harking back 50ms from the current NB onset definition and redefining onset boundaries.
+mod_NB_onsets = zeros(length(NB_onsets),1);
+for ii = 1:length(NB_onsets)
+    if ~isempty(find(spks.time>NB_onsets(ii,2)-50e-3 & spks.time<NB_onsets(ii,2), 1))
+        mod_NB_onsets(ii) = spks.time(find(spks.time >...
+            NB_onsets(ii,2)-50e-3 & spks.time<NB_onsets(ii,2),1,'first'));
+    else
+        mod_NB_onsets(ii) = NB_onsets(ii,2);
+    end
+end
+NB_slices = cell(length(mod_NB_onsets),1);
+inNB_time =[];
+inNB_channel =[];
+for ii = 1: length(mod_NB_onsets)
+    NB_slices{ii}.time = spks.time(spks.time>=mod_NB_onsets(ii) & spks.time<=NB_ends(ii));
+    NB_slices{ii}.channel = spks.channel(spks.time>=mod_NB_onsets(ii) & spks.time<=NB_ends(ii));
+    inNB_time = [inNB_time, NB_slices{ii}.time];
+    inNB_channel = [inNB_channel, NB_slices{ii}.channel];
+end
+[outNB_time, outIndices] = setdiff(spks.time, inNB_time);
+outNB_channel = spks.channel(outIndices);
+
+%% `Patch'ing the network events
+% green path stands for the network burst and the red one for the stim response window
+figure(handles(1)); subplot(3,1,2:3)
+hold on;
+%line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
+Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
+Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
+patch(Xcoords,Ycoords,'g','edgecolor','none','FaceAlpha',0.35);
+hold off;
+%% spikes per channel per time
+spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
 % plot1: No: of spikes in the responses
 figure();

@@ -6,6 +6,7 @@ function [datName,pathName] = chooseDatFile(varargin)
 %'Spontaneous' -- looks only for spontaneous data files.
 %'StimRecSite' -- looks only for stimulus response data files.
 %'ClosedLoop' -- looks only for stimulus response data files.
+%'NetControl' -- NetControl Experiments
 % OUTPUTS:
 % datName -- filename
 % pathName -- complete path to the above file
@@ -25,6 +26,8 @@ switch nargin
             data_dir = 'StimRecSite';
         elseif strncmpi(varargin{2},'closed',2)
             data_dir = 'ClosedLoop';
+        elseif strncmpi(varargin{2},'netcontrol',2)
+            data_dir = 'NetControl';
         end
 end
 

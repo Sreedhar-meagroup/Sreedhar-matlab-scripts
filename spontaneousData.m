@@ -1,7 +1,7 @@
 %function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile();
+    [datName,pathName] = chooseDatFile(3,'NetControl');
 end
     datRoot = datName(1:strfind(datName,'.')-1);
     spikes=loadspike([pathName,datName],2,25);
@@ -156,4 +156,26 @@ suptitle('Inter-Burst Interval(IBI) statistics');
 varargout{1} = ch2ignore;
 varargout{2} = [mod_NB_onsets, NB_ends];
 varargout{3} = NB_slices;
+%%
+% IBIs_4350_s2_post = IBIs;
+% myfun = @(x) size(x.time,2);
+% nSpikesPerNB = cellfun(@(x) myfun(x),NB_slices);
+% nSpikesPerNB_4350_s2_post = nSpikesPerNB;
+% BDuration_s_4350_s2_post = NB_ends - mod_NB_onsets;
 
+%%
+% clearvars -except IBIs_4346_s1_pre  nSpikesPerNB_4346_s1_pre  BDuration_s_4346_s1_pre ... 
+%                   IBIs_4346_s2_pre  nSpikesPerNB_4346_s2_pre  BDuration_s_4346_s2_pre ...
+%                   IBIs_4346_s1_post nSpikesPerNB_4346_s1_post BDuration_s_4346_s1_post ...
+%                   IBIs_4346_s2_post nSpikesPerNB_4346_s2_post BDuration_s_4346_s2_post ...
+%                   IBIs_4350_s2_pre  nSpikesPerNB_4350_s2_pre  BDuration_s_4350_s2_pre ...
+%                   IBIs_4350_s2_post nSpikesPerNB_4350_s2_post BDuration_s_4350_s2_post 
+
+%% 
+inRec = inAChannel{cr2hw(84)+1};
+figure(handles(1)); hold on;
+subplot(3,1,2:3)
+plot(inRec,ones(size(inRec))*31,'g.','markersize',5); hold off;
+Rec_s2_4350.after = length(inRec)/(max(spks.time) - min(spks.time))
+
+                  
