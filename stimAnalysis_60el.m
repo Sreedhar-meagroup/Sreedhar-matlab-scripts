@@ -1,9 +1,9 @@
 % -------------------------------------------------------------------------------------
-% Purpose: Analyse stim responses and choose appropriate stim & rec. site
+% Purpose: Analyse 60 electrode stim responses 
 
 % Author: Sreedhar S Kumar
-% Date: 27.06.2013
-%--------------------------------------------------------------------------------------
+% Date: 22.11.2013
+%% Version details 
 % MATLAB Version 7.12.0.635 (R2011a)
 % MATLAB License Number: 97144
 % Operating System: Microsoft Windows 7 Version 6.1 (Build 7601: Service Pack 1)
@@ -21,7 +21,7 @@
 % Statistics Toolbox                                    Version 7.5        (R2011a)
 % Wavelet Toolbox                                       Version 4.7        (R2011a)
 %--------------------------------------------------------------------------------------
-
+%% Load data
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(3,'st');
 end
@@ -42,21 +42,9 @@ for ii=60:63
 end
 
 
-% the following info shall in future versions automatically gathered from the log file...
-% working on that script stim_efficacy.m
+nStimSites = 60;
 
-nStimSites = 5;
-
-rawText = fileread([datRoot,'.log']);
-stimSitePattern = 'MEA style: ([\d\d ]+)';
-[matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
-    token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
-stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
-
-% str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
-% stimSites = str2num(str{1}); % in cr
-% %stimSites = cr2hw([35, 21, 46, 41, 58]);
- stimTimes = cell(1,5);
+stimTimes = cell(1,nStimSites);
 for ii = 1:nStimSites
     stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
 end
