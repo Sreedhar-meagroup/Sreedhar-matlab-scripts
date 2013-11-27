@@ -5,10 +5,11 @@
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(3,'NetControl');
 end
-    datRoot = datName(1:strfind(datName,'.')-1);
-    spikes=loadspike([pathName,datName],2,25);
-
+        datRoot        = datName(1:strfind(datName,'.')-1);
+        spikes         = loadspike([pathName,datName],2,25);
 [spks, selIdx, rejIdx] = cleanspikes(spikes);
+        spikes_samples = loadspike([pathName,datName],2); %timestamps loaded as samples
+        spks_samples   = cleanspikes(spikes_samples);
 
 [ch2ignore, NB_extremes, NB_slices] = spontaneousData(datName, pathName);
 
@@ -44,6 +45,16 @@ for ii = 1: size(mod_NB_onsets,1)
 end
 
 %%
+corrData = cell(nchoosek(length(states_NB_dec),2),1);
+LagData  = cell(nchoosek(length(states_NB_dec),2),1);
+counter = 1;
+for ii = 1:length(states_NB_dec)
+    for jj = ii: length(states_NB_dec)
+        [corrData{counter}, LagData{counter}] = xcorr(states_NB_dec{ii}, states_NB_dec{jj});
+        counter = counter + 1;
+    end
+end
+
 % 
 % for ii = 1:nBits
 % states(ii,ceil(inAChannel{sortedIndx(ii)}/(25*binWidth))) = 1;
