@@ -65,6 +65,7 @@ ctxts=zeros(124,N);
 
 out = 0;
 
+h = waitbar(0,'Cleaning artifacts...');
 for in = 1:N
     
   now = contexts(:,in);
@@ -141,7 +142,12 @@ for in = 1:N
     ctxts(:,out) = now;
     idx(:,out) = in;
   end
+  
+  if ~mod(in,1e2)
+    waitbar(in/N);
+  end
 end
+close(h);
 ctxts=ctxts(:,1:out);
 selIdx=idx(1:out);
 

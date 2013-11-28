@@ -41,28 +41,27 @@ for ii=60:63
     inAnalog{ii-59,1} = spikes.time(spikes.channel==ii);
 end
 
-
 nStimSites = 60;
-
+stimSites = repmat(hw2cr(0:59),1,50); % in cr
 stimTimes = cell(1,nStimSites);
 for ii = 1:nStimSites
     stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
 end
 
 
+
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
 [spks, selIdx, rejIdx] = cleanspikes(spikes);
+spks = trimAnalogChannels(spikes);
 spks = blankArtifacts(spks,stimTimes,1);
+
+spks.stimTimes = stimTimes;
+spks.stimSites = stimSites;
+
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-
-%% Fig 1a: global firing rate
-% sliding window; bin width = 100ms
-[counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
 
 %% Peristimulus spike trains for each stim site and each channel
@@ -79,91 +78,6 @@ for ii = 1:nStimSites
     end
 end
 
-%% Measuring pre-stimulus inactivity/periods of silence
-% silence_s has a matrix in a cell structure.
-% Layer 1 (outer) is a 1x5 cell, each corresponding to each stim site.
-% Layer 2 is a 60x50 matrix, each row corresponding to a channel and column
-% corresponding to the 50 individual stimuli.
-
-silence_s = cell(1,nStimSites);
-for ii = 1:nStimSites
-    for jj = 1: size(stimTimes{ii},2)
-        for kk = 1:60
-            previousTimeStamp = inAChannel{kk}(find(inAChannel{kk}<stimTimes{ii}(jj),1,'last'));
-            if isempty(previousTimeStamp), previousTimeStamp = 0; end
-            silence_s{ii}(kk,jj) = stimTimes{ii}(jj) - previousTimeStamp;
-        end
-    end
-end
-
-%% Isolating the periStims that follow a period of silence > tSilence_s
-% periStim_selected has the same structure as periStim
-% periStim_selected = cell(size(periStim));
-% tSilence_s = 1;
-% for ii = 1:nStimSites
-%     [validRows, validCols] = find(silence_s{ii}>tSilence_s);
-%     for jj = 1: size(validRows,1)
-%         periStim_selected{ii}{validRows(jj),1}{validCols(jj),1} = periStim{ii}{validRows(jj)}{validCols(jj)};
-%     end
-%     
-% % fixed a bug in retrospective
-% % If by chance a channel did not have a valid response in the 50th trial,
-% % that cell array would remain of length 49. There could be a more elegant
-% % solution. But this patch works for the moment. buggyLength is the index of
-% % such aberrant channels. diffLen is the deficit in length which is then
-% % appropriately compensated.
-%     
-%         buggyLengths = find(cellfun(@length,periStim_selected{ii})<50);
-%         if buggyLengths
-%             for kk = 1:length(buggyLengths)
-%                 diffLen = length(stimTimes{ii}) - length(periStim_selected{ii}{buggyLengths(kk)});
-%                 periStim_selected{ii}{buggyLengths(kk)}{end+diffLen} = [];
-%             end
-%         end
-% end
-
-
-%% Fig 1b: General raster
-gfr_rstr_h = figure(1); 
-handles(1) = gfr_rstr_h;
-fig1ha(2) = subplot(3,1,2:3);
-linkaxes(fig1ha, 'x');
-hold on;
-for ii = 1:nStimSites
-    switch ii
-        case 1
-            clr = 'r';
-        case 2
-            clr = 'g';
-        case 3
-            clr = 'c';
-        case 4
-            clr = 'k';
-        case 5
-            clr = 'm';
-    end
-line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
-patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
-plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
-
-% code for the tiny rectangle
-Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
-Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
-patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
-end
-rasterplot_so(spks.time,spks.channel,'b-');
-% for ii = 1:60 
-%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
-%     %'ob','markersize',2,'markerfacecolor','b'
-%     axis tight;
-% end
-
-hold off;
-set(gca,'TickDir','Out');
-xlabel('Time (s)');
-ylabel('Channel #');
-title(['Raster plot indicating stimulation at channels [',num2str(cr2hw(stimSites)+1),'] (hw^{+1})']);
-zoom xon;
 %% Binning, averaging and plotting the PSTHs with 1s pre-stim silence
 % listOfCounts = cell(1,nStimSites);
 % for ii = 1:nStimSites
