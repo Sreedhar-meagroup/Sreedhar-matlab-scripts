@@ -5,11 +5,11 @@ function spks = trimAnalogChannels(spks)
 % clean.
 
 analogInd = find(spks.channel >= 60);
-spks.time(analogInd) = [];
-spks.channel(analogInd) = [];
-spks.height(analogInd) = [];
-spks.width(analogInd) = [];
-spks.context(:,analogInd) = [];
-spks.thresh(analogInd) = [];
+spks.time(analogInd)        = [];
+spks.channel(analogInd)     = [];
+spks.height(analogInd)      = [];
+spks.width(analogInd)       = [];
+spks.context(:,analogInd)   = [];
+spks.thresh(analogInd)      = [];
 end
 
