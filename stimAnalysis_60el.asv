@@ -51,7 +51,7 @@ end
 
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
-[spks, selIdx, rejIdx] = cleanspikes(spikes,5); % change code to make thresh adaptive; fetch from file
+[spks, selIdx, rejIdx] = cleanspikes(spikes);
 % spks = trimAnalogChannels(spikes);
 spks = blankArtifacts(spks,stimTimes,1);
 

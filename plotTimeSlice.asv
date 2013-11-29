@@ -22,7 +22,7 @@ linkaxes(fig1ha, 'x');
 hold on;
 
 % line([stimTimesSlice; stimTimesSlice], repmat([0;61],size(stimTimesSlice)),'Color','g','LineWidth',0.1);
-patch([stimTimesSlice; stimTimesSlice], repmat([0;61],size(stimTimesSlice)),'g', 'EdgeColor','g', 'EdgeAlpha', 0.35, 'FaceColor', 'none');
+% patch([stimTimesSlice; stimTimesSlice], repmat([0;61],size(stimTimesSlice)), 'g', 'EdgeAlpha', 0.5);%, 'FaceColor', 'none');
 plot(stimTimesSlice, cr2hw(stimSitesSlice)+1,'r*');
 
 % code for the tiny rectangle

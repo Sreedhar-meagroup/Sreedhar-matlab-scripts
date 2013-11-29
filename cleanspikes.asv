@@ -4,13 +4,12 @@ function [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh, testidx, relthresh
 % [spks,idx] = CLEANSPIKES(spikes) returns cleaned up spikes and DC offset corrected spike contexts:
 % SPIKES is the structure returned by loadspike('filename',2,25). Other
 % arguments are optional.
-% THRESH is specified in terms of no: of times of the estimated rms
-% noise. This should match the thresh set for the recording.
 % IDX is the ids of the selected spikes
 % i) relthresh test (-1:-0.5ms and 0.5:1ms)
 % - If any sample in the above mentioned interval is more than half the peak
 %   the spike is rejected.
-% - Use optional arguments testidx and relthresh to modify this test:
+% - Use arguments thresh, testidx  and relthresh to modify this test:
+    
 %     TESTIDX are indices (1:124) of samples to implement the relthresh test.
 %     default: testidx =  [[25:37] [63:75]];
 %     RELTHRESH is a number between 0 and 1.
@@ -48,10 +47,10 @@ function [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh, testidx, relthresh
 
 
 contexts = spikes.context;
-if nargin<4
+if nargin<3
   relthresh = 0.5;
 end
-if nargin<3
+if nargin<2
   testidx = [25:37, 63:75];
 end
 
@@ -81,11 +80,11 @@ for in = 1:N
           if bad
             breach = find(now(testidx) <= relthresh*peak);
             if breach(1)> 50
-                if abs(peak-max(now(50:63+breach(1)-13)))> 6*spikes.thresh(in)/thresh;
+                if abs(peak-max(now(50:63+breach(1)-13)))> 6*spikes.thresh(in)/7;
                     bad = 0;
                 end
             else
-                if abs(peak-max(now(25+breach(end):50)))> 6*spikes.thresh(in)/thresh;
+                if abs(peak-max(now(25+breach(end):50)))> 6*spikes.thresh(in)/7;
                     bad = 0;
                 end                
             end
@@ -95,11 +94,11 @@ for in = 1:N
           if bad
             breach = find(now(testidx) >= relthresh*peak);
             if breach(1) > 50
-                if abs(peak-min(now(50:63+breach(1)-13)))> 6*spikes.thresh(in)/thresh;
+                if abs(peak-min(now(50:63+breach(1)-13)))> 6*spikes.thresh(in)/7;
                     bad = 0;
                 end
             else
-                if abs(peak-min(now(25+breach(end):50)))> 6*spikes.thresh(in)/thresh;
+                if abs(peak-min(now(25+breach(end):50)))> 6*spikes.thresh(in)/7;
                     bad = 0;
                 end                
             end                
@@ -113,11 +112,11 @@ for in = 1:N
           if bad
             breach = find(now(abstestidx) <= 0.9*peak);
             if breach(1) > 50
-                if abs(peak-max(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/thresh;
+                if abs(peak-max(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/7;
                     bad = 0;
                 end
             else
-                if abs(peak-max(now(25+breach(end):50)))> 3*spikes.thresh(in)/thresh;
+                if abs(peak-max(now(25+breach(end):50)))> 3*spikes.thresh(in)/7;
                     bad = 0;
                 end                
             end      
@@ -127,11 +126,11 @@ for in = 1:N
           if bad
             breach = find(now(abstestidx) >= 0.9*peak);
             if breach(1) > 50
-                if abs(peak-min(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/thresh;
+                if abs(peak-min(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/7;
                     bad = 0;
                 end
             else
-                if abs(peak-min(now(25+breach(end):50)))> 3*spikes.thresh(in)/thresh;
+                if abs(peak-min(now(25+breach(end):50)))> 3*spikes.thresh(in)/7;
                     bad = 0;
                 end                
             end      
