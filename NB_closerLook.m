@@ -5,7 +5,9 @@ end
 
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike([pathName,datName],2,25);
-spks = cleanspikes(spikes); % Work on this later
+thresh = extract_thresh([pathName, datName, '.desc']);
+
+spks = cleanspikes(spikes, thresh); % Work on this later
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
