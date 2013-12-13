@@ -28,6 +28,7 @@ end
 
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike([pathName,datName],2,25);
+thresh  = extract_thresh([pathName, datName, '.desc']);
 handles = zeros(1,7);
 
 %% Stimulus locations and time
@@ -63,7 +64,7 @@ end
 
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
-[spks, selIdx, rejIdx] = cleanspikes(spikes);
+[spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
 spks = blankArtifacts(spks,stimTimes,1);
 inAChannel = cell(60,1);
 for ii=0:59
@@ -176,6 +177,7 @@ xlabel('Time (s)');
 ylabel('Channel #');
 title(['Raster plot indicating stimulation at channels [',num2str(cr2hw(stimSites)+1),'] (hw^{+1})']);
 zoom xon;
+pan xon;
 %% Binning, averaging and plotting the PSTHs with 1s pre-stim silence
 % listOfCounts = cell(1,nStimSites);
 % for ii = 1:nStimSites

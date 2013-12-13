@@ -1,24 +1,35 @@
-% figure; hold on;
-% for ii = 1:length(NB_slices)
-%     if NB_slices{ii}.channel(1) == 50
-%         plot(NB_slices{ii}.channel(1:5));
-%     end
-% end
-% hold off;
-% 
-% %%
-% prob_vecL1 = zeros(60,1);
-% prob_vecL2 = zeros(60);
-% % probability chart shall denote the probability that a channel is the first in a burst
-% for ii = 1:size(NB_slices,1)
-%     prob_vecL1(NB_slices{ii}.channel(1)+1) = prob_vecL1(NB_slices{ii}.channel(1)+1) + 1;
-%     prob_vecL2(NB_slices{ii}.channel(2)+1,NB_slices{ii}.channel(1)+1) = prob_vecL2(NB_slices{ii}.channel(2)+1,NB_slices{ii}.channel(1)+1) + 1;
-% end
 
-%% burst participation metric
-burst_part = zeros(60,1);
-for ii = 1:length(NB_slices)
-    burst_part(unique_us(NB_slices{ii}.channel)+1)= burst_part(unique_us(NB_slices{ii}.channel)+1) + 1;
+%% continously firing channels
+chIchose = [50, 49];
+for jj = chIchose
+    inCh_outNBs.(sprintf('Ch%d',jj)) = inAChannel{jj};
+    beforeEachNB.(sprintf('Ch%d',jj)) = cell(60,1);
+
+    for ii = 1:length(mod_NB_onsets)
+        inCh_outNBs.(sprintf('Ch%d',jj))(inCh_outNBs.(sprintf('Ch%d',jj)) >= mod_NB_onsets(ii) & inCh_outNBs.(sprintf('Ch%d',jj)) <= NB_ends(ii)) = [];
+        if ii > 1
+            beforeEachNB.(sprintf('Ch%d',jj)){ii} = inCh_outNBs.(sprintf('Ch%d',jj))(inCh_outNBs.(sprintf('Ch%d',jj)) < mod_NB_onsets(ii) & inCh_outNBs.(sprintf('Ch%d',jj)) > NB_ends(ii-1));
+        else
+            beforeEachNB.(sprintf('Ch%d',jj)){ii} = inCh_outNBs.(sprintf('Ch%d',jj))(inCh_outNBs.(sprintf('Ch%d',jj)) < mod_NB_onsets(ii));
+        end
+
+    end
 end
-%%
-preB_silences = zeros(length(NB_slices),1);
+
+sizeOfNB_s = NB_ends - mod_NB_onsets;
+sizeOfpreNB_n(:,1) = cellfun(@length, beforeEachNB.Ch49);
+sizeOfpreNB_n(:,2) = cellfun(@length, beforeEachNB.Ch50);
+
+%% total number of spikes/ time before a burst
+nSpikesBefNB = zeros(size(mod_NB_onsets));
+for ii = 1:length(mod_NB_onsets)
+    if ii > 1
+        temp = find(spks.time <= mod_NB_onsets(ii) & spks.time > NB_ends(ii-1) );
+    else
+        temp = find(spks.time <= mod_NB_onsets(ii));
+    end
+    nSpikesBefNB(ii) = size(temp,2);
+end
+
+nSpBefPerIBI = nSpikesBefNB./IBIs;
+figure(), plot(nSpBefPerIBI, sizeOfNB_s, '.')

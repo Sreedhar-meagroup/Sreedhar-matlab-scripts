@@ -160,27 +160,18 @@ for in = 1:N
              % The inner breach test
              breach_pre  = breach(breach<50);
              breach_post = breach(breach>=50);
-            if breach_pre
-                if abs(peak-min(now(breach_pre(end)):50))> (thresh-1)*spikes.thresh(in)/thresh;
+            
+            
+            if breach(1) > 50
+                if abs(peak-max(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/thresh;
                     bad = 0;
                 end
-            end
-            
-             
-             
-       Working here      
-             
-             
-%             if breach(1) > 50
-%                 if abs(peak-max(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/thresh;
-%                     bad = 0;
-%                 end
-%             else
-%                 if abs(peak-max(now(25+breach(end):50)))> 3*spikes.thresh(in)/thresh;
-%                     bad = 0;
-%                 end                
-%             end      
-%           end     
+            else
+                if abs(peak-max(now(25+breach(end):50)))> 3*spikes.thresh(in)/thresh;
+                    bad = 0;
+                end                
+            end      
+          end     
       else
           bad = length(find(now(abstestidx) >= 0.9*peak));
           if bad
