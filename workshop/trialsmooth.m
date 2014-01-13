@@ -1,9 +1,9 @@
 minx = 1; 
-maxx = 1000;
+maxx = 20;
 x = minx:maxx; % for discrete plots
 fineness = 1/100; 
 finex = minx:fineness:maxx;
-dim = 2;
+dim = 3;
 y = randi(2,dim,size(x,2))-1;
 
 % y = [zeros(1,50), ones(1,50); zeros(1,30), ones(1,50), zeros(1,20);  zeros(1,30), ones(1,60), zeros(1,10)];
@@ -43,10 +43,13 @@ c = colorGradient([0 0 1], [1 0 0],maxx);
 figure()
 hold on
 for ii = 1:length(sy(1,:)) 
-    plot(sy(1,ii),sy(2,ii),'.','MarkerSize',20,'Color',c(ii,:));
+    plot3(sy(1,ii),sy(2,ii),sy(3,ii),'.','MarkerSize',20,'Color',c(ii,:));
 end
+
 hold on
-plot3(sy(1,:),sy(2,:),x,'--');
+plot3(sy(1,:),sy(2,:),sy(3,:),'--');
+view(3);
+grid;
 respMetric = mean(sqrt(sy(1,:).^2 + sy(2,:).^2))/sqrt(dim);
 
 disp(['The normalized mean response metric = ', num2str(respMetric)]);

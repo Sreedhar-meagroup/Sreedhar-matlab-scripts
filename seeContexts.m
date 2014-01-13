@@ -20,14 +20,14 @@ function plotContexts(spikes,choice)
         plot(spikes.context(:,choice));
         line([0 124],[0, 0],'Color','k');
         line(50*[1,1],[min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'color','k');
-        line([37,37], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle',':','color','r');
-        line([63,63], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle',':','color','r');
+        line([37,37], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle','-.','color','r');
+        line([63,63], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle','-.','color','r');
         line([45,45], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle','--','color','r');
         line([55,55], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle','--','color','r');
         line([25,25], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'color','k');
         line([75,75], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'color','k');
 
-        line([0 124],[peak*.5, peak*.5],'LineStyle',':');
+        line([0 124],[peak*.5, peak*.5],'LineStyle','-.');
         line([0 124],[peak*.9, peak*.9],'LineStyle','--');
         line([0 124],spikes.thresh(choice)*ones(1,2));
         line([0 124],-spikes.thresh(choice)*ones(1,2));

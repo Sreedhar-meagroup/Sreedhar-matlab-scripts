@@ -33,3 +33,5 @@ end
 
 nSpBefPerIBI = nSpikesBefNB./IBIs;
 figure(), plot(nSpBefPerIBI, sizeOfNB_s, '.')
+
+%% the one with cont. firing channels

@@ -72,8 +72,10 @@ for in = 1:N
     
   now = contexts(:,in);
   peak = mean(now(50:51));
- % signtest() determines if the signs of the peak and the threshold match.
- bad = signtest(peak, spikes.thresh(in));
+  
+ % this test discards the analog channels and the signtest() determines if the signs of the peak and the threshold match.
+ bad = or(discard_analog_channels(spikes.channel(in)), signtest(peak, spikes.thresh(in)));
+ 
  
   if ~bad
       if peak<0
@@ -85,7 +87,7 @@ for in = 1:N
              breach_post = breach(breach>=50);
              
              if breach_pre
-                 if abs(peak-max(now(breach_pre(end)):50))> (thresh-1)*spikes.thresh(in)/thresh;
+                 if abs(peak-max(now(breach_pre(end):50)))> (thresh-1)*spikes.thresh(in)/thresh;
                     bad = 0;
                  end
              end
@@ -121,7 +123,7 @@ for in = 1:N
              breach_post = breach(breach>=50);
              
              if breach_pre
-                 if abs(peak-min(now(breach_pre(end)):50))> (thresh-1)*spikes.thresh(in)/thresh;
+                 if abs(peak-min(now(breach_pre(end):50)))> (thresh-1)*spikes.thresh(in)/thresh;
                     bad = 0;
                  end
              end
@@ -158,17 +160,22 @@ for in = 1:N
           if bad
             breach = abstestidx(now(abstestidx) <= absthresh*peak);
              % The inner breach test
-             breach_pre  = breach(breach<50);
-             breach_post = breach(breach>=50);
+             breach_pre  = breach(breach < 50);
+             breach_post = breach(breach >= 50);
             if breach_pre
-                if abs(peak-min(now(breach_pre(end)):50))> (thresh-1)*spikes.thresh(in)/thresh;
+                if abs(peak-max(now(breach_pre(end):50))) > (thresh-4)*spikes.thresh(in)/thresh;
                     bad = 0;
                 end
             end
             
+            if breach_post
+                if abs(peak-max(now(50:breach_post(1))))> (thresh-4)*spikes.thresh(in)/thresh;
+                    bad = 0;
+                end
+            end
+          end
              
-             
-       Working here      
+                 
              
              
 %             if breach(1) > 50
@@ -182,23 +189,39 @@ for in = 1:N
 %             end      
 %           end     
       else
-          bad = length(find(now(abstestidx) >= 0.9*peak));
+          bad = length(find(now(abstestidx) >= absthresh*peak));
           if bad
-            breach = find(now(abstestidx) >= 0.9*peak);
-            if breach(1) > 50
-                if abs(peak-min(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/thresh;
+            breach = abstestidx(now(abstestidx) >= absthresh*peak);  
+%             breach = find(now(abstestidx) >= absthresh*peak);
+
+             % The inner breach test
+             breach_pre  = breach(breach < 50);
+             breach_post = breach(breach >= 50);
+            if breach_pre
+                if abs(peak-min(now(breach_pre(end):50))) > (thresh-4)*spikes.thresh(in)/thresh;
                     bad = 0;
                 end
-            else
-                if abs(peak-min(now(25+breach(end):50)))> 3*spikes.thresh(in)/thresh;
+            end
+            
+            if breach_post
+                if abs(peak-min(now(50:breach_post(1))))> (thresh-4)*spikes.thresh(in)/thresh;
                     bad = 0;
-                end                
-            end      
+                end
+            end
+%             if breach(1) > 50
+%                 if abs(peak-min(now(50:55+breach(1)-20)))> 3*spikes.thresh(in)/thresh;
+%                     bad = 0;
+%                 end
+%             else
+%                 if abs(peak-min(now(25+breach(end):50)))> 3*spikes.thresh(in)/thresh;
+%                     bad = 0;
+%                 end                
+%             end      
           end  
       end  
   end
   
-  if bad == 0
+  if ~bad
     out = out+1;
     ctxts(:,out) = now;
     idx(:,out) = in;
@@ -237,4 +260,11 @@ bad = 0;
             bad = 1;
         end
    end
+end
+
+function bad = discard_analog_channels(channel)
+bad = 0;
+    if channel > 59
+        bad = 1;
+    end
 end

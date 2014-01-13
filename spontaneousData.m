@@ -52,48 +52,48 @@ outNB_channel = spks.channel(outIndices);
 
 %% Computing the channels to ignore (in hw+1)
 ch2ignore= [];
-% % in network burst channel wise
-% spikesInNB = cell(60,1);
-% for ii=0:59
-%     spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
-% end
-% 
-% % outside network bursts - channel wise
-% spikesOutNB = cell(60,1);
-% for ii=0:59
-%     spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
-% end
-% 
-% nSpikesInNB = cellfun(@length, spikesInNB);
-% nSpikesOutNB = cellfun(@length, spikesOutNB);
-% nSpikesTotal = cellfun(@length,inAChannel);
-% pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
-% [sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
-% ii = 1;
-% ch2ignore = [];
-% while 1
-%     if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
-%         if sortedpc(ii) > 20 
-%             ch2ignore = [ch2ignore, sortedIdx(ii)];
-%         else
-%             break;
-%         end
-%     end
-%     ii = ii + 1;
-% end
-%marking ignored channels in red in the raster
-    % figure(handles(1)); subplot(3,1,2:3)
-    % hold on;
-    % line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
-    % igspks = [];
-    % igchnnls = [];
-    % for ii = 1: size(ch2ignore,2)
-    %     igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
-    %     igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
-    %    %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
-    % end
-    % rasterplot_so(igspks,igchnnls,'r-')
-    % hold off
+% in network burst channel wise
+spikesInNB = cell(60,1);
+for ii=0:59
+    spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
+end
+
+% outside network bursts - channel wise
+spikesOutNB = cell(60,1);
+for ii=0:59
+    spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
+end
+
+nSpikesInNB = cellfun(@length, spikesInNB);
+nSpikesOutNB = cellfun(@length, spikesOutNB);
+nSpikesTotal = cellfun(@length,inAChannel);
+pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
+[sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
+ii = 1;
+ch2ignore = [];
+while 1
+    if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
+        if sortedpc(ii) > 20 
+            ch2ignore = [ch2ignore, sortedIdx(ii)];
+        else
+            break;
+        end
+    end
+    ii = ii + 1;
+end
+% marking ignored channels in red in the raster
+    figure(handles(1)); subplot(3,1,2:3)
+    hold on;
+    line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
+    igspks = [];
+    igchnnls = [];
+    for ii = 1: size(ch2ignore,2)
+        igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
+        igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
+       %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
+    end
+%     rasterplot_so(igspks,igchnnls-1,'r-')
+    hold off
 
 %% `Patch'ing the network event
 figure(handles(1)); subplot(3,1,2:3)

@@ -66,6 +66,7 @@ end
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
 [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
 spks = blankArtifacts(spks,stimTimes,1);
+spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
