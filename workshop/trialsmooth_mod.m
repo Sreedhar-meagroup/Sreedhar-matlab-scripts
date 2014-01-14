@@ -1,15 +1,17 @@
 minx = 1; 
-maxx = 20;
-x = minx:maxx; % for discrete plots
+maxx = 1000;
+% x = minx:maxx; % for discrete plots
+x = timeVec;
 fineness = 1/100; 
 finex = minx:fineness:maxx;
 dim = 3;
-y = randi(2,dim,size(x,2))-1;
-
+% y = randi(2,dim,size(x,2))-1;
 % y = [zeros(1,50), ones(1,50); zeros(1,30), ones(1,50), zeros(1,20);  zeros(1,30), ones(1,60), zeros(1,10)];
+y = coords;
+
 h1 =  figure;
 for ii = 1:dim
-    subplot(3,1,ii)
+    figh(ii) = subplot(3,1,ii);
     stem(x,y(ii,:));
     ylim([-0.5, 1.5]);
 end
@@ -25,7 +27,8 @@ sy = zeros(size(y));
 for ii = 1:dim
     for xi = x
       kerny_i = exp(-(x-xi).^2/(2*sig^2));
-      kerny_i = kerny_i / sum(kerny_i);
+%       a(xi) = sum(kerny_i);
+      kerny_i = kerny_i / sum(kerny_i);  
       sy(ii,xi)  = sum(y(ii,:).*kerny_i);
     end
 end
@@ -37,19 +40,18 @@ for ii = 1:dim
     plot(x,sy(ii,:),'r')
     ylim([-0.5, 1.5]);
 end
+linkaxes(figh, 'x');
 
 
 c = colorGradient([0 0 1], [1 0 0],maxx);
 figure()
 hold on
 for ii = 1:length(sy(1,:)) 
-    plot3(sy(1,ii),sy(2,ii),sy(3,ii),'.','MarkerSize',20,'Color',c(ii,:));
+    plot(sy(1,ii),sy(2,ii),'.','MarkerSize',20,'Color',c(ii,:));
 end
-
 hold on
-plot3(sy(1,:),sy(2,:),sy(3,:),'--');
-view(3);
-grid;
+plot3(sy(1,:),sy(2,:),x,'--');
 respMetric = mean(sqrt(sy(1,:).^2 + sy(2,:).^2))/sqrt(dim);
+respMetric_raw = mean(sqrt(y(1,:).^2 + y(2,:).^2))/sqrt(dim);
 
 disp(['The normalized mean response metric = ', num2str(respMetric)]);
