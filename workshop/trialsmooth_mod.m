@@ -1,7 +1,7 @@
 minx = 1; 
 maxx = 1000;
 % x = minx:maxx; % for discrete plots
-x = timeVec;
+x = 1:length(timeVec);
 fineness = 1/100; 
 finex = minx:fineness:maxx;
 dim = 3;
@@ -9,19 +9,20 @@ dim = 3;
 % y = [zeros(1,50), ones(1,50); zeros(1,30), ones(1,50), zeros(1,20);  zeros(1,30), ones(1,60), zeros(1,10)];
 y = coords;
 
-h1 =  figure;
-for ii = 1:dim
-    figh(ii) = subplot(3,1,ii);
-    stem(x,y(ii,:));
-    ylim([-0.5, 1.5]);
-end
+% figure to plot the stems
+% h1 =  figure;
+% for ii = 1:dim
+%     figh(ii) = subplot(3,1,ii);
+%     stem(x,y(ii,:));
+%     ylim([-0.5, 1.5]);
+% end
 
 
 FWHM = 4;
 sig = FWHM/sqrt(8*log(2));
-kerny = exp(-(finex-250).^2/(2*sig^2));
-figure
-plot(finex, kerny);
+% kerny = exp(-(finex-250).^2/(2*sig^2));
+% figure
+% plot(finex, kerny);
 
 sy = zeros(size(y));
 for ii = 1:dim
@@ -33,24 +34,27 @@ for ii = 1:dim
     end
 end
 
-figure(h1)
-for ii = 1:dim
-    subplot(3,1,ii)
-    hold on;
-    plot(x,sy(ii,:),'r')
-    ylim([-0.5, 1.5]);
-end
-linkaxes(figh, 'x');
+% figure(h1)
+% for ii = 1:dim
+%     subplot(3,1,ii)
+%     hold on;
+%     plot(x,sy(ii,:),'r')
+%     ylim([-0.5, 1.5]);
+% end
+% linkaxes(figh, 'x');
 
 
-c = colorGradient([0 0 1], [1 0 0],maxx);
-figure()
+c = colorGradient([0 0 1], [1 0 0],length(x));
+% h2 = figure();
+figure(h2);
 hold on
 for ii = 1:length(sy(1,:)) 
-    plot(sy(1,ii),sy(2,ii),'.','MarkerSize',20,'Color',c(ii,:));
+    plot3(sy(1,ii),sy(2,ii),sy(3,ii),'.','MarkerSize',10,'Color',c(ii,:));
 end
 hold on
-plot3(sy(1,:),sy(2,:),x,'--');
+plot3(sy(1,:),sy(2,:),sy(3,:)); view(3); grid on;
+% plot3(sy(1,:),sy(2,:),x); view(2); grid on;
+
 respMetric = mean(sqrt(sy(1,:).^2 + sy(2,:).^2))/sqrt(dim);
 respMetric_raw = mean(sqrt(y(1,:).^2 + y(2,:).^2))/sqrt(dim);
 

@@ -48,7 +48,7 @@ end
 
 nStimSites = 5;
 
-rawText = fileread([datRoot,'.log']);
+rawText = fileread([pathName,datRoot,'.log']);
 stimSitePattern = 'MEA style: ([\d\d ]+)';
 [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');

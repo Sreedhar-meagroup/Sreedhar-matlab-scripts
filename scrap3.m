@@ -24,11 +24,17 @@ seeContexts(foc_idx,spks);
 
 %% trajectory in space
 %131010_4346_StimEfficacy2.spike
-coords = zeros(3,56);
-resps = [periStim{5}{[26,58,60]}];
-for ii = 1:3
-    shifted_ms = (resps{2,ii}- stimTimes{5}(2))*1e3;
-    [counts,timeVec] = hist(shifted_ms,-50:10:500);
-    counts(find(counts)) = 1;
-    coords(ii,:) = counts;
+h2 = figure();
+binSize = 1;
+binned = -50:binSize:500;
+for jj = 1:50
+    coords = zeros(3,length(binned));
+    resps = [periStim{5}{[26,58,60]}];
+    for ii = 1:3
+        shifted_ms = (resps{jj,ii}- stimTimes{5}(jj))*1e3;
+        [counts,timeVec] = hist(shifted_ms,binned);
+        counts(find(counts)) = 1;
+        coords(ii,:) = counts;
+    end
+    trialsmooth_mod;
 end
