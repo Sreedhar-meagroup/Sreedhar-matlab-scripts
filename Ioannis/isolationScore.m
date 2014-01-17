@@ -88,7 +88,7 @@ errorResults(4) = falseNegatives;
 errorResults(5) = falsePositivesError;
 errorResults(6) = falseNegativesError;
 
-fprintf('\nScore: %.2f \n',score)
+fprintf('\nScore: %.4f \n',score)
 fprintf('numSpikes: %d ,  numNoise: %d \n',numSpikes,numNoise)
 fprintf('falsePositives: %d ,  falseNegatives: %d \n',falsePositives,falseNegatives)
 fprintf('falsePositivesRatio: %.3f ,  falseNegativesRatio: %.3f \n',falsePositivesError,falseNegativesError)

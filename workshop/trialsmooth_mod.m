@@ -49,13 +49,15 @@ c = colorGradient([0 0 1], [1 0 0],length(x));
 figure(h2);
 hold on
 for ii = 1:length(sy(1,:)) 
-    plot3(sy(1,ii),sy(2,ii),sy(3,ii),'.','MarkerSize',10,'Color',c(ii,:));
+    plot3(sy(1,ii),sy(2,ii),sy(3,ii),'.','MarkerSize',3,'Color',c(ii,:));
 end
-hold on
+% hold on
+% view(3);grid on;
 plot3(sy(1,:),sy(2,:),sy(3,:)); view(3); grid on;
 % plot3(sy(1,:),sy(2,:),x); view(2); grid on;
+
 
 respMetric = mean(sqrt(sy(1,:).^2 + sy(2,:).^2))/sqrt(dim);
 respMetric_raw = mean(sqrt(y(1,:).^2 + y(2,:).^2))/sqrt(dim);
 
-disp(['The normalized mean response metric = ', num2str(respMetric)]);
+% disp(['The normalized mean response metric = ', num2str(respMetric)]);

@@ -69,9 +69,12 @@ out = 0;
 
 h = waitbar(0,'Cleaning artifacts...');
 for in = 1:N
-    
+  
+% switch between these two lines to enable/disable offset correction
+%     now = offset_correction(contexts(:,in));
   now = contexts(:,in);
-  peak = mean(now(50:51));
+  
+    peak = mean(now(50:51));
   
  % this test discards the analog channels and the signtest() determines if the signs of the peak and the threshold match.
  bad = or(discard_analog_channels(spikes.channel(in)), signtest(peak, spikes.thresh(in)));
@@ -268,3 +271,17 @@ bad = 0;
         bad = 1;
     end
 end
+
+function now = offset_correction(contexts)
+  first = contexts(1:15);
+  last  = contexts(109:end);
+  dc1   = mean(first);
+  dc2   = mean(last);
+  v1    = var(first);
+  v2    = var(last);
+  dc    = (dc1*v2+dc2*v1)/(v1+v2+1e-10); % == (dc1/v1 + dc2/v1) / (1/v1 + 1/v2)
+  now   = contexts - dc;
+end
+    
+    
+    

@@ -23,18 +23,41 @@ seeContexts(foc_idx,spks);
 % cleanspikes(foc);
 
 %% trajectory in space
-%131010_4346_StimEfficacy2.spike
-h2 = figure();
-binSize = 1;
-binned = -50:binSize:500;
-for jj = 1:50
-    coords = zeros(3,length(binned));
-    resps = [periStim{5}{[26,58,60]}];
-    for ii = 1:3
-        shifted_ms = (resps{jj,ii}- stimTimes{5}(jj))*1e3;
-        [counts,timeVec] = hist(shifted_ms,binned);
-        counts(find(counts)) = 1;
-        coords(ii,:) = counts;
+%131010_4346_StimEfficacy2.spike (26, 58, 60)
+%130625_4205_StimEfficacy2.spike (13, 25, 17)
+summed_effect = cell(5,1);
+count = 1;
+for kk = [1 5 10 15 20]
+    h2 = figure();
+    binSize = kk;
+    binned = -50:binSize:500;
+    for jj = 1:15
+        coords = zeros(3,length(binned));
+        resps = [periStim{5}{[13,25,17]}];
+        for ii = 1:3
+            shifted_ms = (resps{jj,ii}- stimTimes{5}(jj))*1e3;
+            [counts,timeVec] = hist(shifted_ms,binned);
+            counts(find(counts)) = 1;
+            coords(ii,:) = counts;
+        end
+        trialsmooth_mod;
+        summed_effect{count}(:,:,jj) = sy;
     end
-    trialsmooth_mod;
+    count = count + 1;
+    set(gca,'FontSize',12);
+    title(['Trajectories with bin-size = ', num2str(kk),'ms'], 'FontSize',12);
+    saveas(h2,['C:\Users\duarte\Desktop\fig_traj\130625_4205\traj_',num2str(kk),'ms.eps'], 'psc2');
+    close(h2);
 end
+
+%% Isolation score
+
+nSelSpikes = size(selIdx,2);
+nRejSpikes = size(rejIdx,2);
+k = 1000;
+shuffle = randperm(nSelSpikes);
+spikeCluster = spikes.context(:,selIdx(shuffle(1:k)))';
+shuffle = randperm(nRejSpikes);
+noiseCluster = spikes.context(:,rejIdx(shuffle(1:k)))';
+[score, errorResults] = isolationScore(spikeCluster, noiseCluster)
+

@@ -1,4 +1,9 @@
 function seeContexts(choice,spikes)
+% This function plots spike cutouts
+% INPUT ARGUMENTS
+% choice: a vector of indices of the spikes 
+% spikes: the MEABench structure
+
 figure();
 if size(choice,2) == 1
     plotContexts(spikes,choice);
