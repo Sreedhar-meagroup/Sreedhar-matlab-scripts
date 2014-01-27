@@ -22,7 +22,7 @@ end
 
 function plotContexts(spikes,choice)
         peak = mean(spikes.context(50:51,choice));
-        plot(spikes.context(:,choice));
+        plot(spikes.context(:,choice),'k','LineWidth',2);
         line([0 124],[0, 0],'Color','k');
         line(50*[1,1],[min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'color','k');
         line([37,37], [min(spikes.context(:,choice))-5, max(spikes.context(:,choice))+5],'linestyle','-.','color','r');

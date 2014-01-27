@@ -71,8 +71,8 @@ h = waitbar(0,'Cleaning artifacts...');
 for in = 1:N
   
 % switch between these two lines to enable/disable offset correction
-%     now = offset_correction(contexts(:,in));
-  now = contexts(:,in);
+    now = offset_correction(contexts(:,in));
+%   now = contexts(:,in);
   
     peak = mean(now(50:51));
   
