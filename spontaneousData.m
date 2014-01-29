@@ -1,4 +1,4 @@
-% function varargout = spontaneousData(datName,pathName)
+ function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(3,'NetControl');
@@ -8,7 +8,11 @@ end
 thresh  = extract_thresh([pathName, datName, '.desc']);
 
 %% Cleaning spikes, getting them into channels
-[spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
+off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
+spikes_oc = spikes;
+spikes_oc.context = off_corr_contexts;
+[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+% [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
@@ -82,18 +86,18 @@ while 1
     ii = ii + 1;
 end
 % marking ignored channels in red in the raster
-    figure(handles(1)); subplot(3,1,2:3)
-    hold on;
-    line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
-    igspks = [];
-    igchnnls = [];
-    for ii = 1: size(ch2ignore,2)
-        igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
-        igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
-       %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
-    end
-%     rasterplot_so(igspks,igchnnls-1,'r-')
-    hold off
+%     figure(handles(1)); subplot(3,1,2:3)
+%     hold on;
+%     line(repmat([0;spks.time(end)],size(ch2ignore)),[ch2ignore; ch2ignore],'Color','k','LineWidth',.1);    
+%     igspks = [];
+%     igchnnls = [];
+%     for ii = 1: size(ch2ignore,2)
+%         igspks = horzcat(igspks, spks.time(spks.channel==ch2ignore(ii)));
+%         igchnnls = horzcat(igchnnls,ch2ignore(ii)*ones(1,length(spks.time(spks.channel==ch2ignore(ii)))));
+%        %plot(inAChannel{ch2ignore(ii)},ones(size(inAChannel{ch2ignore(ii)}))*ch2ignore(ii),'.r');
+%     end
+% %     rasterplot_so(igspks,igchnnls-1,'r-')
+%     hold off
 
 %% `Patch'ing the network event
 figure(handles(1)); subplot(3,1,2:3)

@@ -4,9 +4,10 @@ end
 [ch2ignore, NBextremes, NB_slices] = spontaneousData(datName,pathName);
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes = loadspike([pathName,datName],2,25);
-spks = cleanspikes(spikes);
+thresh  = extract_thresh([pathName, datName, '.desc']);
+spks = cleanspikes(spikes, thresh);
 spikes_samples = loadspike([pathName,datName],2); %timestamps loaded as samples
-spks_samples = cleanspikes(spikes_samples);
+spks_samples = cleanspikes(spikes_samples,thresh);
 
 %% Generate `states'
 inAChannel = cell(60,1);
@@ -211,3 +212,20 @@ for ii = 1:1%size(allPairsOfChannels,1)
     axis tight;
     title([num2str(allPairsOfChannels(ii,2)),'/',num2str(allPairsOfChannels(ii,1))]);
 end
+
+
+%% basic transition probabilities
+tpmat = zeros(1024);
+for ii = 0
+    temp1 = find(red_states_dec == ii);
+    if any(ismember(temp1,size(red_states_dec,2)))
+        itsInd = find(temp1 == size(red_states_dec,2) );
+        temp1(itsInd) = [];
+    end
+    temp2 = red_states_dec(temp1+1);
+    temp3 = histc(temp2,0:1023);
+
+    tpmat(ii,:) = temp3;
+end
+    
+

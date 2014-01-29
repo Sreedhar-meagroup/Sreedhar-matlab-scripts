@@ -10,16 +10,16 @@ dim = 3;
 y = coords;
 
 % figure to plot the stems
-h1 =  figure;
+% h1 =  figure;
 % figure
-for ii = 1:dim
-    figh(ii) = subplot(3,1,ii);
-    stem(x,y(ii,:));
-    ylim([-0.5, 1.5]);
-end
+% for ii = 1:dim
+%     figh(ii) = subplot(3,1,ii);
+%     stem(x,y(ii,:));
+% %     ylim([-0.5, 1.5]);
+% end
 
 
-FWHM = 4*2;
+FWHM = 8;
 sig = FWHM/sqrt(8*log(2));
 % kerny = exp(-(finex-250).^2/(2*sig^2));
 % figure
@@ -35,16 +35,20 @@ for ii = 1:dim
     end
 end
 
-figure(h1)
+% figure(h1)
+% for ii = 1:dim
+%     subplot(3,1,ii)
+%     hold on;
+%     plot(x,sy(ii,:),'r')
+%     ylim([-0.5, 1.5]);
+% end
+% linkaxes(figh, 'x');
+
+
+% Normalizing the sy
 for ii = 1:dim
-    subplot(3,1,ii)
-    hold on;
-    plot(x,sy(ii,:),'r')
-    ylim([-0.5, 1.5]);
+sy(ii,:) = sy(ii,:)/max(sy(ii,:));
 end
-linkaxes(figh, 'x');
-
-
 % c = colorGradient([0 0 1], [1 0 0],length(x));
 % h2 = figure();
 figure(h2);
