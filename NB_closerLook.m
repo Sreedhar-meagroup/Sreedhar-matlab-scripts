@@ -7,7 +7,11 @@ datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike([pathName,datName],2,25);
 thresh = extract_thresh([pathName, datName, '.desc']);
 
-spks = cleanspikes(spikes, thresh); % Work on this later
+off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
+spikes_oc = spikes;
+spikes_oc.context = off_corr_contexts;
+[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+% spks = cleanspikes(spikes, thresh); % Work on this later
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
@@ -165,4 +169,5 @@ axis square;
 
 % export_fig('C:\Sreedhar\Lat_work\Closed_loop\misc\work_documentation\figures\test','-eps','-transparent')
 
-disp(['Oliver''s verdict: ', num2str(hw2cr(final_tally(:,4)-1)), ' (cr)'])
+% disp(['Oliver''s verdict: ', num2str(hw2cr(final_tally(:,4)-1)), ' (cr)'])
+disp(['Your stimulate options!!! : ', num2str(hw2cr(final_tally(:,4)-1)), ' (cr)'])

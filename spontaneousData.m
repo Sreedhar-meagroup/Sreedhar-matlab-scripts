@@ -26,7 +26,6 @@ fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes');
 title(['Global firing rate (bin= 100 ms)            data:',datRoot],'Interpreter','none');
 
-
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
