@@ -244,13 +244,13 @@ pan xon;
 
 %% Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
-
+binSize = 10;
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
     eval([psth_h '= figure(', num2str(1+ii), ');']);
     handles(ii+1) = eval(psth_h);
     for jj = 1:60
-        bins = -50: 5: 500;
+        bins = -50: binSize: 500;
         count = 0;
         frMat = zeros(2,length(bins));
         for kk = 1:size(stimTimes{ii},2)
