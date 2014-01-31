@@ -56,21 +56,22 @@ outNB_channel = spks.channel(outIndices);
 %% Computing the channels to ignore (in hw+1)
 ch2ignore= [];
 % in network burst channel wise
-spikesInNB = cell(60,1);
+spikesInNBbyChannel = cell(60,1);
 for ii=0:59
-    spikesInNB{ii+1,1} = inNB_time(inNB_channel==ii);
+    spikesInNBbyChannel{ii+1,1} = inNB_time(inNB_channel==ii);
 end
 
 % outside network bursts - channel wise
-spikesOutNB = cell(60,1);
+spikesOutNBbyChannel = cell(60,1);
 for ii=0:59
-    spikesOutNB{ii+1,1} = outNB_time(outNB_channel==ii);
+    spikesOutNBbyChannel{ii+1,1} = outNB_time(outNB_channel==ii);
 end
 
-nSpikesInNB = cellfun(@length, spikesInNB);
-nSpikesOutNB = cellfun(@length, spikesOutNB);
+%Note: this analysis is per channel
+nSpikesInNBbyChannel = cellfun(@length, spikesInNBbyChannel);
+nSpikesOutNBbyChannel = cellfun(@length, spikesOutNBbyChannel);
 nSpikesTotal = cellfun(@length,inAChannel);
-pcSpikesOutNB = nSpikesOutNB./nSpikesTotal*100;
+pcSpikesOutNB = nSpikesOutNBbyChannel./nSpikesTotal*100;
 [sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
 ii = 1;
 ch2ignore = [];
@@ -164,8 +165,8 @@ varargout{2} = [mod_NB_onsets, NB_ends];
 varargout{3} = NB_slices;
 %%
 % IBIs_4350_s2_post = IBIs;
-% myfun = @(x) size(x.time,2);
-% nSpikesPerNB = cellfun(@(x) myfun(x),NB_slices);
+myfun = @(x) size(x.time,2);
+nSpikesPerNB = cellfun(@(x) myfun(x),NB_slices);
 % nSpikesPerNB_4350_s2_post = nSpikesPerNB;
 % BDuration_s_4350_s2_post = NB_ends - mod_NB_onsets;
 
