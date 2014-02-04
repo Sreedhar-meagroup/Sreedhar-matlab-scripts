@@ -23,7 +23,7 @@
 %--------------------------------------------------------------------------------------
 
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile(3,'st');
+    [datName,pathName] = chooseDatFile(5,'st');
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
@@ -46,14 +46,13 @@ end
 % the following info shall in future versions automatically gathered from the log file...
 % working on that script stim_efficacy.m
 
-nStimSites = 5;
 
 rawText = fileread([pathName,datRoot,'.log']);
 stimSitePattern = 'MEA style: ([\d\d ]+)';
 [matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
     token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
 stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
-
+nStimSites = size(stimSites,2);
 % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
 % stimSites = str2num(str{1}); % in cr
 % %stimSites = cr2hw([35, 21, 46, 41, 58]);
@@ -242,17 +241,19 @@ pan xon;
 % end
 
 
-%% Binning, averaging and plotting all the PSTHs
+% Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
 binSize = 10;
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
     eval([psth_h '= figure(', num2str(1+ii), ');']);
     handles(ii+1) = eval(psth_h);
+    psth_sp_h = zeros(1,60); %psth subplot handles
+    max_axlim = 0;
     for jj = 1:60
         bins = -50: binSize: 500;
         count = 0;
-        frMat = zeros(2,length(bins));
+        frMat = zeros(size(stimTimes{ii},2),length(bins));
         for kk = 1:size(stimTimes{ii},2)
             shiftedSp = periStim{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
             %if ~isempty(spks)
@@ -271,9 +272,10 @@ for ii = 1:nStimSites
         ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
         [row, col] = find(ch6x10_ch8x8_60 == jj);
         pos = 6*(row-1) + col;
-        subplot(10,6,pos)
+        
+        psth_sp_h(jj) = subplot(10,6,pos);
         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-        axis([-50 500 -0.5 1])
+%         axis([-50 500 -0.5 1])
         
         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
         if jj == cr2hw(stimSites(ii))+1
@@ -282,23 +284,29 @@ for ii = 1:nStimSites
             text(375,0.5,num2str(jj),'FontAngle','italic');
         end
         
-        if ~or(mod(pos,6)==1,pos>54)
-            set(gca,'YTickLabel',[]);
-            set(gca,'XTickLabel',[]);
-        elseif pos>55
-            set(gca,'YTickLabel',[]);
-        elseif pos~=55
-            set(gca,'XTickLabel',[]);
-        end
+%         if ~or(mod(pos,6)==1,pos>54)
+%             set(gca,'YTickLabel',[]);
+%             set(gca,'XTickLabel',[]);
+%         elseif pos>55
+%             set(gca,'YTickLabel',[]);
+%         elseif pos~=55
+%             set(gca,'XTickLabel',[]);
+%         end
         set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
         set(gcf,'WindowStyle','docked');
+
+        if max(mean(frMat)+std(frMat)) > max_axlim
+            max_axlim =  max(mean(frMat)+std(frMat));
+        end
     end
- [ax1,h1]=suplabel('time[ms]');
- set(h1,'FontSize',16);
- [ax2,h2]=suplabel('Mean #spikes','y');
- set(h2,'FontSize',16);
- [ax4,h3]=suplabel(['PSTH (stimulation at ',num2str(stimSites(ii)),'^{cr} / ',num2str(cr2hw(stimSites(ii))+1),'^{hw+1})'],'t');
- set(h3,'FontSize',16);
+    linkaxes(psth_sp_h);
+    axis([-50 500 -0.5 max_axlim]);
+    [ax1,h1]=suplabel('time[ms]');
+    set(h1,'FontSize',16);
+    [ax2,h2]=suplabel('Mean #spikes','y');
+    set(h2,'FontSize',16);
+    [ax4,h3]=suplabel(['PSTH (stimulation at ',num2str(stimSites(ii)),'^{cr} / ',num2str(cr2hw(stimSites(ii))+1),'^{hw+1})'],'t');
+    set(h3,'FontSize',16);
  %  set(h3,'FontSize',30)
 %     % Add a title to the whole plot
 %         set(gcf,'NextPlot','add');

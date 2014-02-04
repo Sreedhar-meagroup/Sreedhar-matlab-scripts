@@ -55,36 +55,36 @@ outNB_channel = spks.channel(outIndices);
 
 %% Computing the channels to ignore (in hw+1)
 ch2ignore= [];
-% in network burst channel wise
-spikesInNBbyChannel = cell(60,1);
-for ii=0:59
-    spikesInNBbyChannel{ii+1,1} = inNB_time(inNB_channel==ii);
-end
-
-% outside network bursts - channel wise
-spikesOutNBbyChannel = cell(60,1);
-for ii=0:59
-    spikesOutNBbyChannel{ii+1,1} = outNB_time(outNB_channel==ii);
-end
-
-%Note: this analysis is per channel
-nSpikesInNBbyChannel = cellfun(@length, spikesInNBbyChannel);
-nSpikesOutNBbyChannel = cellfun(@length, spikesOutNBbyChannel);
-nSpikesTotal = cellfun(@length,inAChannel);
-pcSpikesOutNB = nSpikesOutNBbyChannel./nSpikesTotal*100;
-[sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
-ii = 1;
-ch2ignore = [];
-while 1
-    if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
-        if sortedpc(ii) > 20 
-            ch2ignore = [ch2ignore, sortedIdx(ii)];
-        else
-            break;
-        end
-    end
-    ii = ii + 1;
-end
+% % in network burst channel wise
+% spikesInNBbyChannel = cell(60,1);
+% for ii=0:59
+%     spikesInNBbyChannel{ii+1,1} = inNB_time(inNB_channel==ii);
+% end
+% 
+% % outside network bursts - channel wise
+% spikesOutNBbyChannel = cell(60,1);
+% for ii=0:59
+%     spikesOutNBbyChannel{ii+1,1} = outNB_time(outNB_channel==ii);
+% end
+% 
+% %Note: this analysis is per channel
+% nSpikesInNBbyChannel = cellfun(@length, spikesInNBbyChannel);
+% nSpikesOutNBbyChannel = cellfun(@length, spikesOutNBbyChannel);
+% nSpikesTotal = cellfun(@length,inAChannel);
+% pcSpikesOutNB = nSpikesOutNBbyChannel./nSpikesTotal*100;
+% [sortedpc, sortedIdx] = sort(pcSpikesOutNB,'descend');
+% ii = 1;
+% ch2ignore = [];
+% while 1
+%     if nSpikesTotal(sortedIdx(ii)) > 0.05*max(nSpikesTotal)
+%         if sortedpc(ii) > 20 
+%             ch2ignore = [ch2ignore, sortedIdx(ii)];
+%         else
+%             break;
+%         end
+%     end
+%     ii = ii + 1;
+% end
 % marking ignored channels in red in the raster
 %     figure(handles(1)); subplot(3,1,2:3)
 %     hold on;

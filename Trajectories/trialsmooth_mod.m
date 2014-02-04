@@ -1,3 +1,4 @@
+
 minx = 1; 
 maxx = 1000;
 % x = minx:maxx; % for discrete plots
@@ -47,7 +48,9 @@ end
 
 % Normalizing the sy
 for ii = 1:dim
-sy(ii,:) = sy(ii,:)/max(sy(ii,:));
+%     if max(sy(ii,:))
+        sy(ii,:) = sy(ii,:)/max(sy(ii,:));
+%     end
 end
 % c = colorGradient([0 0 1], [1 0 0],length(x));
 % h2 = figure();

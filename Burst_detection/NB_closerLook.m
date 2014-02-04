@@ -16,7 +16,7 @@ inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
-final_tally = zeros(5,7); % where channels are numbered 1-60.
+final_tally = zeros(5,7); % hw+1 where channels are numbered 1-60.
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
@@ -38,7 +38,11 @@ for ii = 1: length(mod_NB_onsets)
     NB_slices{ii}.channel = spks.channel(spks.time>=mod_NB_onsets(ii) & spks.time<=NB_ends(ii));
 end
 
-%% 1. scores with the entire burst lengths divided into 3 sections (unique)
+%% Col 1. Oliver's code
+[Delay_hist_fig nr_starts, EL_return] = NB_sequences_sk(datRoot,network_burst, 0,1,bursting_channels_mea);
+final_tally(:,1) = (cr2hw(EL_return)+1)';
+
+%% Col 2. scores with the entire burst lengths divided into 3 sections (unique)
 scores = zeros(60,1);
 for ii = 1: length(mod_NB_onsets)
     classA = 1:round(length(NB_slices{ii}.time)/3);
@@ -54,7 +58,7 @@ end
 [~,b] = sort(scores,'descend');
 final_tally(:,2) = b(1:size(final_tally,1));
 
-%% 2. scores considering the ranks of just the first 10 spikes of each NB (unique)
+%% Col 3. scores considering the ranks of just the first 10 spikes of each NB (unique)
  
 scores = zeros(60,1);
 for ii = 1: length(mod_NB_onsets)
@@ -65,7 +69,7 @@ end
 [~,b] = sort(scores,'descend');
 final_tally(:,3) = b(1:size(final_tally,1));
 
-%% 3. scores looking at three 50 ms increments after NB start
+%% Col 4. scores looking at three 50 ms increments after NB start
 % 
 scores = zeros(60,1);
 for ii = 1: length(mod_NB_onsets)
@@ -82,10 +86,10 @@ end
 [~,b] = sort(scores,'descend');
 final_tally(:,4) = b(1:size(final_tally,1));
 
-%% 4. Oliver's code
-[Delay_hist_fig nr_starts, EL_return] = NB_sequences_sk(datRoot,network_burst, 0,1,bursting_channels_mea);
-final_tally(:,1) = (cr2hw(EL_return)+1)';
-%% 5. Occurence probability distribution
+
+%% Col 5 - 7. Occurence probability distribution
+
+% Col 5. P(1)
 prob_chart = zeros(60,1); % probability chart shall denote the probability that a channel is the first in a burst
 for ii = 1:size(NB_slices,1)
     prob_chart(NB_slices{ii}.channel(1)+1) = prob_chart(NB_slices{ii}.channel(1)+1) + 1;
@@ -94,6 +98,8 @@ prob_chart = prob_chart/size(NB_slices,1);
 [~,b] = sort(prob_chart,'descend');
 final_tally(:,5) = b(1:size(final_tally,1));
 
+
+% Col 6. P(3)
 prob_chart = zeros(60,1);
 for ii = 1:size(NB_slices,1)
     ch_unique = unique_us(NB_slices{ii}.channel);
@@ -106,8 +112,9 @@ prob_chart = prob_chart/size(NB_slices,1);
 [~,b] = sort(prob_chart,'descend');
 final_tally(:,6) = b(1:size(final_tally,1));
 
-prob_chart = zeros(60,1);
 
+% Col 7. P(5)
+prob_chart = zeros(60,1);
 not_incl = [];
 for ii = 1:size(NB_slices,1)
     ch_unique = unique_us(NB_slices{ii}.channel);
@@ -169,5 +176,5 @@ axis square;
 
 % export_fig('C:\Sreedhar\Lat_work\Closed_loop\misc\work_documentation\figures\test','-eps','-transparent')
 
-% disp(['Oliver''s verdict: ', num2str(hw2cr(final_tally(:,4)-1)), ' (cr)'])
-disp(['Your stimulate options!!! : ', num2str(hw2cr(final_tally(:,4)-1)), ' (cr)'])
+% disp(['Oliver''s verdict: ', num2str(hw2cr(final_tally(:,1)-1)), ' (cr)'])
+disp(['Your stimulate options!!! : ', num2str(hw2cr(final_tally(:,1)-1)), ' (cr)'])
