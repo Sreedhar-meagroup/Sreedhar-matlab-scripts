@@ -1,17 +1,19 @@
 %  function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile(3,'NetControl');
+    [datName,pathName] = chooseDatFile(5,'NetControl');
 end
     datRoot = datName(1:strfind(datName,'.')-1);
     spikes=loadspike([pathName,datName],2,25);
-thresh  = extract_thresh([pathName, datName, '.desc']);
+%     thresh  = extract_thresh([pathName, datName, '.desc']);
+thresh = 7;
 
 %% Cleaning spikes, getting them into channels
 off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
 spikes_oc = spikes;
 spikes_oc.context = off_corr_contexts;
 [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 % [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
 inAChannel = cell(60,1);
 for ii=0:59

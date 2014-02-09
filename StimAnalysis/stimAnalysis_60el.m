@@ -51,9 +51,14 @@ end
 
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
-[spks, selIdx, rejIdx] = cleanspikes(spikes, thresh); % cleans by spike shape
-% spks = trimAnalogChannels(spikes); use ONLY IF cleanspikes() is commented out.
-spks = blankArtifacts(spks,stimTimes,1); % cleans the stimulation artifacts
+
+%Introducing dc offset correction
+off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
+spikes_oc = spikes;
+spikes_oc.context = off_corr_contexts;
+[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+% [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
+spks = blankArtifacts(spks,stimTimes,1);
 spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 
 spks.stimTimes = stimTimes;
@@ -68,4 +73,4 @@ end
 
 %% Visualizing slices of the data
 
-plotTimeSlice(spks, 100, 200); % raster plot from 100 s <= t <= 200 s
+plotTimeSlice(spks, 5000, 5100); % raster plot from 100 s <= t <= 200 s

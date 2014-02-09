@@ -69,7 +69,6 @@ spikes_oc = spikes;
 spikes_oc.context = off_corr_contexts;
 [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
 % [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
-
 spks = blankArtifacts(spks,stimTimes,1);
 spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 inAChannel = cell(60,1);
