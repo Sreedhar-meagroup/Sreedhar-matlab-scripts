@@ -4,6 +4,7 @@ end
 
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike([pathName,datName],2,25);
+thresh  = extract_thresh([pathName, datName, '.desc']);
 
 
 %% Stimulus locations and time
@@ -37,9 +38,15 @@ end
 stimTimes = inAnalog{2};
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
- [spks, selIdx, rejIdx] = cleanspikes(spikes); %  cleaning has been switched off since it is not available online.
- spks = blankArtifacts(spks,stimTimes,1);
-%spks = spikes;
+
+off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
+spikes_oc = spikes;
+spikes_oc.context = off_corr_contexts;
+[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+spks = blankArtifacts(spks,stimTimes,1);
+spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3);
+spks.stimTimes = stimTimes;
+spks.stimSites = repmat(stimSite,size(stimTimes));
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
@@ -69,7 +76,7 @@ patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
 rasterplot_so(spks.time,spks.channel,'b-');
 response.time = spks.time(spks.channel == cr2hw(recSite));
 response.channel = spks.channel(spks.channel == cr2hw(recSite));
-rasterplot_so(response.time,response.channel,'g-');
+rasterplot_so(response.time,response.channel,'r-');
 hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
@@ -207,7 +214,7 @@ ylabel('Pre-stimulus inactivity [s]');
 % plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
 figure();
 [sortedSil, silInd] = sort(silence_s);
-plot(sortedSil, respLengths_n(silInd));
+plot(sortedSil, respLengths_n(silInd),'.');
 box off;
 set(gca, 'FontSize', 14);
 xlabel('Pre-stimulus inactivity [s]');

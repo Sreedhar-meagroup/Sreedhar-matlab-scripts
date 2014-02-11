@@ -3,7 +3,11 @@ function h = plotTimeSlice(spks,startTime, stopTime)
 slice = find(spks.time >= startTime & spks.time <= stopTime);
 timeStamps  = spks.time(slice);
 channels    = spks.channel(slice);
-stimTimesVec = [spks.stimTimes{:}]; % [ch.1, ch1, ch1 ...x50 times, ch.2, ch.2,... x50 times,...]
+if iscell(spks.stimTimes)
+    stimTimesVec = [spks.stimTimes{:}]; % [ch.1, ch1, ch1 ...x50 times, ch.2, ch.2,... x50 times,...]
+else
+    stimTimesVec = spks.stimTimes;
+end 
 stimTimesVec = sort(stimTimesVec); % so that the stimTimes are now in [ch.1, ch2., .. ch59., ch1., ch2., ...]
 stimTimesSlice = stimTimesVec(stimTimesVec >= startTime & stimTimesVec <= stopTime);
 stimSitesSlice = spks.stimSites(stimTimesVec >= startTime & stimTimesVec <= stopTime); % in cr

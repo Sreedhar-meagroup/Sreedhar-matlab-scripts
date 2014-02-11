@@ -74,5 +74,5 @@ plot(max_ind(max_ind>1),'.');
 silence_b4 = silence_s{5}([36,45,48],:)'; %old 50x3 matrix
 mean_sil_b4 = mean(silence_b4,2);
 figure;
-plot(mean_sil_b4(max_ind>1),max_ind(max_ind>1),'.');
+plot(max_ind(max_ind>1),mean_sil_b4(max_ind>1),'.');
 
