@@ -160,7 +160,7 @@ for ii = 1:nStimSites
         case 5
             clr = 'm';
     end
-line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
+% line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
 patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 

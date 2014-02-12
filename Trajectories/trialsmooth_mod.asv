@@ -52,7 +52,7 @@ end
 %         sy(ii,:) = sy(ii,:)/max(sy(ii,:));
 % %     end
 % end
-sy = sy/max(sy(:)); % another way of normalizing
+say
 
 
 % c = colorGradient([0 0 1], [1 0 0],length(x));

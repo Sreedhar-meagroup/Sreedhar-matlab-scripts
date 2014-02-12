@@ -31,7 +31,7 @@ for kk =  20%[10 15 20 25]; %
     colorbar;
     set(gca,'FontSize',14);
     title(['Trajectories with bin-size = ', num2str(kk),'ms'], 'FontSize',14);
-%      saveas(h2,['C:\Users\duarte\Desktop\fig_traj\130625_4205\trajFWHM8_',num2str(kk),'ms.eps'], 'psc2');
+%      saveas(h2,['C:\Users\duarte\Desktop\fig_traj\131011_4350\trajFWHM8_',num2str(kk),'ms.eps'], 'psc2');
 %      close(h2);
 end
 
@@ -70,9 +70,15 @@ score_mat(isnan(score_mat)) = 0;
 
 
 figure;
-plot(max_ind(max_ind>1),'.');
-silence_b4 = silence_s{5}([36,45,48],:)'; %old 50x3 matrix
+plot(find(max_ind>1),max_ind(max_ind>1),'.','MarkerSize',7);
+silence_b4 = silence_s{5}([6,36,45],:)'; %old 50x3 matrix
 mean_sil_b4 = mean(silence_b4,2);
+max_sil_b4 = max(silence_b4,[],2);
+min_sil_b4 = min(silence_b4,[],2);
+
 figure;
-plot(mean_sil_b4(max_ind>1),max_ind(max_ind>1),'.');
+plot(mean_sil_b4(max_ind>1),max_ind(max_ind>1),'.','MarkerSize',15);
+hold on;
+plot(min_sil_b4(max_ind>1),max_ind(max_ind>1),'r.');
+plot(max_sil_b4(max_ind>1),max_ind(max_ind>1),'g.');
 

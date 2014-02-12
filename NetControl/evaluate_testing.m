@@ -45,46 +45,48 @@ spikes_oc.context = off_corr_contexts;
 [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
 spks = blankArtifacts(spks,stimTimes,1);
 spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3);
+% spks = spikes;
 spks.stimTimes = stimTimes;
 spks.stimSites = repmat(stimSite,size(stimTimes));
+spks.recSite = recSite;
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
 
 %% Fig 1a: global firing rate
-% sliding window; bin width = 100ms
-[counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
+% % sliding window; bin width = 100ms
+% [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
+% figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
+% axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
 %% Fig 1b: General raster
-gfr_rstr_h = figure(1); 
-handles(1) = gfr_rstr_h;
-fig1ha(2) = subplot(3,1,2:3);
-linkaxes(fig1ha, 'x');
-hold on;
-%line([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)),'Color','r','LineWidth',0.1);
-patch([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
-plot(stimTimes,cr2hw(stimSite)+1,'r*');
-
-% code for the tiny rectangle
-Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
-Ycoords = 60*repmat([0;1;1;0],size(stimTimes));
-patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
-
-rasterplot_so(spks.time,spks.channel,'b-');
-response.time = spks.time(spks.channel == cr2hw(recSite));
-response.channel = spks.channel(spks.channel == cr2hw(recSite));
-rasterplot_so(response.time,response.channel,'r-');
-hold off;
-set(gca,'TickDir','Out');
-xlabel('Time (s)');
-ylabel('Channel #');
-title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),'/'...
-    ,num2str(cr2hw(stimSite)+1),':',num2str(recSite),'/',num2str(cr2hw(recSite)+1),'(cr/hw^{+1})']);
-zoom xon;
-pan xon;
+% gfr_rstr_h = figure(1); 
+% handles(1) = gfr_rstr_h;
+% fig1ha(2) = subplot(3,1,2:3);
+% linkaxes(fig1ha, 'x');
+% hold on;
+% %line([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)),'Color','r','LineWidth',0.1);
+% patch([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
+% plot(stimTimes,cr2hw(stimSite)+1,'r*');
+% 
+% % code for the tiny rectangle
+% Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
+% Ycoords = 60*repmat([0;1;1;0],size(stimTimes));
+% patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+% 
+% rasterplot_so(spks.time,spks.channel,'b-');
+% response.time = spks.time(spks.channel == cr2hw(recSite));
+% response.channel = spks.channel(spks.channel == cr2hw(recSite));
+% rasterplot_so(response.time,response.channel,'r-');
+% hold off;
+% set(gca,'TickDir','Out');
+% xlabel('Time (s)');
+% ylabel('Channel #');
+% title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),'/'...
+%     ,num2str(cr2hw(stimSite)+1),':',num2str(recSite),'/',num2str(cr2hw(recSite)+1),'(cr/hw^{+1})']);
+% zoom xon;
+% pan xon;
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell structure.
 % Layer 1 is a 60x1 cell, each corresponding to a channel
@@ -169,14 +171,14 @@ end
 outNB_channel = spks.channel(outIndices);
 
 %% `Patch'ing the network events
-% green path stands for the network burst and the red one for the stim response window
-figure(handles(1)); subplot(3,1,2:3)
-hold on;
-%line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
-Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
-Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
-patch(Xcoords,Ycoords,'g','edgecolor','none','FaceAlpha',0.35);
-hold off;
+% % green path stands for the network burst and the red one for the stim response window
+% figure(handles(1)); subplot(3,1,2:3)
+% hold on;
+% %line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
+% Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
+% Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
+% patch(Xcoords,Ycoords,'g','edgecolor','none','FaceAlpha',0.35);
+% hold off;
 %% spikes per channel per time
 spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
@@ -234,3 +236,6 @@ ylabel('Response length [ms]');
 
 % export_fig('C:\Sreedhar\Lat_work\Brainlinks\NetControl_results...
 %\figures_317_4346_s1\rl_vs_sil','-eps','-transparent')
+
+%% slice of a raster
+plotTimeSlice(spks,1200,1225,'nb',mod_NB_onsets,NB_ends,'resp');
