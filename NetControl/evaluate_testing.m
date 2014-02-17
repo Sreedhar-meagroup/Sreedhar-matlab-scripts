@@ -238,4 +238,4 @@ ylabel('Response length [ms]');
 %\figures_317_4346_s1\rl_vs_sil','-eps','-transparent')
 
 %% slice of a raster
-plotTimeSlice(spks,1200,1225,'nb',mod_NB_onsets,NB_ends,'resp');
+plotTimeSlice(spks,420,460,'nb',mod_NB_onsets,NB_ends,'resp');

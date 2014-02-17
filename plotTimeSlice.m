@@ -43,9 +43,11 @@ if nargin >= 6
     end
     %% patching network events
     mod_NB_onsets = varargin{2};
-    mod_NB_onsets = mod_NB_onsets(mod_NB_onsets>startTime & mod_NB_onsets<stopTime);
+    temp1 = mod_NB_onsets(mod_NB_onsets>startTime & mod_NB_onsets<stopTime);
     NB_ends = varargin{3};
-    NB_ends = NB_ends(mod_NB_onsets>startTime & mod_NB_onsets<stopTime);
+    temp2 = NB_ends(mod_NB_onsets>startTime & mod_NB_onsets<stopTime);
+    mod_NB_onsets = temp1;
+    NB_ends = temp2;
     Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
     Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
     patch(Xcoords,Ycoords,'g','edgecolor','none','FaceAlpha',0.35);

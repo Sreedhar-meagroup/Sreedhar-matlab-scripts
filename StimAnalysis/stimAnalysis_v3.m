@@ -1,3 +1,4 @@
+%% Version info, aim
 % -------------------------------------------------------------------------------------
 % Purpose: Analyse stim responses and choose appropriate stim & rec. site
 
@@ -43,19 +44,15 @@ for ii=60:63
 end
 
 
-% the following info shall in future versions automatically gathered from the log file...
-% working on that script stim_efficacy.m
-
-
 rawText = fileread([pathName,datRoot,'.log']);
 stimSitePattern = 'MEA style: ([\d\d ]+)';
-[matchedPattern matchedPatternIdx_start matchedPatternIdx_end ...
-    token_idx token_data] = regexp(rawText, stimSitePattern, 'match');
+[~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
 stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
 nStimSites = size(stimSites,2);
+
 % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
 % stimSites = str2num(str{1}); % in cr
-% %stimSites = cr2hw([35, 21, 46, 41, 58]);
+
  stimTimes = cell(1,5);
 for ii = 1:nStimSites
     stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
@@ -80,7 +77,7 @@ end
 % sliding window; bin width = 100ms
 [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
 figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
+axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
 
 
 %% Peristimulus spike trains for each stim site and each channel
@@ -147,43 +144,45 @@ handles(1) = gfr_rstr_h;
 fig1ha(2) = subplot(3,1,2:3);
 linkaxes(fig1ha, 'x');
 hold on;
+joined_ch = [];
 for ii = 1:nStimSites
     switch ii
         case 1
             clr = 'r';
+            joined_ch = strcat(joined_ch,'{\color{red}',num2str(cr2hw(stimSites(ii))+1),' }');
         case 2
             clr = 'g';
+            joined_ch = strcat(joined_ch,'{\color{green}',num2str(cr2hw(stimSites(ii))+1),' }');
         case 3
             clr = 'c';
+            joined_ch = strcat(joined_ch,'{\color{cyan}',num2str(cr2hw(stimSites(ii))+1),' }');
         case 4
             clr = 'k';
+            joined_ch = strcat(joined_ch,'{\color{black}',num2str(cr2hw(stimSites(ii))+1),' }');
         case 5
             clr = 'm';
+            joined_ch = strcat(joined_ch,'{\color{magenta}',num2str(cr2hw(stimSites(ii))+1),' }');
     end
-% line([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})),'Color',clr,'LineWidth',0.1);
 patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 
-% code for the tiny rectangle
+% code for the tiny rectangle (500 ms)
 Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
 Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
 patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
 end
 rasterplot_so(spks.time,spks.channel,'b-');
-% for ii = 1:60 
-%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','MarkerSize',5);
-%     %'ob','markersize',2,'markerfacecolor','b'
-%     axis tight;
-% end
-
 hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
 ylabel('Channel #');
-title(['Raster plot indicating stimulation at channels [',num2str(cr2hw(stimSites)+1),'] (hw^{+1})']);
+
+
+title(['Raster plot indicating stimulation at channels [',joined_ch,'] (hw+1)']);
 zoom xon;
 pan xon;
-%% Binning, averaging and plotting the PSTHs with 1s pre-stim silence
+%% Binning, averaging and plotting the PSTHs 
+%with 1s pre-stim silence
 % listOfCounts = cell(1,nStimSites);
 % for ii = 1:nStimSites
 %     figure(2+ii)
@@ -354,3 +353,39 @@ end
 %         axis tight;
 %     end
 % end
+
+seeStim = 1;
+stimResp.time = [];
+stimResp.channel = [];
+offset = 1;
+for ii = 1:size(stimTimes{seeStim},2)
+    respSliceInd = find(and(spks.time>stimTimes{seeStim}(ii), spks.time<stimTimes{seeStim}(ii)+0.5));
+    stimResp.time = [stimResp.time, spks.time(respSliceInd) - stimTimes{seeStim}(ii)+(ii-1)*offset];
+    stimResp.channel = [stimResp.channel, spks.channel(respSliceInd)];
+end
+
+pseudoStimTimes = 0:offset:(size(stimTimes{seeStim},2)-1)*offset;
+Xcoords = [pseudoStimTimes;... 
+           pseudoStimTimes;...
+           pseudoStimTimes+0.5;...
+           pseudoStimTimes+0.5];
+       
+Ycoords = 60*repmat([0;1;1;0],size(stimTimes{seeStim}));
+
+[counts,timeVec] = hist(stimResp.time,0:0.1:ceil(max(stimResp.time)));
+figure(); fig2ha(1) = subplot(3,1,1); bar(timeVec,counts); box off;
+axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
+
+fig2ha(2) = subplot(3,1,2:3);
+linkaxes(fig2ha, 'x');
+hold on;
+
+patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+plot(pseudoStimTimes,cr2hw(stimSites(seeStim))+1,'r.');
+rasterplot_so(stimResp.time,stimResp.channel,'b-');
+title(['Stim responses at channel ', num2str(cr2hw(stimSites(seeStim))+1),'(hw+1)/',num2str(stimSites(seeStim)),'(cr) alone.']);
+zoom xon;
+pan xon;
+    
+
+
