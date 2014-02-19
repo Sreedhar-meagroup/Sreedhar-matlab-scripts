@@ -182,9 +182,11 @@ outNB_channel = spks.channel(outIndices);
 %% spikes per channel per time
 spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
+figPath = 'C:\Users\duarte\Desktop\NetControl\PID321_4411\';
+session = '_testing';
 % plot1: No: of spikes in the responses
-figure();
-plot(respLengths_n);
+h1 = figure();
+plot(respLengths_n,'.-','LineWidth',1);
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
 hold on;
 plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
@@ -196,10 +198,12 @@ box off
 set(gca, 'FontSize', 14)
 xlabel('Stimulus number')
 ylabel('No: of spikes in response')
+saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
+
 %title('Response during testing');
 
 % plot2: Pre-stimulus inactivities
-figure();
+h2 = figure();
 plot(silence_s,'.','markersize',5);
 box off;
 %hold on;
@@ -212,26 +216,29 @@ set(gca, 'FontSize', 14);
 xlabel('Stimulus number');
 ylabel('Pre-stimulus inactivity [s]');
 %title('Response during testing');
+saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
 
 % plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
-figure();
+h3 = figure();
 [sortedSil, silInd] = sort(silence_s);
-plot(sortedSil, respLengths_n(silInd),'.');
+plot(sortedSil, respLengths_n(silInd),'.-','LineWidth',2);
 box off;
 set(gca, 'FontSize', 14);
 xlabel('Pre-stimulus inactivity [s]');
 ylabel('Response length (# spikes)');
 %title('Response during testing');
+saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
 
 % plot4: Response lengths(ms) vs. pre-stimulus inactivities
-figure();
+h4 = figure();
 [sortedSil, silInd] = sort(silence_s);
-plot(sortedSil, respLengths_ms(silInd));
+plot(sortedSil, respLengths_ms(silInd),'.-','LineWidth',2);
 box off;
 set(gca, 'FontSize', 14);
 xlabel('Pre-stimulus inactivity [s]');
 ylabel('Response length [ms]');
 %title('Response during testing');
+saveas(h4,[figPath,'respLvsSil',session,'.eps'], 'psc2');
 
 
 % export_fig('C:\Sreedhar\Lat_work\Brainlinks\NetControl_results...

@@ -354,10 +354,10 @@ end
 %     end
 % end
 
-seeStim = 1;
+seeStim = 2;
 stimResp.time = [];
 stimResp.channel = [];
-offset = 1;
+offset = 1; % 1s offsets
 for ii = 1:size(stimTimes{seeStim},2)
     respSliceInd = find(and(spks.time>stimTimes{seeStim}(ii), spks.time<stimTimes{seeStim}(ii)+0.5));
     stimResp.time = [stimResp.time, spks.time(respSliceInd) - stimTimes{seeStim}(ii)+(ii-1)*offset];
