@@ -182,8 +182,8 @@ outNB_channel = spks.channel(outIndices);
 %% spikes per channel per time
 spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
-figPath = 'C:\Users\duarte\Desktop\NetControl\PID321_4411\';
-session = '_testing';
+% figPath = 'C:\Users\duarte\Desktop\NetControl\PID321_4411\';
+% session = '_testing';
 % plot1: No: of spikes in the responses
 h1 = figure();
 plot(respLengths_n,'.-','LineWidth',1);
@@ -198,11 +198,11 @@ box off
 set(gca, 'FontSize', 14)
 xlabel('Stimulus number')
 ylabel('No: of spikes in response')
-saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
+% saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
 
 %title('Response during testing');
 
-% plot2: Pre-stimulus inactivities
+% plot2: Pre-stimulus inactivity vs stim number
 h2 = figure();
 plot(silence_s,'.','markersize',5);
 box off;
@@ -216,7 +216,7 @@ set(gca, 'FontSize', 14);
 xlabel('Stimulus number');
 ylabel('Pre-stimulus inactivity [s]');
 %title('Response during testing');
-saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
+% saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
 
 % plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
 h3 = figure();
@@ -227,7 +227,7 @@ set(gca, 'FontSize', 14);
 xlabel('Pre-stimulus inactivity [s]');
 ylabel('Response length (# spikes)');
 %title('Response during testing');
-saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
+% saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
 
 % plot4: Response lengths(ms) vs. pre-stimulus inactivities
 h4 = figure();
@@ -238,11 +238,24 @@ set(gca, 'FontSize', 14);
 xlabel('Pre-stimulus inactivity [s]');
 ylabel('Response length [ms]');
 %title('Response during testing');
-saveas(h4,[figPath,'respLvsSil',session,'.eps'], 'psc2');
+% saveas(h4,[figPath,'respLvsSil',session,'.eps'], 'psc2');
 
 
 % export_fig('C:\Sreedhar\Lat_work\Brainlinks\NetControl_results...
 %\figures_317_4346_s1\rl_vs_sil','-eps','-transparent')
 
-%% slice of a raster
-plotTimeSlice(spks,420,460,'nb',mod_NB_onsets,NB_ends,'resp');
+%% slice of a raster around a given stim number (manual -- very accurate)
+% dcm_obj = datacursormode(h2);
+% set(dcm_obj,'DisplayStyle','datatip','SnapToDataVertex','off','Enable','on');
+% figure(h2);
+% keyboard;
+% c_info = getCursorInfo(dcm_obj);
+% plotTimeSlice(spks,stimTimes(c_info.DataIndex)-10,stimTimes(c_info.DataIndex)+5,'nb',mod_NB_onsets,NB_ends,'resp');
+% hold on;
+% plot(stimTimes(c_info.DataIndex),0,'r^');
+% hold off;
+
+%% slice of a raster around a given stim number (automatic -- less accurate)
+figure(h2);
+set(h2, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,mod_NB_onsets,NB_ends});
+%% figure(3) modification into box plots
