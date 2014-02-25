@@ -56,37 +56,37 @@ end
 
 %% Fig 1a: global firing rate
 % % sliding window; bin width = 100ms
-% [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-% figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-% axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
+[counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
+figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
+axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
 
 %% Fig 1b: General raster
-% gfr_rstr_h = figure(1); 
-% handles(1) = gfr_rstr_h;
-% fig1ha(2) = subplot(3,1,2:3);
-% linkaxes(fig1ha, 'x');
-% hold on;
-% %line([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)),'Color','r','LineWidth',0.1);
-% patch([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
-% plot(stimTimes,cr2hw(stimSite)+1,'r*');
-% 
-% % code for the tiny rectangle
-% Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
-% Ycoords = 60*repmat([0;1;1;0],size(stimTimes));
-% patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
-% 
-% rasterplot_so(spks.time,spks.channel,'b-');
-% response.time = spks.time(spks.channel == cr2hw(recSite));
-% response.channel = spks.channel(spks.channel == cr2hw(recSite));
-% rasterplot_so(response.time,response.channel,'r-');
-% hold off;
-% set(gca,'TickDir','Out');
-% xlabel('Time (s)');
-% ylabel('Channel #');
-% title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),'/'...
-%     ,num2str(cr2hw(stimSite)+1),':',num2str(recSite),'/',num2str(cr2hw(recSite)+1),'(cr/hw^{+1})']);
-% zoom xon;
-% pan xon;
+gfr_rstr_h = figure(1); 
+handles(1) = gfr_rstr_h;
+fig1ha(2) = subplot(3,1,2:3);
+linkaxes(fig1ha, 'x');
+hold on;
+%line([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)),'Color','r','LineWidth',0.1);
+patch([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
+plot(stimTimes,cr2hw(stimSite)+1,'r*');
+
+% code for the tiny rectangle
+Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
+Ycoords = 60*repmat([0;1;1;0],size(stimTimes));
+patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+
+rasterplot_so(spks.time,spks.channel,'b-');
+response.time = spks.time(spks.channel == cr2hw(recSite));
+response.channel = spks.channel(spks.channel == cr2hw(recSite));
+rasterplot_so(response.time,response.channel,'r-');
+hold off;
+set(gca,'TickDir','Out');
+xlabel('Time (s)');
+ylabel('Channel #');
+title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),'/'...
+    ,num2str(cr2hw(stimSite)+1),':',num2str(recSite),'/',num2str(cr2hw(recSite)+1),'(cr/hw^{+1})']);
+zoom xon;
+pan xon;
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell structure.
 % Layer 1 is a 60x1 cell, each corresponding to a channel
@@ -186,7 +186,7 @@ spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 % session = '_testing';
 % plot1: No: of spikes in the responses
 h1 = figure();
-plot(respLengths_n,'.-','LineWidth',1);
+plot(respLengths_n,'LineWidth',1);
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
 hold on;
 plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
@@ -218,18 +218,25 @@ ylabel('Pre-stimulus inactivity [s]');
 %title('Response during testing');
 % saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
 
-% plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
-h3 = figure();
+%% plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
+%% Boxplot version
 [sortedSil, silInd] = sort(silence_s);
-plot(sortedSil, respLengths_n(silInd),'.-','LineWidth',2);
-box off;
-set(gca, 'FontSize', 14);
-xlabel('Pre-stimulus inactivity [s]');
-ylabel('Response length (# spikes)');
+respOfSortedSil = respLengths_n(silInd);
+dt = 0.5; disp('Did you remember to set the right dt?');
+h3 = plt_respLength(sortedSil,respOfSortedSil,dt);
+saveas(h3,[figPath,'nSpvsSil2',session,'.eps'], 'psc2');
+
+%% Abandoned this version of plot3
+% h3 = figure();
+% plot(sortedSil, respOfSortedSil,'.','LineWidth',2);
+% box off;
+% set(gca, 'FontSize', 14);
+% xlabel('Pre-stimulus inactivity [s]');
+% ylabel('Response length (# spikes)');
 %title('Response during testing');
 % saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
 
-% plot4: Response lengths(ms) vs. pre-stimulus inactivities
+%% plot4: Response lengths(ms) vs. pre-stimulus inactivities
 h4 = figure();
 [sortedSil, silInd] = sort(silence_s);
 plot(sortedSil, respLengths_ms(silInd),'.-','LineWidth',2);
