@@ -214,7 +214,7 @@ hcb = colorbar;
 set(gca, 'FontSize', 14);
 xlabel('Stimulus number');
 ylabel('Pre-stimulus inactivity [s]');
-ylabel(hcb,'Response length (normalized)');
+set(hcb,'YLabel','Response length (normalized)');
 
 % h2 = figure();
 % cmp = jet(max(respLengths_n));
