@@ -1,10 +1,11 @@
 %% setting datName, pathName to run stimAnalysisv3 / spontaneousData
 datName = '131011_4350_spontaneous1.spike';
-pathName = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments3\Spontaneous\';
+% pathName = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments3\Spontaneous\';
+pathName = 'D:\Codes\mat_work\MB_data\NetControl\Experiments3\Spontaneous\';
 respTriplet = [6 36 45] - 1; % hw+1 to hw
 
 %% spont trajectory
- spontaneousData
+%  spontaneousData
 
 summed_effect = cell(size(NB_ends,1),1);
 

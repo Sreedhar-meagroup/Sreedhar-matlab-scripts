@@ -184,8 +184,9 @@ spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
 %% plot1: response lengths(#spikes) vs stimNo
 % figPath = 'C:\Users\duarte\Desktop\NetControl\PID321_4411\';
-% session = '_testing';
-% plot1: No: of spikes in the responses
+ figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
+ session = '_training';
+%% plot1: No: of spikes in the responses
 h1 = figure();
 plot(respLengths_n,'LineWidth',1);
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
@@ -214,7 +215,7 @@ hcb = colorbar;
 set(gca, 'FontSize', 14);
 xlabel('Stimulus number');
 ylabel('Pre-stimulus inactivity [s]');
-set(hcb,'YLabel','Response length (normalized)');
+ylabel(hcb,'Response length (normalized)');
 
 % h2 = figure();
 % cmp = jet(max(respLengths_n));
@@ -286,3 +287,9 @@ h4 = plt_respLength(sortedSil,respOfSortedSil_ms,dt,'ms');
 %% slice of a raster around a given stim number (automatic -- less accurate)
 figure(h2);
 set(h2, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mod_NB_onsets,NB_ends});
+
+%% Saving figures
+% saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
+% saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
+% saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
+% saveas(h4,[figPath,'rlvsSil2',session,'.eps'], 'psc2');

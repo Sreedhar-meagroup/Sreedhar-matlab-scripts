@@ -10,7 +10,7 @@ stimNo = 5;
 %140203_4409_stimEfficacy (25, 32, 37), st:1
 
 % priors to run this: stimAnalysis_v3.m
-% stimAnalysis_v3;
+stimAnalysis_v3;
 summed_effect = cell(5,1);
 count = 1;
 
