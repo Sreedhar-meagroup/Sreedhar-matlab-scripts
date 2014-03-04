@@ -203,7 +203,7 @@ ylabel('No: of spikes in response')
 %% plot2: Pre-stimulus inactivity vs stim number
 [rl_n_sorted, rl_n_ind] = sort(respLengths_n);
 cmap = varycolor(max(respLengths_n)+1);
-figure();
+h2 = figure();
 scatter(rl_n_ind,silence_s(rl_n_ind),10,cmap(rl_n_sorted+1,:),'fill');
 box off;
 colormap(cmap);
@@ -232,37 +232,44 @@ ylabel(hcb,'Response length (normalized)');
 %% plot3: Response lengths(#spikes) vs. pre-stimulus inactivities
 % Boxplot version of RL (#spikes) vs psi
 [sortedSil, silInd] = sort(silence_s);
-respOfSortedSil_n = respLengths_n(silInd);
-dt = 0.5
-disp('Did you remember to set the right dt?');
-h3 = plt_respLength(sortedSil,respOfSortedSil_n,dt);
+    respOfSortedSil_n = respLengths_n(silInd);
+if length(strfind(datName,'trai')) 
+    dt = 0.5
+    disp('Did you remember to set the right dt?');
+    h3 = plt_respLength(sortedSil,respOfSortedSil_n,dt);
 % saveas(h3,[figPath,'nSpvsSil2',session,'.eps'], 'psc2');
 
 % Abandoned this version of plot3
-% h3 = figure();
-% plot(sortedSil, respOfSortedSil,'.','LineWidth',2);
-% box off;
-% set(gca, 'FontSize', 14);
-% xlabel('Pre-stimulus inactivity [s]');
-% ylabel('Response length (# spikes)');
-%title('Response during testing');
+else
+    h3 = figure();
+    plot(sortedSil, respOfSortedSil_n,'.','LineWidth',2);
+    box off;
+    set(gca, 'FontSize', 14);
+    xlabel('Pre-stimulus inactivity [s]');
+    ylabel('Response length (# spikes)');
+    title('Response during testing');
+end
 % saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
 
 %% plot4: Response lengths(ms) vs. pre-stimulus inactivities
 % Boxplot version of RL (ms) vs psi
-respOfSortedSil_ms = respLengths_ms(silInd);
-h4 = plt_respLength(sortedSil,respOfSortedSil_ms,dt,'ms');
+  respOfSortedSil_ms = respLengths_ms(silInd);
+    
+if length(strfind(datName,'trai'))
+  h4 = plt_respLength(sortedSil,respOfSortedSil_ms,dt,'ms');
 % saveas(h4,[figPath,'rlvsSil2',session,'.eps'], 'psc2');
 
 % Abandoned this version of plot4
-% h4 = figure();
-% [sortedSil, silInd] = sort(silence_s);
-% plot(sortedSil, respLengths_ms(silInd),'.-','LineWidth',2);
-% box off;
-% set(gca, 'FontSize', 14);
-% xlabel('Pre-stimulus inactivity [s]');
-% ylabel('Response length [ms]');
-%title('Response during testing');
+else
+    h4 = figure();
+    [sortedSil, silInd] = sort(silence_s);
+    plot(sortedSil, respLengths_ms(silInd),'.','LineWidth',2);
+    box off;
+    set(gca, 'FontSize', 14);
+    xlabel('Pre-stimulus inactivity [s]');
+    ylabel('Response length [ms]');
+    title('Response during testing');
+end
 % saveas(h4,[figPath,'respLvsSil',session,'.eps'], 'psc2');
 
 
@@ -285,9 +292,14 @@ figure(h2);
 set(h2, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mod_NB_onsets,NB_ends});
 
 %% Saving figures
-% figPath = 'C:\Users\duarte\Desktop\NetControl\PID321_4411\';
-figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
-session = '_training';
+figPath = 'C:\Sreedhar\Lat_work\Closed_loop\NetControl_analysis\E5_321_4409\figures2\';
+% figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
+if length(strfind(datName,'trai'))
+    session = '_training'
+elseif length(strfind(datName,'test'))
+    session = '_testing'
+end
+keyboard
 saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
 saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
 saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
