@@ -234,7 +234,7 @@ ylabel(hcb,'Response length (normalized)');
 [sortedSil, silInd] = sort(silence_s);
     respOfSortedSil_n = respLengths_n(silInd);
 if length(strfind(datName,'trai')) 
-    dt = 0.5
+    dt = 0.25
     disp('Did you remember to set the right dt?');
     h3 = plt_respLength(sortedSil,respOfSortedSil_n,dt);
 % saveas(h3,[figPath,'nSpvsSil2',session,'.eps'], 'psc2');
@@ -300,7 +300,12 @@ elseif length(strfind(datName,'test'))
     session = '_testing'
 end
 keyboard
-saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
-saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
-saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
-saveas(h4,[figPath,'rlvsSil2',session,'.eps'], 'psc2');
+% saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
+% saveas(h2,[figPath,'SilvsStim',session,'.eps'], 'psc2');
+% saveas(h3,[figPath,'nSpvsSil',session,'.eps'], 'psc2');
+% saveas(h4,[figPath,'rlvsSil2',session,'.eps'], 'psc2');
+
+
+
+%% Collect log of number of stimuli in training and testing sessions
+
