@@ -1,4 +1,4 @@
-%   function varargout = spontaneousData(datName,pathName)
+  function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(5,'NetControl');

@@ -7,9 +7,10 @@ if ~exist('datName','var')
 end
         datRoot        = datName(1:strfind(datName,'.')-1);
         spikes         = loadspike([pathName,datName],2,25);
-[spks, selIdx, rejIdx] = cleanspikes(spikes);
+        thresh  = extract_thresh([pathName, datName, '.desc']);
+[spks, selIdx, rejIdx] = cleanspikes(spikes,thresh);
         spikes_samples = loadspike([pathName,datName],2); %timestamps loaded as samples
-        spks_samples   = cleanspikes(spikes_samples);
+        spks_samples   = cleanspikes(spikes_samples,thresh);
 
 [ch2ignore, NB_extremes, NB_slices] = spontaneousData(datName, pathName);
 
