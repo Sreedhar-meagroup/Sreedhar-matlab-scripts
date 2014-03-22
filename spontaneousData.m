@@ -143,7 +143,7 @@ IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
 [counts, timeVec] = hist(IBIs,1:1:max(IBIs));
 figure('name', 'IBI statistics', 'NumberTitle', 'off');
 % subplot(1,2,1)
-bar(timeVec, counts/length(IBIs));
+bar(timeVec, counts/length(IBIs),'EdgeColor','None','FaceColor','k');
 box off;
 % axis square; axis tight;
 set(gca, 'FontSize', 16)

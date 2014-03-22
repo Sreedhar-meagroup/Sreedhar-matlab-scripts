@@ -94,6 +94,17 @@ for ii = 1:nStimSites
     end
 end
 
+% another form -- cell of cell array of structures
+%resp_slices{site no:}{stimulation no:}.time/channel
+
+resp_slices = cell(1,nStimSites);
+for ii = 1:nStimSites
+    for jj = 1: size(stimTimes{ii},2)
+        resp_slices{ii}{jj}.time = spks.time(and(spks.time>stimTimes{ii}(jj)-0.05, spks.time<stimTimes{ii}(jj)+0.5));
+        resp_slices{ii}{jj}.channel = spks.channel(and(spks.time>stimTimes{ii}(jj)-0.05, spks.time<stimTimes{ii}(jj)+0.5));
+    end
+end
+
 %% Measuring pre-stimulus inactivity/periods of silence
 % silence_s has a matrix in a cell structure.
 % Layer 1 (outer) is a 1x5 cell, each corresponding to each stim site.

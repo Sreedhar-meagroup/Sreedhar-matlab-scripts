@@ -1,4 +1,4 @@
-function [ h, hcb ] = imagescWithNaN( a,cm,nanclr )
+function [ h, hcb ] = imagescwithnan( a,cm,nanclr )
 % IMAGESC with NaNs assigning a specific color to NaNs
 
 %# find minimum and maximum

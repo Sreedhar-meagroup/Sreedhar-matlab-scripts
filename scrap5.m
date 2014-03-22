@@ -20,7 +20,14 @@ for ii = 1:50-1
     final_time = [final_time; linspace(mod_NB_onsets(ii),NB_ends(ii),100)'; linspace(NB_ends(ii),mod_NB_onsets(ii+1),100)'];
 end
 
-   
+pred_NB_widths = NaN(size(NB_widths));
+for ii = 1:length(NB_widths)-1
+    pred_NB_widths(ii+1) = max(NB_widths)*((max(NB_widths)-NB_widths(ii))/max(NB_widths) - exp(-IBIs(ii+1)));
+    if pred_NB_widths(ii+1)<0
+        pred_NB_widths(ii+1) = min(NB_widths);
+    end
+end
+
 %% learning input = 50  random bursts
 learn_IBIs = IBIs(1:50);
 

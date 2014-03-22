@@ -1,11 +1,20 @@
-HM= NaN(10,6);
-rList = [14,53,26,33,21];
-
-cords = [fix(rList/10)',mod(rList,10)'];
-for ii = 1 : length(rList)
-    HM(cords(ii,1),cords(ii,2))=ii;
+ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
+for ii= 1:1%length(rankList)
+    HM= NaN(10,6);
+    rList = rankList{ii};
+for jj = 1 : length(rList)
+    HM(ch6x10_ch8x8_60==rList(jj))=jj;
 end
-figure;
-h = imagescWithNaN(HM,jet,[1 1 1]);
+% all_HM(:,:,ii) = HM;
+
+
+%subplot(4,7,ii)
+h = figure;
+HM = HM/size(rList,2);
+imagescwithnan(HM,jet,[1 1 1]);
 set(gca,'TickDir', 'out');
+set(gca,'XTick',[],'YTick',[]);
+%saveas(h,['figure-' num2str(ii),'.eps'],'psc2');
+%close(h);
+end
 
