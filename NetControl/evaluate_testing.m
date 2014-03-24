@@ -37,6 +37,12 @@ if ~exist('stimSite','var')
 end
 stimTimes = inAnalog{2};
 
+disp(['The number of stimuli delivered: ',num2str(size(stimTimes,2))]);
+if ~isempty(strfind(datName,'trai'))
+    disp(['As a % :',num2str(size(stimTimes,2)/10)]);
+else
+    disp(['As a % :',num2str(size(stimTimes,2)/5)]);
+end
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
 
 off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
@@ -237,7 +243,7 @@ ylabel(hcb,'Response length (normalized)');
 [sortedSil, silInd] = sort(silence_s);
     respOfSortedSil_n = respLengths_n(silInd);
 if ~isempty(strfind(datName,'trai')) 
-    dt = 0.5
+    dt = 0.25
     disp('Did you remember to set the right dt?');
     bplot_h = plt_respLength(sortedSil,respOfSortedSil_n,dt);
 %     title('Response during testing');
@@ -312,20 +318,20 @@ figure(silvssn_h);
 set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mod_NB_onsets,NB_ends});
 
 %% Saving figures
-figPath = 'C:\Users\duarte\Desktop\progress_report1\figures\E5_323_4449\';
-% figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
-if ~isempty(strfind(datName,'trai'))
-    session = '_training'
-elseif ~isempty(strfind(datName,'test'))
-    session = '_testing'
-end
-keyboard
-
-saveas(silvssn_h,[figPath,'silvssn',session,'.eps'], 'psc2');
-saveas(silvssn_h,[figPath,'silvssn',session], 'png');
-
-saveas(boxplotn_h,[figPath,'resp',session], 'png');
-saveas(boxplotn_h,[figPath,'resp',session,'.eps'], 'psc2');
+% figPath = 'C:\Users\duarte\Desktop\progress_report1\figures\E5_323_4449\';
+% % figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
+% if ~isempty(strfind(datName,'trai'))
+%     session = '_training'
+% elseif ~isempty(strfind(datName,'test'))
+%     session = '_testing'
+% end
+% keyboard
+% 
+% saveas(silvssn_h,[figPath,'silvssn',session,'.eps'], 'psc2');
+% saveas(silvssn_h,[figPath,'silvssn',session], 'png');
+% 
+% saveas(boxplotn_h,[figPath,'resp',session], 'png');
+% saveas(boxplotn_h,[figPath,'resp',session,'.eps'], 'psc2');
 
 
 % saveas(h1,[figPath,'nSpvsStim',session,'.eps'], 'psc2');
