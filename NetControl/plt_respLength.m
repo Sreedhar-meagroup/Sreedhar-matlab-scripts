@@ -1,4 +1,11 @@
 function h = plt_respLength(sortedSil, respOfSortedSil, dt,varargin)
+% This function plots the reponse lengths as a function of pre-stimulus
+% inactivity in a box plot.
+% INPUT ARGS:
+%     sortedSil: vector of pre-stimulus inactivities, sorted in increasing order
+%     respOfSortedSil: vector of responses, each corresponding to the stimului in sortedSil
+%     dt: the state discretization of the silence
+%     varargin: 'ms','nspikes' -- the box plot will be labelled accordingly
 
 [binC,~] = hist(sortedSil,0:dt:ceil(sortedSil(end)));
 groups = zeros(size(respOfSortedSil));
@@ -16,7 +23,7 @@ if nargin > 3
     if strcmpi(varargin{1},'ms')
         ylabel('Response length [ms]','FontSize',14);
     end
-else
+elseif strcmpi(varargin{1},'nspikes')
     ylabel('Response length (#spikes)','FontSize',14);
 end
 box off;

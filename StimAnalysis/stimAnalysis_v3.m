@@ -23,6 +23,7 @@
 % Wavelet Toolbox                                       Version 4.7        (R2011a)
 %--------------------------------------------------------------------------------------
 
+%% loading the file
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(5,'st');
 end
@@ -76,7 +77,7 @@ end
 %% Fig 1a: global firing rate
 % sliding window; bin width = 100ms
 [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-figure(1); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
+handles(1)= figure(); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
 
 
@@ -150,8 +151,7 @@ end
 
 
 %% Fig 1b: General raster
-gfr_rstr_h = figure(1); 
-handles(1) = gfr_rstr_h;
+figure(handles(1)); 
 fig1ha(2) = subplot(3,1,2:3);
 linkaxes(fig1ha, 'x');
 hold on;
@@ -174,7 +174,7 @@ for ii = 1:nStimSites
             clr = 'm';
             joined_ch = strcat(joined_ch,'{\color{magenta}',num2str(cr2hw(stimSites(ii))+1),' }');
     end
-patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
+% patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 
 % code for the tiny rectangle (500 ms)
@@ -255,7 +255,7 @@ listOfCounts_all = cell(1,nStimSites);
 binSize = 10;
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
-    eval([psth_h '= figure(', num2str(1+ii), ');']);
+    eval([psth_h '= figure();']);%, num2str(1+ii), ');']);
     handles(ii+1) = eval(psth_h);
     psth_sp_h = zeros(1,60); %psth subplot handles
     max_axlim = 0;
@@ -283,7 +283,8 @@ for ii = 1:nStimSites
         pos = 6*(row-1) + col;
         
         psth_sp_h(jj) = subplot(10,6,pos);
-        shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
+        shadedErrorBar(bins+binSize/2,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
+%         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
 %         axis([-50 500 -0.5 1])
         
         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
@@ -365,38 +366,14 @@ end
 %     end
 % end
 
-seeStim = 2;
-stimResp.time = [];
-stimResp.channel = [];
-offset = 1; % 1s offsets
-for ii = 1:size(stimTimes{seeStim},2)
-    respSliceInd = find(and(spks.time>stimTimes{seeStim}(ii), spks.time<stimTimes{seeStim}(ii)+0.5));
-    stimResp.time = [stimResp.time, spks.time(respSliceInd) - stimTimes{seeStim}(ii)+(ii-1)*offset];
-    stimResp.channel = [stimResp.channel, spks.channel(respSliceInd)];
-end
 
-pseudoStimTimes = 0:offset:(size(stimTimes{seeStim},2)-1)*offset;
-Xcoords = [pseudoStimTimes;... 
-           pseudoStimTimes;...
-           pseudoStimTimes+0.5;...
-           pseudoStimTimes+0.5];
-       
-Ycoords = 60*repmat([0;1;1;0],size(stimTimes{seeStim}));
 
-[counts,timeVec] = hist(stimResp.time,0:0.1:ceil(max(stimResp.time)));
-figure(); fig2ha(1) = subplot(3,1,1); bar(timeVec,counts); box off;
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
+%% preparing structure to send to function plt_resp2stim()
 
-fig2ha(2) = subplot(3,1,2:3);
-linkaxes(fig2ha, 'x');
-hold on;
+stimEfficacy_data.recording = spks;
+stimEfficacy_data.stimTimes = stimTimes;
+stimEfficacy_data.stimSites = stimSites;
 
-patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
-plot(pseudoStimTimes,cr2hw(stimSites(seeStim))+1,'r.');
-rasterplot_so(stimResp.time,stimResp.channel,'b-');
-title(['Stim responses at channel ', num2str(cr2hw(stimSites(seeStim))+1),'(hw+1)/',num2str(stimSites(seeStim)),'(cr) alone.']);
-zoom xon;
-pan xon;
-    
+plt_resp2stim(5,stimEfficacy_data);
 
 
