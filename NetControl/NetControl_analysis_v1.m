@@ -8,8 +8,8 @@ end
 
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike([pathName,datName],2,25);
-% thresh = 7;
-thresh  = extract_thresh([pathName, datName, '.desc']);
+thresh = 7;
+% thresh  = extract_thresh([pathName, datName, '.desc']);
 
 
 %% Stimulus locations and time
@@ -81,7 +81,7 @@ line([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)),'Color','r','LineWid
 patch([stimTimes ;stimTimes], repmat([0;60],size(stimTimes)), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes,cr2hw(stimSite)+1,'r*');
 
-code for the tiny rectangle
+% code for the tiny rectangle
 Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
 Ycoords = 60*repmat([0;1;1;0],size(stimTimes));
 patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
