@@ -27,7 +27,7 @@ handles(1) = gfr_rstr_h;
 fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes');
 title(['Global firing rate (bin= 100 ms)            data:',datRoot],'Interpreter','none');
-
+set(gca,'TickDir','Out');
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
@@ -121,6 +121,7 @@ rasterplot_so(spks.time,spks.channel,'b-');
 % end
 hold off;
 set(gca,'TickDir','Out');
+set(gca,'YMinorGrid','On');
 xlabel('Time (s)');
 ylabel('Channel #');
 title(['Raster plot of spontaneous activity          ', num2str(length(network_burst)), ' NBs']);
@@ -140,7 +141,7 @@ set(bad_h, 'Visible','off');
 IBIs = zeros(size(mod_NB_onsets));
 IBIs(1) = mod_NB_onsets(1);
 IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
-[counts, timeVec] = hist(IBIs,1:1:max(IBIs));
+[counts, timeVec] = hist(IBIs,0:0.5:max(IBIs));
 figure('name', 'IBI statistics', 'NumberTitle', 'off');
 % subplot(1,2,1)
 bar(timeVec, counts/length(IBIs),'EdgeColor','None','FaceColor','k');

@@ -79,7 +79,7 @@ end
 [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
 handles(1)= figure(); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
-
+set(gca,'TickDir','Out');
 
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell in a cell structure.
@@ -187,7 +187,7 @@ hold off;
 set(gca,'TickDir','Out');
 xlabel('Time (s)');
 ylabel('Channel #');
-
+set(gca,'YMinorGrid','On');
 
 title(['Raster plot indicating stimulation at channels [',joined_ch,'] (hw+1)']);
 zoom xon;
