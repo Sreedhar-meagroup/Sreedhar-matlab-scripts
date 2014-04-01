@@ -1,4 +1,4 @@
-%   function varargout = spontaneousData(datName,pathName)
+% function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(5,'NetControl');
@@ -6,7 +6,7 @@ end
     datRoot = datName(1:strfind(datName,'.')-1);
     spikes=loadspike([pathName,datName],2,25);
     thresh  = extract_thresh([pathName, datName, '.desc']);
-% thresh = 7;
+
 
 %% Cleaning spikes, getting them into channels
 off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
@@ -141,12 +141,13 @@ set(bad_h, 'Visible','off');
 IBIs = zeros(size(mod_NB_onsets));
 IBIs(1) = mod_NB_onsets(1);
 IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
-[counts, timeVec] = hist(IBIs,0:0.5:max(IBIs));
+[counts, timeVec] = hist(IBIs,0:0.25:max(IBIs));
 figure('name', 'IBI statistics', 'NumberTitle', 'off');
 % subplot(1,2,1)
-bar(timeVec, counts/length(IBIs),'EdgeColor','None','FaceColor','k');
+bar(timeVec, counts/length(IBIs),'EdgeColor','w','FaceColor','k');
 box off;
-% axis square; axis tight;
+% axis square; 
+axis tight;
 set(gca, 'FontSize', 16)
 ylabel('probability')
 xlabel('IBI [s]')

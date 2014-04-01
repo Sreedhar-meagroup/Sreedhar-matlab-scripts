@@ -2,14 +2,15 @@
 % where the protocol of 1000 training episodes followed by 500 testing ones
 % was followed. Training and testing sessions need to be in separate files.
 
+%% File selection
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(6,'net');
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes=loadspike([pathName,datName],2,25);
-thresh = 7;
-% thresh  = extract_thresh([pathName, datName, '.desc']);
+% thresh = 7;
+thresh  = extract_thresh([pathName, datName, '.desc']);
 
 
 %% Stimulus locations and time
@@ -248,9 +249,9 @@ ylabel(hcb,'Response length (normalized)');
 [sortedSil, silInd] = sort(silence_s);
     respOfSortedSil_n = respLengths_n(silInd);
 if ~isempty(strfind(datName,'trai')) 
-    dt = 0.5
+    dt = 0.25
     disp('Did you remember to set the right dt?');
-    bplot_h = plt_respLength(sortedSil,respOfSortedSil_n,dt);
+    bplot_h = plt_respLength(sortedSil,respOfSortedSil_n,dt,'nspikes');
 %     title('Response during testing');
 
 % Comment out if you don't want the exponential model to be superimposed on
@@ -305,8 +306,6 @@ else
     title('Response during testing');
 end
 
-
-
 %% slice of a raster around a given stim number (manual -- very accurate)
 % dcm_obj = datacursormode(h2);
 % set(dcm_obj,'DisplayStyle','datatip','SnapToDataVertex','off','Enable','on');
@@ -322,6 +321,8 @@ end
 figure(silvssn_h);
 set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mod_NB_onsets,NB_ends});
 
+%% spontaneous data
+% spontaneousData();
 %% Saving figures
 % figPath = 'C:\Users\duarte\Desktop\progress_report1\figures\E5_323_4449\';
 % % figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
