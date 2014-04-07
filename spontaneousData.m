@@ -141,11 +141,15 @@ set(bad_h, 'Visible','off');
 IBIs = zeros(size(mod_NB_onsets));
 IBIs(1) = mod_NB_onsets(1);
 IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
-[counts, timeVec] = hist(IBIs,0:0.25:max(IBIs));
+% [counts, timeVec] = hist(IBIs,0:0.5:max(IBIs));
+timeVec = 0:0.5:max(IBIs);
+counts = histc(IBIs,timeVec);
+
 figure('name', 'IBI statistics', 'NumberTitle', 'off');
 % subplot(1,2,1)
-bar(timeVec, counts/length(IBIs),'EdgeColor','w','FaceColor','k');
+bar_h = bar(timeVec,counts/length(IBIs),'histc');
 box off;
+set(bar_h,'EdgeColor','w','FaceColor','k');
 % axis square; 
 axis tight;
 set(gca, 'FontSize', 16)
