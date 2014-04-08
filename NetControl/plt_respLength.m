@@ -22,9 +22,9 @@ set(get(gca,'XLabel'),'Position',get(get(gca,'XLabel'),'Position') - [0, 15, 0])
 if nargin > 3
     if strcmpi(varargin{1},'ms')
         ylabel('Response length [ms]','FontSize',14);
+    elseif strcmpi(varargin{1},'nspikes')
+        ylabel('Response length (#spikes)','FontSize',14);
     end
-elseif strcmpi(varargin{1},'nspikes')
-    ylabel('Response length (#spikes)','FontSize',14);
 end
 box off;
 set(gca,'FontSize',12);

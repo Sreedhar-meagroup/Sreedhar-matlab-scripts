@@ -227,6 +227,7 @@ set(gca,'YGrid','On');
 xlabel('Stimulus number');
 ylabel('Pre-stimulus inactivity [s]');
 ylabel(hcb,'Response length (normalized)');
+axis tight;
 
 % h2 = figure();
 % cmp = jet(max(respLengths_n));
@@ -249,7 +250,7 @@ ylabel(hcb,'Response length (normalized)');
 [sortedSil, silInd] = sort(silence_s);
     respOfSortedSil_n = respLengths_n(silInd);
 if ~isempty(strfind(datName,'trai')) 
-    dt = 0.25
+    dt = 0.5
     disp('Did you remember to set the right dt?');
     bplot_h = plt_respLength(sortedSil,respOfSortedSil_n,dt,'nspikes');
 %     title('Response during testing');
@@ -350,4 +351,39 @@ set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mo
 
 
 %% Collect log of number of stimuli in training and testing sessions
+nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
+nSessions = size(nStimuliInEachSession,1);
+totalStim = repmat([300;200],3,1);
 
+figure(silvssn_h);
+hold on;
+for ii = 1:nSessions
+    line([sum(nStimuliInEachSession(1:ii)),sum(nStimuliInEachSession(1:ii))],[0, max(silence_s)],'Color','k');
+end
+%% 
+figure();
+session_vector = [1;cumsum(nStimuliInEachSession)];
+dist_h = zeros(1,nSessions);
+max_yval = 0;
+for ii = 1:nSessions
+    num = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
+    dist_h(ii) = subplot(3,2,ii);
+    plot(0:max(respLengths_n),num/nStimuliInEachSession(ii),'k-','LineWidth',2);
+    if mod(ii,2)
+        title(['Training:',num2str(ii-fix(ii/2))]);
+    else
+        title(['Testing:',num2str(ii-fix(ii/2))]);
+    end
+    grid on;
+    if max(num/nStimuliInEachSession(ii)) > max_yval
+        max_yval = max(num/nStimuliInEachSession(ii));
+    end
+end
+max_xval = max(respLengths_n);
+linkaxes(dist_h);
+xlim([0,max_xval]);
+ylim([0,max_yval]);
+[ax1,h1]=suplabel('Response length');
+[ax2,h2]=suplabel('probability','y');
+set(h1,'FontSize',12);
+set(h2,'FontSize',12);

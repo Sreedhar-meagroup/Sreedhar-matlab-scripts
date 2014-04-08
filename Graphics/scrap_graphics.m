@@ -4,7 +4,7 @@ h=gcf;
 set(h,'PaperPositionMode','auto'); 
 set(h,'PaperOrientation','landscape');
 set(h,'Position',[50 50 1200 800]);
-print(gcf, '-depsc', 'art1.eps')
+print(gcf, '-depsc', 'art.eps')
 
 
 % option 2 ----------------------------------------------------------------
