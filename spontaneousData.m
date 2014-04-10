@@ -1,7 +1,7 @@
-function varargout = spontaneousData(datName,pathName)
+% function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile(5,'NetControl');
+    [datName,pathName] = chooseDatFile(6,'Spontaneous');
 end
     datRoot = datName(1:strfind(datName,'.')-1);
     spikes=loadspike([pathName,datName],2,25);
@@ -124,7 +124,7 @@ set(gca,'TickDir','Out');
 set(gca,'YMinorGrid','On');
 xlabel('Time (s)');
 ylabel('Channel #');
-title(['Raster plot of spontaneous activity          ', num2str(length(network_burst)), ' NBs']);
+title(['Raster plot of spontaneous activity          ', num2str(length(NB_ends)), ' NBs']);
 zoom xon;
 pan xon;
 

@@ -1,21 +1,22 @@
 %Network bursts: a closer look
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile();
+    datRoot = datName(1:strfind(datName,'.')-1);
+    spikes=loadspike([pathName,datName],2,25);
+    thresh = extract_thresh([pathName, datName, '.desc']);
+
+    off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
+    spikes_oc = spikes;
+    spikes_oc.context = off_corr_contexts;
+    [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+    % spks = cleanspikes(spikes, thresh); % Work on this later
+    inAChannel = cell(60,1);
+    for ii=0:59
+        inAChannel{ii+1,1} = spks.time(spks.channel==ii);
+    end
 end
 
-datRoot = datName(1:strfind(datName,'.')-1);
-spikes=loadspike([pathName,datName],2,25);
-thresh = extract_thresh([pathName, datName, '.desc']);
 
-off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
-spikes_oc = spikes;
-spikes_oc.context = off_corr_contexts;
-[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
-% spks = cleanspikes(spikes, thresh); % Work on this later
-inAChannel = cell(60,1);
-for ii=0:59
-    inAChannel{ii+1,1} = spks.time(spks.channel==ii);
-end
 final_tally = zeros(5,7); % hw+1 where channels are numbered 1-60.
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
