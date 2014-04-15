@@ -35,10 +35,7 @@ NetControlData.Spikes = spks;
 NetControlData.Electrode_details = electrode_details;
 NetControlData.StimTimes = stimTimes;
 
-NetControlData.inAChannel = inAChannel;
-
-
-
+NetControlData.InAChannel = inAChannel;
 
 %% Fig 1: global firing rate and raster
 
@@ -53,6 +50,11 @@ handles(1) = plt_gfrWithRaster(NetControlData);
 % periStim has a cell in a cell structure.
 % Layer 1 is a 60x1 cell, each corresponding to a channel
 % Layer 2 is a nx1 cell, holding the periStim (-50 ms to +500 ms)spike stamps corresponding to each of the n stimuli.
+
+% for the time being:
+recSite = electrode_details.rec_electrode;
+stimSite = electrode_details.stim_electrode;
+
 periStim = cell(60,1);
 for jj = 1: size(stimTimes,2)
     for kk = 1:60
@@ -146,7 +148,7 @@ spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
 %% plot1: response lengths(#spikes) vs stimNo
 rlvsn_h = figure();
-plot(respLengths_n,'LineWidth',1);
+plot(respLengths_n,'.');
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
 hold on;
 plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
@@ -273,7 +275,10 @@ figure(silvssn_h);
 set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mod_NB_onsets,NB_ends});
 
 %% spontaneous data
-% spontaneousData();
+pre_spont = spontaneousData();
+plt_IBIdist(pre_spont, dt, 'Network pre');
+post_spont = spontaneousData('spon_after_testing.spike', pathName);
+plt_IBIdist(pre_spont, dt, 'Network post');
 %% Saving figures
 % figPath = 'C:\Users\duarte\Desktop\progress_report1\figures\E5_323_4449\';
 % % figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
@@ -337,3 +342,4 @@ ylim([0,max_yval]);
 [ax2,h2]=suplabel('probability','y');
 set(h1,'FontSize',12);
 set(h2,'FontSize',12);
+

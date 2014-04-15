@@ -1,4 +1,4 @@
-function SpontaneousData = spontaneousData(datName,pathName)
+% function varargout = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(6,'Spontaneous');
@@ -19,15 +19,15 @@ inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
- %% Fig 1a: global firing rate
-% bin width = 100ms
-% [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-% gfr_rstr_h = figure('name', 'Spontaneous activity','NumberTitle','off');
-% handles(1) = gfr_rstr_h;
-% fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-% axis tight; ylabel('# spikes');
-% title(['Global firing rate (bin= 100 ms)            data:',datRoot],'Interpreter','none');
-% set(gca,'TickDir','Out');
+%% Fig 1a: global firing rate
+%bin width = 100ms
+[counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
+gfr_rstr_h = figure('name', 'Spontaneous activity','NumberTitle','off');
+handles(1) = gfr_rstr_h;
+fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
+axis tight; ylabel('# spikes');
+title(['Global firing rate (bin= 100 ms)            data:',datRoot],'Interpreter','none');
+set(gca,'TickDir','Out');
 %% Burst detection part
 burst_detection = burstDetAllCh_sk(spks);
 [bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
@@ -102,59 +102,59 @@ ch2ignore= [];
 %     hold off
 
 %% `Patch'ing the network event
-% figure(handles(1)); subplot(3,1,2:3)
-% hold on;
-% %line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
-% Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
-% Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
-% patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
-% hold off;
+figure(handles(1)); subplot(3,1,2:3)
+hold on;
+%line([mod_NB_onsets' ; mod_NB_onsets'], repmat([0;60],size(mod_NB_onsets')),'Color',[0,0,0]+0.7,'LineWidth',0.1);
+Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
+Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
+patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
+hold off;
 %% Fig 1b: General raster
-% figure(handles(1));
-% fig1ha(2) = subplot(3,1,2:3);
-% linkaxes(fig1ha, 'x');
-% hold on;
-% rasterplot_so(spks.time,spks.channel,'b-');
-% % for ii = 1:60 
-% %     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
-% %     axis tight;
-% % end
-% hold off;
-% set(gca,'TickDir','Out');
-% set(gca,'YMinorGrid','On');
-% xlabel('Time (s)');
-% ylabel('Channel #');
-% title(['Raster plot of spontaneous activity          ', num2str(length(NB_ends)), ' NBs']);
-% zoom xon;
-% pan xon;
+figure(handles(1));
+fig1ha(2) = subplot(3,1,2:3);
+linkaxes(fig1ha, 'x');
+hold on;
+rasterplot_so(spks.time,spks.channel,'b-');
+% for ii = 1:60 
+%     plot(inAChannel{ii},ones(size(inAChannel{ii}))*ii,'.','markersize',6);
+%     axis tight;
+% end
+hold off;
+set(gca,'TickDir','Out');
+set(gca,'YMinorGrid','On');
+xlabel('Time (s)');
+ylabel('Channel #');
+title(['Raster plot of spontaneous activity          ', num2str(length(NB_ends)), ' NBs']);
+zoom xon;
+pan xon;
 
 %% Visualizing rejected spikes
-% figure(handles(1));subplot(3,1,2:3)
-% hold on;
-% badspikes = spikes.time(rejIdx);
-% badchannels = spikes.channel(rejIdx);
-% bad_h = rasterplot_so(badspikes, badchannels,'r-');
-% hold off;
-% set(bad_h, 'Visible','off');
+figure(handles(1));subplot(3,1,2:3)
+hold on;
+badspikes = spikes.time(rejIdx);
+badchannels = spikes.channel(rejIdx);
+bad_h = rasterplot_so(badspikes, badchannels,'r-');
+hold off;
+set(bad_h, 'Visible','off');
 
 %% Plotting the IBI distribution
 IBIs = zeros(size(mod_NB_onsets));
 IBIs(1) = mod_NB_onsets(1);
 IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
 % [counts, timeVec] = hist(IBIs,0:0.5:max(IBIs));
-% timeVec = 0:0.5:max(IBIs);
-% counts = histc(IBIs,timeVec);
-% 
-% figure('name', 'IBI statistics', 'NumberTitle', 'off');
-% % subplot(1,2,1)
-% bar_h = bar(timeVec,counts/length(IBIs),'histc');
-% box off;
-% set(bar_h,'EdgeColor','w','FaceColor','k');
-% % axis square; 
-% axis tight;
-% set(gca, 'FontSize', 16)
-% ylabel('probability')
-% xlabel('IBI [s]')
+timeVec = 0:0.5:max(IBIs);
+counts = histc(IBIs,timeVec);
+
+figure('name', 'IBI statistics', 'NumberTitle', 'off');
+% subplot(1,2,1)
+bar_h = bar(timeVec,counts/length(IBIs),'histc');
+box off;
+set(bar_h,'EdgeColor','w','FaceColor','k');
+% axis square; 
+axis tight;
+set(gca, 'FontSize', 16)
+ylabel('probability')
+xlabel('IBI [s]')
 
 % subplot(1,2,2)
 % %plot(IBIs); hold on; plot(mean(IBIs)*ones(size(IBIs)),'r--');
@@ -168,9 +168,9 @@ IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
 % 
 % suptitle('Inter-Burst Interval(IBI) statistics');
 %% when used as a function, what variables are to be returned
-% varargout{1} = ch2ignore;
-% varargout{2} = [mod_NB_onsets, NB_ends];
-% varargout{3} = NB_slices;
+varargout{1} = ch2ignore;
+varargout{2} = [mod_NB_onsets, NB_ends];
+varargout{3} = NB_slices;
 
 %%
 % IBIs_4350_s2_post = IBIs;
@@ -195,9 +195,7 @@ nSpikesPerNB = cellfun(@(x) myfun(x),NB_slices);
 % Rec_s2_4350.after = length(inRec)/(max(spks.time) - min(spks.time))
 
 %%
-SpontaneousData.fileName = datRoot;
 SpontaneousData.Spikes = spks;
 SpontaneousData.InAChannel = inAChannel;
 SpontaneousData.NetworkBursts.NB_slices = NB_slices;
 SpontaneousData.NetworkBursts.NB_extrema = [mod_NB_onsets, NB_ends];
-SpontaneousData.NetworkBursts.IBIs = IBIs;
