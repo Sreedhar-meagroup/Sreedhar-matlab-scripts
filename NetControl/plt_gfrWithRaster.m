@@ -3,7 +3,7 @@ function gfr_rstr_h = plt_gfrWithRaster(data)
     stimulation   = 0;
     spontaneous   = 0;
 
-if isfield(data,'stimTimes')
+if isfield(data,'StimTimes')
     stimTimes = data.StimTimes;
     stimSite  = data.Electrode_details.stim_electrode;
     recSite   = data.Electrode_details.rec_electrode;

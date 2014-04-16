@@ -25,6 +25,7 @@ end
 [PID, CID] = getCultureDetails(pathName);
 
 %% NetControlData structure
+NetControlData.fileName = datRoot;
 NetControlData.Culture_details.PID = PID;
 NetControlData.Culture_details.CID = CID;
 NetControlData.Culture_details.MEA = '';
@@ -150,8 +151,8 @@ spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 rlvsn_h = figure();
 plot(respLengths_n,'.');
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
-hold on;
-plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
+% hold on;
+% plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
 box off
 % plot(mean(respLengths_n) + std(respLengths_n)*ones(size(respLengths_n)),'r-');
 % plot(mean(respLengths_n) - std(respLengths_n)*ones(size(respLengths_n)),'r-');
@@ -278,7 +279,7 @@ set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mo
 pre_spont = spontaneousData();
 plt_IBIdist(pre_spont, dt, 'Network pre');
 post_spont = spontaneousData('spon_after_testing.spike', pathName);
-plt_IBIdist(pre_spont, dt, 'Network post');
+plt_IBIdist(post_spont, dt, 'Network post');
 %% Saving figures
 % figPath = 'C:\Users\duarte\Desktop\progress_report1\figures\E5_323_4449\';
 % % figPath = 'D:\Codes\Lat_work\Closed_loop\NetControl_analysis\E3_317_4346_s1\figures\';
@@ -315,25 +316,57 @@ hold on;
 for ii = 1:nSessions
     line([sum(nStimuliInEachSession(1:ii)),sum(nStimuliInEachSession(1:ii))],[0, max(silence_s)],'Color','k');
 end
-%% 
+%% for 6 session recordings
+% figure();
+% session_vector = [1;cumsum(nStimuliInEachSession)];
+% dist_h = zeros(1,nSessions);
+% max_yval = 0;
+% for ii = 1:nSessions
+%     num = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
+%     dist_h(ii) = subplot(3,2,ii);
+%     plot(0:max(respLengths_n),num/nStimuliInEachSession(ii),'k-','LineWidth',2);
+%     if mod(ii,2)
+%         title(['Training:',num2str(ii-fix(ii/2))]);
+%     else
+%         title(['Testing:',num2str(ii-fix(ii/2))]);
+%     end
+%     grid on;
+%     if max(num/nStimuliInEachSession(ii)) > max_yval
+%         max_yval = max(num/nStimuliInEachSession(ii));
+%     end
+% end
+% 
+% 
+% max_xval = max(respLengths_n);
+% linkaxes(dist_h);
+% xlim([0,max_xval]);
+% ylim([0,max_yval]);
+% [ax1,h1]=suplabel('Response length');
+% [ax2,h2]=suplabel('probability','y');
+% set(h1,'FontSize',12);
+% set(h2,'FontSize',12);
+
+%% for 12 sessions recordings
 figure();
 session_vector = [1;cumsum(nStimuliInEachSession)];
-dist_h = zeros(1,nSessions);
+dist_h = zeros(1,nSessions/2);
 max_yval = 0;
-for ii = 1:nSessions
-    num = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
-    dist_h(ii) = subplot(3,2,ii);
-    plot(0:max(respLengths_n),num/nStimuliInEachSession(ii),'k-','LineWidth',2);
-    if mod(ii,2)
-        title(['Training:',num2str(ii-fix(ii/2))]);
-    else
-        title(['Testing:',num2str(ii-fix(ii/2))]);
-    end
+count = 1;
+for ii = 1:2:nSessions
+    num1 = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
+    num2 = hist(respLengths_n(session_vector(ii+1):session_vector(ii+2)),0:max(respLengths_n));
+    dist_h(count) = subplot(3,2,count);
+    plot(0:max(respLengths_n),num1/nStimuliInEachSession(ii),'k-','LineWidth',2);
+    hold on
+    plot(0:max(respLengths_n),num2/nStimuliInEachSession(ii),'r-','LineWidth',2);
     grid on;
-    if max(num/nStimuliInEachSession(ii)) > max_yval
-        max_yval = max(num/nStimuliInEachSession(ii));
+    if max(num2/nStimuliInEachSession(ii)) > max_yval
+        max_yval = max(num2/nStimuliInEachSession(ii));
     end
+    count = count + 1;
 end
+
+
 max_xval = max(respLengths_n);
 linkaxes(dist_h);
 xlim([0,max_xval]);
@@ -342,4 +375,3 @@ ylim([0,max_yval]);
 [ax2,h2]=suplabel('probability','y');
 set(h1,'FontSize',12);
 set(h2,'FontSize',12);
-

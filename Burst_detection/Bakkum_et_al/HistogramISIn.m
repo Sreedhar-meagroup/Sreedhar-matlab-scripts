@@ -29,10 +29,11 @@ for FRnum = N
  ISI_N = SpikeTimes( FRnum:end ) - SpikeTimes( 1:end-(FRnum-1) ); 
  n = histc( ISI_N*1000, Steps*1000 ); 
  n = smooth( n, 'lowess' ); 
- plot( Steps*1000, n/sum(n), '.-', 'color', map(cnt,:) ) 
+ plot( Steps*1000, n/sum(n), '.-', 'color', map(cnt,:),'LineWidth',2 )  % changed linewidth
 end 
  
-xlabel 'ISI, T_i - T_{i-(N-1) _{ }} [ms]' 
+xlabel 'ISI [ms]'
+% xlabel 'ISI, T_i - T_{i-(N-1) _{ }} [ms]' 
 ylabel 'Probability [%]' 
 set(gca,'xscale','log') 
 set(gca,'yscale','log')

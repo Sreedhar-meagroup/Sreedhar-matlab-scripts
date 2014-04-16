@@ -6,22 +6,9 @@
 % Date: 27.06.2013
 %--------------------------------------------------------------------------------------
 % MATLAB Version 7.12.0.635 (R2011a)
-% MATLAB License Number: 97144
 % Operating System: Microsoft Windows 7 Version 6.1 (Build 7601: Service Pack 1)
 % Java VM Version: Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) 64-Bit Server VM mixed mode
 % -------------------------------------------------------------------------------------
-% MATLAB                                                Version 7.12       (R2011a)
-% Simulink                                              Version 7.7        (R2011a)
-% Data Acquisition Toolbox                              Version 2.18       (R2011a)
-% Fixed-Point Toolbox                                   Version 3.3        (R2011a)
-% Image Processing Toolbox                              Version 7.2        (R2011a)
-% MATLAB Compiler                                       Version 4.15       (R2011a)
-% Neural Network Toolbox                                Version 7.0.1      (R2011a)
-% Parallel Computing Toolbox                            Version 5.1        (R2011a)
-% Signal Processing Toolbox                             Version 6.15       (R2011a)
-% Statistics Toolbox                                    Version 7.5        (R2011a)
-% Wavelet Toolbox                                       Version 4.7        (R2011a)
-%--------------------------------------------------------------------------------------
 
 %% loading the file
 if ~exist('datName','var')

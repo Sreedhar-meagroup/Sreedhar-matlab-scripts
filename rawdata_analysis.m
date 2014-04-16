@@ -172,37 +172,44 @@ box off;
 axis tight;
 
 %%
-% [~, name] = system('hostname');
-% if strcmpi(strtrim(name),'sree-pc')
-%     srcPath = 'D:\Codes\mat_work\MB_data\NetControl\Experiments5\misc\';
-% elseif strcmpi(strtrim(name),'petunia')
-%     srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments6\misc\';
-% end
-% [datName,pathName]=uigetfile('*.raw','Select MEABench Data file',srcPath);
-% data = loadraw([pathName,datName],2);
-% data1 = data - 683;
-% ch = 26;
-% figure;
-% h(1) = subplot(3,1,1);
-% time = 25*25e3:30*25e3;
-% plot(time/25e3,data1(ch,time));
-% axis tight
-% box off;
-% set(gca,'XGrid','On')
-% 
-% h(2) = subplot(3,1,2);
-% time = 38*25e3:43*25e3;
-% plot(time/25e3,data1(ch,time));
-% axis tight
-% box off;
-% set(gca,'XGrid','On')
-% 
-% h(3) = subplot(3,1,3);
-% time = 85*25e3:90*25e3;
-% plot(time/25e3,data1(ch,time));
-% axis tight
-% box off;
-% set(gca,'XGrid','On')
-% 
-% suplabel('Time [s]');
-% suplabel('Voltage [\muV]','y');
+[~, name] = system('hostname');
+if strcmpi(strtrim(name),'sree-pc')
+    srcPath = 'D:\Codes\mat_work\MB_data\NetControl\Experiments5\misc\';
+elseif strcmpi(strtrim(name),'petunia')
+    srcPath = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments6\misc\';
+end
+[datName,pathName]=uigetfile('*.raw','Select MEABench Data file',srcPath);
+data = loadraw([pathName,datName],2);
+data1 = data - 683;
+ch = 54;
+figure;
+h(1) = subplot(4,1,1);
+time = 30*25e3:33*25e3;
+plot(time/25e3,data1(ch,time));
+axis tight
+box off;
+set(gca,'XGrid','On')
+
+h(2) = subplot(4,1,2);
+time = 48*25e3:51*25e3;
+plot(time/25e3,data1(ch,time));
+axis tight
+box off;
+set(gca,'XGrid','On')
+
+h(3) = subplot(4,1,3);
+time = 52*25e3:55*25e3;
+plot(time/25e3,data1(ch,time));
+axis tight
+box off;
+set(gca,'XGrid','On')
+
+h(3) = subplot(4,1,4);
+time = 78*25e3:81*25e3;
+plot(time/25e3,data1(ch,time));
+axis tight
+box off;
+set(gca,'XGrid','On')
+
+suplabel('Time [s]');
+suplabel('Voltage [\muV]','y');
