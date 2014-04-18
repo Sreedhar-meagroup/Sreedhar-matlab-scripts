@@ -1,4 +1,4 @@
-function SpontaneousData = spontaneousData(datName,pathName)
+% function SpontaneousData = spontaneousData(datName,pathName)
 %% Look for data if you dont find the datName
 if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(6,'Spontaneous');

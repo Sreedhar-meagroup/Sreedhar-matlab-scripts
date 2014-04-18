@@ -32,8 +32,8 @@ for FRnum = N
  plot( Steps*1000, n/sum(n), '.-', 'color', map(cnt,:),'LineWidth',2 )  % changed linewidth
 end 
  
-xlabel 'ISI [ms]'
-% xlabel 'ISI, T_i - T_{i-(N-1) _{ }} [ms]' 
+% xlabel 'ISI [ms]'
+xlabel 'ISI, T_i - T_{i-(N-1) _{ }} [ms]' 
 ylabel 'Probability [%]' 
 set(gca,'xscale','log') 
 set(gca,'yscale','log')
