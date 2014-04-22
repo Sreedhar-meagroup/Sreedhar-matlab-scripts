@@ -43,29 +43,44 @@ try
     end
     
     spks      = data.Spikes;
-    datRoot   = data.fileName;
-
+    if isfield(data,'fileName')
+       datRoot   = data.fileName;
+    else
+        datRoot  = 'Unknown';
+        warnflag = 1;        
+    end
+    if isfield(data,'BurstDetector')
+        BurstDetector = data.BurstDetector;
+    else
+        BurstDetector = 'Unspecified!';
+        warnflag = 1;
+    end
+    
 catch err
     try
         if ~exist('recSite','var')
             recSite = [];
         end
-        if ~exist('datRoot','var')            
-            datRoot = '';
-        end
-        disp('Warning :: Some optional fields are missing!!!');
     catch
         rethrow(err);
     end
+    if warnflag, disp('Warning :: Some optional fields are missing!!!'); end
 end
 gfr_rstr_h    = figure();
 %% Global firing rate
-binSize = 0.1;
+
+make_it_tight = true;
+subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.05], [0.1 0.01]);
+if ~make_it_tight,  clear subplot;  end
+
+
+binSize = 0.5;
 [counts,timeVec] = hist(spks.time,0:binSize:ceil(max(spks.time)));
-fig1ha(1) = subplot(3,1,1); bar(timeVec,counts); box off; 
+fig1ha(1) = subplot(3,1,1); bar(timeVec,counts/binSize); box off; 
+set(gca,'XTick',[]);
 set(gca,'TickDir','Out');
-axis tight; ylabel('# spikes'); 
-title(['Global firing rate (bin= 100ms), data: ', datRoot],'Interpreter','none');
+axis tight; ylabel('Global firing rate [Hz]'); 
+% title(['Global firing rate (bin= 0.5s), data: ', datRoot],'Interpreter','none');
 
 if stimulation % Stim response raster
     fig1ha(2)  = subplot(3,1,2:3);
@@ -88,11 +103,17 @@ if stimulation % Stim response raster
     xlabel('Time (s)');
     ylabel('Channel # (hw^{+1})');
 
-    title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),' : ',num2str(recSite), ...
-        ' (cr) / ',num2str(cr2hw(stimSite)+1),' : ',num2str(cr2hw(recSite)+1),' (hw^{+1}) ']);
+    set( get(fig1ha(1),'Title'), 'String', ...
+    sprintf('data: %s;  Stim. ch : Rec. ch = %d:%d (cr) OR %d:%d (hw+1)',...
+    datRoot,stimSite,recSite,cr2hw(stimSite)+1,cr2hw(recSite)+1),'FontWeight','Bold');
 
-    zoom xon;
+% to be tested    
+%     title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),' : ',num2str(recSite), ...
+%         ' (cr) / ',num2str(cr2hw(stimSite)+1),' : ',num2str(cr2hw(recSite)+1),' (hw^{+1}) ']);
+
     pan xon;
+    zoom xon;
+
 
 
 elseif spontaneous % Spontaneous raster with NBs
@@ -108,11 +129,16 @@ elseif spontaneous % Spontaneous raster with NBs
     hold off;
     set(gca,'TickDir','Out');
     set(gca,'YMinorGrid','On');
-    xlabel('Time (s)');
+    xlabel('Time [s]');
     ylabel('Channel #');
-    title(['Raster plot of spontaneous activity. ', num2str(length(NB_ends)), ' NBs']);
-    zoom xon;
     pan xon;
+    zoom xon;
+
+    
+set( get(fig1ha(1),'Title'), 'String', ...
+sprintf('data: %s ||  Burst detector: %s ||  %d NBs detected',...
+datRoot,BurstDetector,length(NB_ends)),'FontWeight','Bold');
+    
 else % otherwise
     disp('Error: Check the input data structure');
 end

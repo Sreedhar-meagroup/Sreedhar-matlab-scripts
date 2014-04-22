@@ -1,4 +1,4 @@
-function NB_extrema = sreedhar_ISIthreshold(spiketimes_n_channels, varargin)
+function NB_extrema = sreedhar_ISI_threshold(spiketimes_n_channels, varargin)
 
 %% HELP:
 % NB_extrema = sreedhar_ISIthreshold(spiketimes_n_channels,varargin) returns the
@@ -75,6 +75,7 @@ end
 NB_extrema = [mod_NB_onsets, NB_ends];
 
 if plot_flag
+    spontData.BurstDetector = 'ISI threshold';
     spontData.Spikes = spks;
     spontData.NetworkBursts.NB_extrema = NB_extrema;
     plt_gfrWithRaster(spontData);
