@@ -105,7 +105,7 @@ if stimulation % Stim response raster
 
     set( get(fig1ha(1),'Title'), 'String', ...
     sprintf('data: %s;  Stim. ch : Rec. ch = %d:%d (cr) OR %d:%d (hw+1)',...
-    datRoot,stimSite,recSite,cr2hw(stimSite)+1,cr2hw(recSite)+1),'FontWeight','Bold');
+    datRoot,stimSite,recSite,cr2hw(stimSite)+1,cr2hw(recSite)+1),'FontWeight','Bold','Interpreter','None');
 
 % to be tested    
 %     title(['Raster plot indicating stimulation:recording at channel [',num2str(stimSite),' : ',num2str(recSite), ...
@@ -137,7 +137,7 @@ elseif spontaneous % Spontaneous raster with NBs
     
 set( get(fig1ha(1),'Title'), 'String', ...
 sprintf('data: %s ||  Burst detector: %s ||  %d NBs detected',...
-datRoot,BurstDetector,length(NB_ends)),'FontWeight','Bold');
+datRoot,BurstDetector,length(NB_ends)),'FontWeight','Bold','Interpreter','None');
     
 else % otherwise
     disp('Error: Check the input data structure');

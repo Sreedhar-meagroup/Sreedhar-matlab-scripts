@@ -138,9 +138,9 @@ barwitherr(arg1_bwerr,arg2_bwerr,'g','EdgeColor','None');
 %     mean(respL_n_swise{4}), mean(respL_n_swise{5}), mean(respL_n_swise{6}), mean(nSpikesperBurst_post)]);
 box off;
 set(gca,'FontSize',12);
-% set(gca,'xticklabel',{'Pre','Train1','Test1','Train2','Test2','Train3','Test3','Post'});
-set(gca,'xticklabel',{'Pre','Train1','Test1','Train2','Test2','Train3','Test3',...
-    'Train4','Test4','Train5','Test5','Train6','Test6','Post'});
+set(gca,'xticklabel',{'Pre','Train1','Test1','Train2','Test2','Train3','Test3','Post'});
+% set(gca,'xticklabel',{'Pre','Train1','Test1','Train2','Test2','Train3','Test3',...
+%     'Train4','Test4','Train5','Test5','Train6','Test6','Post'});
 
 ylabel('No. of spikes');
 xticklabel_rotate;

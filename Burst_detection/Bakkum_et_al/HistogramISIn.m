@@ -39,7 +39,10 @@ for FRnum = N
  [peakVals, peakInd] = findpeaks(DataInv);
  [~, maxInd] = max(peakVals);
  valleyMinimizer_ms(cnt) = 1e3*Steps(peakInd(maxInd));
+ hold on;
+ plot(valleyMinimizer_ms(cnt),yValues(peakInd(maxInd)),'g^');
 end 
+hold off;
  
 % xlabel 'ISI [ms]'
 xlabel 'ISI, T_i - T_{i-(N-1) _{ }} [ms]' 
