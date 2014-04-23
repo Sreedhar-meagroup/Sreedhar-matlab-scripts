@@ -1,4 +1,4 @@
-function valleyMinimizer_ms = HistogramISIn( SpikeTimes, N, Steps ) 
+function valleyMinimizer_ms = HistogramISIn_old( SpikeTimes, N, Steps ) 
 % ISI_N histogram plots 
 % © Douglas Bakkum, 2013 
 % 
@@ -22,7 +22,7 @@ function valleyMinimizer_ms = HistogramISIn( SpikeTimes, N, Steps )
 % HistogramISIn(SpikeTimes,N,Steps) % Run function
 % 
 
-% version 1.2 @ SSK, 23.04.2014
+
 figure; hold on 
 map = hsv(length(N)); 
  
@@ -35,10 +35,8 @@ for FRnum = N
  n = smooth( n, 'lowess' ); 
  plot( Steps*1000, n/sum(n), '.-', 'color', map(cnt,:),'LineWidth',2 )  % changed linewidth
  yValues = n/sum(n);
- DataInv = 1.01*max(yValues) - yValues;
- [peakVals, peakInd] = findpeaks(DataInv);
- [~, maxInd] = max(peakVals);
- valleyMinimizer_ms(cnt) = 1e3*Steps(peakInd(maxInd));
+ [~, valleyMinimizerShifted] = min(yValues(Steps>0.01&Steps<1));
+ valleyMinimizer_ms(cnt) = Steps(find(Steps>0.01, 1, 'first') + valleyMinimizerShifted - 1)*1000;
 end 
  
 % xlabel 'ISI [ms]'

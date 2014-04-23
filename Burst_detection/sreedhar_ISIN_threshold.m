@@ -1,4 +1,5 @@
-function NB_extrema = sreedhar_ISIN_threshold(spiketimes_n_channels, varargin)
+% function NB_extrema = sreedhar_ISIN_threshold(spiketimes_n_channels, varargin)
+function [NB_extrema Burst] = sreedhar_ISIN_threshold(spks, varargin)
 
 %% HELP:
 % NB_extrema = sreedhar_ISI_N_threshold(spiketimes_n_channels,varargin) returns the
@@ -30,7 +31,7 @@ function NB_extrema = sreedhar_ISIN_threshold(spiketimes_n_channels, varargin)
 % Pack 1) Java Version: Java 1.7.0_11-b21 with Oracle Corporation Java
 % HotSpot(TM) 64-Bit Server VM mixed mode
 % -------------------------------------------------------------------------
-
+% version 1.2 @22.04.2014
 %**************************************************************************
 
 
@@ -42,8 +43,8 @@ if nargin > 1
    end
 end
 
-spks.time = spiketimes_n_channels(1,:);
-spks.channel = spiketimes_n_channels(2,:);
+% spks.time = spiketimes_n_channels(1,:);
+% spks.channel = spiketimes_n_channels(2,:);
 
 Steps = 10.^[-5:.05:1.5];
 N = 10;  % N is set to 10
@@ -53,7 +54,7 @@ valleyMinimizer_ms = HistogramISIn(spks.time, N, Steps); % The time threshold is
 Spike.T = spks.time;
 Spike.C = spks.channel;
 ISI_N = valleyMinimizer_ms/1e3; % in seconds
-
+disp(['ISI_N threshold was chosen as : ',num2str(1000*ISI_N),'ms']);
 [Burst Spike.N] = BurstDetectISIn( Spike, N, ISI_N );
 
 NB_extrema = [Burst.T_start', Burst.T_end'];
