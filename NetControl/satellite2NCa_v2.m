@@ -25,7 +25,7 @@ for ii = 1:length(burst_recSite{recSite_in_hwpo})
     burstsInRecCh.indices = [burstsInRecCh.indices; burst_recSite{recSite_in_hwpo}{ii,4}(:)];
 end
 
-% No: of spikes per NB
+% No: of spikes per single channel burst
 allLengths = cellfun(@length, burst_recSite{recSite_in_hwpo});
 nSpikesperBurst_pre = allLengths(:,3);
 

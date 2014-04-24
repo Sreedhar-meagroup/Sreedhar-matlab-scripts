@@ -80,9 +80,11 @@ end
 %% Response lengths (in no: of spikes)
 
 periStimAtRecSite = periStim{cr2hw(recSite)+1};
+postStimAtRecSite = cell(size(periStimAtRecSite));
 respLengths_n = zeros(size(stimTimes));
 for ii = 1: size(stimTimes,2)
     respLengths_n(ii) =  length(find(periStimAtRecSite{ii}>stimTimes(ii)));
+    postStimAtRecSite{ii} = periStimAtRecSite{ii}(periStimAtRecSite{ii}>stimTimes(ii));
 end
 
 %% Response lengths (in time)
@@ -318,11 +320,11 @@ for ii = 1:nSessions
 end
 %% for 6 session recordings
 figure();
-session_vector = [1;cumsum(nStimuliInEachSession)];
+session_vector = [0;cumsum(nStimuliInEachSession)]; % they are boundaries
 dist_h = zeros(1,nSessions);
 max_yval = 0;
 for ii = 1:nSessions
-    num = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
+    num = hist(respLengths_n(session_vector(ii)+1:session_vector(ii+1)),0:max(respLengths_n));
     dist_h(ii) = subplot(3,2,ii);
     plot(0:max(respLengths_n),num/nStimuliInEachSession(ii),'k-','LineWidth',2);
     if mod(ii,2)
