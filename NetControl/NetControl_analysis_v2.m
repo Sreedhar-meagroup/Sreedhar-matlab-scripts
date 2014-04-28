@@ -3,11 +3,16 @@
 
 %% File selection and loading data
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile(6,'net');
+    [datName,pathName] = chooseDatFile(7,'net');
 end
 datRoot = datName(1:strfind(datName,'.')-1);
 spikes  = loadspike([pathName,datName],2,25);
-thresh  = extract_thresh([pathName, datName, '.desc']);
+try
+    thresh  = extract_thresh([pathName, datName, '.desc']);
+catch
+    str = inputdlg('Enter the MEABench threshold');
+    thresh = str2num(str{1}); 
+end
 
 
 %% Stimulus times and location
@@ -40,7 +45,7 @@ NetControlData.InAChannel = inAChannel;
 
 %% Fig 1: global firing rate and raster
 
-handles(1) = plt_gfrWithRaster(NetControlData);
+% handles(1) = plt_gfrWithRaster(NetControlData);
 
 
 % Continue from here

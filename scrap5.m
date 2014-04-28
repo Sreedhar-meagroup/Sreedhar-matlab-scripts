@@ -59,3 +59,39 @@ figure();
 plot(freq,2*abs(spInfo(1:NFFT/2+1)));
 xlabel('Frequency (Hz)');
 ylabel('Amplitude');
+
+
+%% ISI histogram for recording channel
+
+SpikeTimes = data.InAChannel{38}; %hw+1
+Steps = 10.^[-5:.05:1.5];
+N = 10;
+valleyMinimizer_ms = HistogramISIn(SpikeTimes, N, Steps)
+
+
+%% Snipping NetControlData at T s
+T_end = 19e3;
+
+spks            = NetControlData.Spikes;
+spks1.time      = spks.time(spks.time<T_end);
+spks1.channel   = spks.channel(spks.time<T_end);
+spks1.height    = spks.height(spks.time<T_end);
+spks1.width     = spks.width(spks.time<T_end);
+spks1.context   = spks.context(:,spks.time<T_end);
+spks1.thresh    = spks.thresh(:,spks.time<T_end);
+spks1.thresh    = spks.thresh(:,spks.time<T_end);
+spks1.stimTimes = stimTimes;
+spks1.stimSites = spks.stimSites;
+spks1.recSite   = recSite;
+
+NetControlData.Spikes = spks1;
+inAChannel = cell(60,1);
+for ii=0:59
+    inAChannel{ii+1,1} = NetControlData.Spikes.time(NetControlData.Spikes.channel==ii);
+end
+
+% temporarily
+spks = spks1;
+
+
+NetControlData.InAChannel = inAChannel;

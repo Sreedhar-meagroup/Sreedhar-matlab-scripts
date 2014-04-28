@@ -205,7 +205,7 @@ network_burst_ends     = zeros(no_network_bursts-1,1);
 inter_netw_burst_int   = zeros(1,no_network_bursts-1);
 inter_netw_burst_gap   = zeros(1,no_network_bursts-1);
 
- for i=1:length([network_burst])-1
+ for i=1:size(network_burst,1)-1 % changed length() to size([],1)
      network_burst_onset(i,1) =  network_burst{i,1}(1);                %the  channel that starts in the networkburst
      network_burst_onset(i,2) =  network_burst{i,2}(1);                % the time when the netwburst starts
     
@@ -215,7 +215,6 @@ inter_netw_burst_gap   = zeros(1,no_network_bursts-1);
      network_burst_ends(i,1)  =  max(network_burst{i,5});            %the end time of the network burst
      inter_netw_burst_gap(i)  =  network_burst{i+1,2}(1) - burst_detection{1,which_channel_ends}{which_burst_nr_ends,3}(end); 
  end
- 
 %  %plot a histogram of the network burst interval distribution
 %  inter_netwburst_int_fig=figure;
 %  netw_burst_hist=hist(inter_netw_burst_int,0:1:max(inter_netw_burst_int));
