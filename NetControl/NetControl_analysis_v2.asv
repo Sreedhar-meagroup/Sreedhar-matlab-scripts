@@ -142,11 +142,6 @@ end
 [outNB_time, outIndices] = setdiff(spks.time, inNB_time);
 outNB_channel = spks.channel(outIndices);
 
-
-%%
-    dt = 0.5
-    disp('Did you remember to set the right dt?');
-
 %% `Patch'ing the network events
 % % green path stands for the network burst and the red one for the stim response window
 % figure(handles(1)); subplot(3,1,2:3)
@@ -324,11 +319,11 @@ nSessions = size(nStimuliInEachSession,1);
 totalStim = repmat([300;200],3,1);
 session_vector = [0;cumsum(nStimuliInEachSession)]; % they are boundaries
 
-% figure(silvssn_h);
-% hold on;
-% for ii = 1:nSessions
-%     line([sum(nStimuliInEachSession(1:ii)),sum(nStimuliInEachSession(1:ii))],[0, max(silence_s)],'Color','k');
-% end
+figure(silvssn_h);
+hold on;
+for ii = 1:nSessions
+    line([sum(nStimuliInEachSession(1:ii)),sum(nStimuliInEachSession(1:ii))],[0, max(silence_s)],'Color','k');
+end
 % NCa_v2_resp_dist comes here;
 
 % %% for 6 session recordings response distributions

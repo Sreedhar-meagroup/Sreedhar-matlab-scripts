@@ -1,6 +1,6 @@
 function RecChannel = bursts_at_RecSite(data, burst_para, recSite_in_hwpo)
 
-burst_recSite = burstDetAllCh_sk(data, burst_para(1), burst_para(2), burst_para(3));
+burst_recSite = burstDetAllCh_sk(data, burst_para(1), burst_para(2));
 
 burstsInRecCh.onsets.time = zeros(length(burst_recSite{recSite_in_hwpo}),1);
 burstsInRecCh.onsets.idx  = zeros(length(burst_recSite{recSite_in_hwpo}),1);

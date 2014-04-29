@@ -2,11 +2,11 @@
 
 
 %% Stimulus frequency distribution
-IstimI_session = diff(stimTimes(session_vector(1)+1:session_vector(2)));
-timeVec = 0:max(IstimI_session);
-counts = histc(IstimI_session,timeVec);
-figure();
-bar(timeVec,counts,'histc');
+% IstimI_session = diff(stimTimes(session_vector(1)+1:session_vector(2)));
+% timeVec = 0:max(IstimI_session);
+% counts = histc(IstimI_session,timeVec);
+% figure();
+% bar(timeVec,counts,'histc');
 max_yval = 0;
 for ii = 1:nSessions
     IstimI_session = diff(stimTimes(session_vector(ii)+1:session_vector(ii+1)));

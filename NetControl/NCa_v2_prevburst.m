@@ -1,6 +1,4 @@
 % pre stim spont
-
-
 % removing spikes in resp window
 indtoTrim = [];
 for ii = 1:length(stimTimes)
@@ -109,6 +107,7 @@ for jj = 1:nSessions
     box off;
     axis tight;
     set(gca, 'TickDir','Out');
+    set(gca, 'XScale','log');
     if mod(jj,2)
         title(['Training:',num2str(jj-fix(jj/2))]);
     else
