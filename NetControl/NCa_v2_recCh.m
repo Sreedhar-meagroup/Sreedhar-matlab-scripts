@@ -71,7 +71,7 @@ RecChannel_post = bursts_at_RecSite(post_spont.Spikes,[0.2,0.2,3],recSite_in_hwp
 IBI_rec_ch_post_h = plt_IBIdist(RecChannel_post.IBIs,dt,'Rec channel, post');
 
 Steps = 10.^[-5:.05:1.5];
-HistogramISIn(pre_spont.InAChannel{recSite_in_hwpo},2,Steps);
+HistogramISIn(post_spont.InAChannel{recSite_in_hwpo},2,Steps);
 title('post');
 line([200,200],[10^-5, 10^-1]);
 set(gca,'FontSize',12);
@@ -126,15 +126,15 @@ set(gca,'FontSize',12);
 % set(gca,'FontSize',12);
 
 % Adding to the spont raster plot
-% plt_gfrWithRaster(post_spont);
-% hold on
-% rasterplot_so(pre_spont.Spikes.time(burstsInRecCh.onsets.idx),(recSite_in_hwpo-1)*ones(size(burstsInRecCh.onsets.idx))','k-');
-% rasterplot_so(pre_spont.Spikes.time(burstsInRecCh.ends.idx),(recSite_in_hwpo-1)*ones(size(burstsInRecCh.ends.idx))','r-');
-% hold off;
+plt_gfrWithRaster(pre_spont);
+hold on
+rasterplot_so(pre_spont.Spikes.time(RecChannel_pre.burstsInRecCh.onsets.idx),(recSite_in_hwpo-1)*ones(size(RecChannel_pre.burstsInRecCh.onsets.idx))','g-');
+rasterplot_so(pre_spont.Spikes.time(RecChannel_pre.burstsInRecCh.ends.idx),(recSite_in_hwpo-1)*ones(size(RecChannel_pre.burstsInRecCh.ends.idx))','r-');
+hold off;
 
 
  %% nSp_diff_cases
- NCa_v2_SpikesInResp;
+ NCa_v2_spikesInResp;
 % % main_vector = nSpikesperBurst_pre;
 % % grps = zeros(size(nSpikesperBurst_pre));
 % arg1_bwerr = std(nSpikesperBurst_pre);

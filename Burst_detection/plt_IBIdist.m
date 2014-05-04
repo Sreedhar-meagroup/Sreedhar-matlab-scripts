@@ -10,6 +10,7 @@ h = figure('name', tag, 'NumberTitle', 'off');
 bar_h = bar(timeVec,counts/length(IBI_data),'histc');
 box off;
 set(bar_h,'EdgeColor','w','FaceColor','k');
+set(gca,'TickDir','Out');
 axis tight;
 set(gca, 'FontSize', 16)
 ylabel('probability')

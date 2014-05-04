@@ -52,69 +52,70 @@ end
 
 %% 
 % actual order
+make_it_tight = true;
+subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.05], [0.1 0.01]);
+if ~make_it_tight,  clear subplot;  end
 
 figure();
+min_xval = -1;
 for jj = 1:nSessions
-    trials_h(jj) = subplot(3,2,jj); hold on;
+    trials_h(jj) = subplot(nSessions/2,2,jj); hold on;
     for ii = session_vector(jj)+1:session_vector(jj+1)
-    plot(preStim_burst{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(preStim_burst{ii})),'.','MarkerSize',4);
-    plot(postStimAtRecSite{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(postStimAtRecSite{ii})),'r.','MarkerSize',4);
+        plot(preStim_burst{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(preStim_burst{ii})),'.','MarkerSize',4);
+        plot(postStimAtRecSite{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(postStimAtRecSite{ii})),'r.','MarkerSize',4);
+        temp = min(preStim_burst{ii}-stimTimes(ii));
+        if temp<min_xval, min_xval = temp; end 
     end
     hold off;
     box off;
     axis tight;
     set(gca, 'TickDir','Out');
-    if mod(jj,2)
-        title(['Training:',num2str(jj-fix(jj/2))]);
-    else
-        title(['Testing:',num2str(jj-fix(jj/2))]);
+    if jj == 1 %mod(jj,2)
+        title(['Training: 1 - ',num2str(nSessions/2)]);%,num2str(jj-fix(jj/2))]);
+    elseif jj == 2
+        title(['Testing: 1 - ',num2str(nSessions/2)]);
+%         title(['Testing:',num2str(jj-fix(jj/2))]);
     end
 end
 [ax1,h1]=suplabel('Time [s]');
 [ax2,h2]=suplabel('Trials','y');
+linkaxes(trials_h,'x');
+xlim([min_xval, 0.7]);
 set(h1,'FontSize',12);
 set(h2,'FontSize',12);
-
-
-
-% figure(); hold on; 
-% for ii = session_vector(1)+1:session_vector(2)
-% plot(preStim_burst{ii}-stimTimes(ii),ii*ones(size(preStim_burst{ii})),'.','MarkerSize',3);
-% plot(postStimAtRecSite{ii}-stimTimes(ii),ii*ones(size(postStimAtRecSite{ii})),'r.','MarkerSize',3);
-% end
-% axis tight;
-% hold off;
-% box off;
-% xlabel('Time [s]', 'FontSize', 14);
-% ylabel('Trials', 'FontSize', 14);
-% set(gca,'TickDir','Out');
-% set(gca,'FontSize',12);
 
 %% effect of prev_burst
 preStim_Blengths = cellfun(@length, preStim_burst);
 
 figure();
+    expected_resp = cell(1,nSessions);
+    error_in_resp = cell(1,nSessions);
+
 for jj = 1:nSessions
-    expected_resp = [];
-    error_in_resp = [];
-    subplot(3,2,jj); hold on;
+%     expected_resp{jj} = [];
+%     error_in_resp{jj} = [];
+    trials_h(jj) = subplot(nSessions/2,2,jj); hold on;
     for ii = session_vector(jj)+1:session_vector(jj+1)
-    expected_resp(ii-session_vector(jj)) = emodel_para(1)*(1-exp(-emodel_para(2)*silence_s(ii)));
-    error_in_resp(ii-session_vector(jj)) = respLengths_n(ii) - expected_resp(ii-session_vector(jj));
+        expected_resp{jj}(ii-session_vector(jj)) = emodel_para(1)*(1-exp(-emodel_para(2)*silence_s(ii)));
+        error_in_resp{jj}(ii-session_vector(jj)) = respLengths_n(ii) - expected_resp{jj}(ii-session_vector(jj));
     end
-    plot(preStim_Blengths(session_vector(jj)+1:session_vector(jj+1)), error_in_resp, 'k.');
+    plot(preStim_Blengths(session_vector(jj)+1:session_vector(jj+1)), error_in_resp{jj}, 'k.');
     hold off;
     box off;
-    axis tight;
+%     axis tight;
     set(gca, 'TickDir','Out');
     set(gca, 'XScale','log');
-    if mod(jj,2)
-        title(['Training:',num2str(jj-fix(jj/2))]);
-    else
-        title(['Testing:',num2str(jj-fix(jj/2))]);
+    if jj == 1%mod(jj,2)
+        title(['Training: 1 - ',num2str(nSessions/2)]);
+%         title(['Training:',num2str(jj-fix(jj/2))]);
+    elseif jj == 2
+        title(['Testing: 1 - ',num2str(nSessions/2)])
+%         title(['Testing:',num2str(jj-fix(jj/2))]);
     end
 end
 [ax1,h1]=suplabel('Length of previous burst');
 [ax2,h2]=suplabel('Error','y');
+linkaxes(trials_h,'x');
+xlim([1,max(preStim_Blengths)]);
 set(h1,'FontSize',12);
 set(h2,'FontSize',12);

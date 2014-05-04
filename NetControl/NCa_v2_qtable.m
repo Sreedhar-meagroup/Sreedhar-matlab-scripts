@@ -1,14 +1,7 @@
 % Qtable analysis
-
-qname = [pathName,'qtables\','trained.qtable0'];
+for ii = 1:nSessions/2
+qtab_id = num2str(ii-1);    
+qname = [pathName,'qtables\','trained.qtable',qtab_id];
 temp = plt_qtable(qname);
-hold on;
-title('Post training 1');
-qname = [pathName,'qtables\','trained.qtable1'];
-temp = plt_qtable(qname);
-hold on;
-title('Post training 2');
-qname = [pathName,'qtables\','trained.qtable2'];
-temp = plt_qtable(qname);
-hold on;
-title('Post training 3');
+title(['Post training: ',num2str(ii)]);
+end

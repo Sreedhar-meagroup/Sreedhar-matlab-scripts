@@ -1,16 +1,16 @@
 % Control room
 %%
-NetControl_analysis_v2;
+% NetControl_analysis_v2;
+NetControl_analysis_v2_1;
 
 %%
-NCa_v2_stock_plots;
-
-
-%%
-NCa_v2_resp_dist;
+NCa_v2_1_stock_plots;
 
 %%
-NCa_v2_recCh;
+NCa_v2_1_resp_dist; 
+
+%%
+NCa_v2_1_recCh;
 
 %%
 NCa_v2_qtable;

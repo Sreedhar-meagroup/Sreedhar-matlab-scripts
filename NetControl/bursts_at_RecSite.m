@@ -30,3 +30,4 @@ IBI_RecCh(2:end) = burstsInRecCh.onsets.time(2:end) - burstsInRecCh.ends.time(1:
 
 RecChannel.IBIs = IBI_RecCh;
 RecChannel.nSpikesperBurst = nSpikesperBurst;
+RecChannel.burstsInRecCh = burstsInRecCh;

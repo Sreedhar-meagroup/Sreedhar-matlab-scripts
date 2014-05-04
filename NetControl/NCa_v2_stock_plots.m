@@ -1,6 +1,6 @@
 %% Figures
 %% plot1: response lengths(#spikes) vs stimNo
-rlvstimno_h = figure();
+rlvsstimno_h = figure();
 plot(respLengths_n,'.');
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
 % hold on;
@@ -112,11 +112,9 @@ end
 %     title('Response during testing');
 % end
 
-
-
 %% 
 IBI_pre_h = plt_IBIdist(pre_spont.NetworkBursts.IBIs , dt, 'Network, pre');
-IBI_post_h = plt_IBIdist(pre_spont.NetworkBursts.IBIs , dt, 'Network, post');
+IBI_post_h = plt_IBIdist(post_spont.NetworkBursts.IBIs , dt, 'Network, post');
 %% slice of a raster around a given stim number (manual -- very accurate)
 % dcm_obj = datacursormode(h2);
 % set(dcm_obj,'DisplayStyle','datatip','SnapToDataVertex','off','Enable','on');
@@ -137,7 +135,10 @@ end
 set(silvsstimno_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mod_NB_onsets,NB_ends});
 
 
+%%
 
+figure(rlvsstimno_h); hold on;
+plot(session_vector(2:end-1), max(respLengths_n)*ones(size(session_vector(2:end-1))),'r^');
 
 %% Saving figures
 % figPath = 'C:\Users\duarte\Desktop\progress_report1\figures\E5_323_4449\';
