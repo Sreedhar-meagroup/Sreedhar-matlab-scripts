@@ -14,10 +14,12 @@ stimSitesSlice = spks.stimSites(stimTimesVec >= startTime & stimTimesVec <= stop
 
 %% Fig 1a: global firing rate
  h = figure(); 
-% sliding window; bin width = 100ms
-[counts,timeVec] = hist(timeStamps,0:0.1:ceil(max(timeStamps)));
-fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 1s)');
+binSize = 0.05;
+[counts,timeVec] = hist(timeStamps,0:binSize:ceil(max(timeStamps)));
+fig1ha(1) = subplot(3,1,1); bar(timeVec,counts/binSize);
+axis tight; ylabel('Global firing rate [Hz]'); title(['Binwidth = ',num2str(binSize*1e3),'ms']);
+box off;
+set(gca,'TickDir','Out');
 
 %% Fig 1b: General raster
 

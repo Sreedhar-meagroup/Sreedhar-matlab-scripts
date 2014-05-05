@@ -12,7 +12,7 @@ slim_spks.channel = spks.channel(setdiff((1:length(spks.time)),indtoTrim));
 
 burst_det_cl = burstDetAllCh_sk(slim_spks,0.2,0.2,3);
 
-% our channel 
+% bursts in recording channel (biRC)
 biRC_closedLoop .onsets.time = zeros(length(burst_det_cl {recSite_in_hwpo}),1);
 biRC_closedLoop .onsets.idx  = zeros(length(burst_det_cl {recSite_in_hwpo}),1);
 
@@ -64,11 +64,12 @@ for jj = 1:nSessions
         plot(preStim_burst{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(preStim_burst{ii})),'.','MarkerSize',4);
         plot(postStimAtRecSite{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(postStimAtRecSite{ii})),'r.','MarkerSize',4);
         temp = min(preStim_burst{ii}-stimTimes(ii));
+        if jj <= nSessions-2, set(gca,'XTickLabel',[]);end
         if temp<min_xval, min_xval = temp; end 
     end
     hold off;
     box off;
-    axis tight;
+%     axis tight;
     set(gca, 'TickDir','Out');
     if jj == 1 %mod(jj,2)
         title(['Training: 1 - ',num2str(nSessions/2)]);%,num2str(jj-fix(jj/2))]);
@@ -84,7 +85,7 @@ xlim([min_xval, 0.7]);
 set(h1,'FontSize',12);
 set(h2,'FontSize',12);
 
-%% effect of prev_burst
+%% Error (actual-expected) of prev_burst
 preStim_Blengths = cellfun(@length, preStim_burst);
 
 figure();
@@ -100,6 +101,8 @@ for jj = 1:nSessions
         error_in_resp{jj}(ii-session_vector(jj)) = respLengths_n(ii) - expected_resp{jj}(ii-session_vector(jj));
     end
     plot(preStim_Blengths(session_vector(jj)+1:session_vector(jj+1)), error_in_resp{jj}, 'k.');
+    if jj <= nSessions-2, set(gca,'XTickLabel',[]);end
+
     hold off;
     box off;
 %     axis tight;
@@ -114,7 +117,7 @@ for jj = 1:nSessions
     end
 end
 [ax1,h1]=suplabel('Length of previous burst');
-[ax2,h2]=suplabel('Error','y');
+[ax2,h2]=suplabel('Error=(Actual-expected)','y');
 linkaxes(trials_h,'x');
 xlim([1,max(preStim_Blengths)]);
 set(h1,'FontSize',12);

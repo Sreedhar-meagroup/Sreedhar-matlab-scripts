@@ -65,7 +65,27 @@ nSessions = size(nStimuliInEachSession,1);
 totalStim = repmat([300;200],3,1);
 session_vector = [0;cumsum(nStimuliInEachSession)]; % they are boundaries
 
+%% Burst detection part
 
+burst_detection = burstDetAllCh_sk(spks);
+[bursting_channels_mea, network_burst, NB_onsets, NB_ends] ...
+    = Networkburst_detection_sk(datName,spks,burst_detection,10);
+% harking back 50ms from the current NB onset definition and redefining onset boundaries.
+mod_NB_onsets = zeros(length(NB_onsets),1);
+for ii = 1:length(NB_onsets)
+    if ~isempty(find(spks.time>NB_onsets(ii,2)-50e-3 & spks.time<NB_onsets(ii,2), 1))
+        mod_NB_onsets(ii) = spks.time(find(spks.time >...
+            NB_onsets(ii,2)-50e-3 & spks.time<NB_onsets(ii,2),1,'first'));
+    else
+        mod_NB_onsets(ii) = NB_onsets(ii,2);
+    end
+end
+NB_slices = cell(length(mod_NB_onsets),1);
+
+for ii = 1: length(mod_NB_onsets)
+    NB_slices{ii}.time = spks.time(spks.time>=mod_NB_onsets(ii) & spks.time<=NB_ends(ii));
+    NB_slices{ii}.channel = spks.channel(spks.time>=mod_NB_onsets(ii) & spks.time<=NB_ends(ii));
+end
 
 %% NetControl-Data structure
 NetControlData.fileName = datRoot;

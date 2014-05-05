@@ -1,4 +1,6 @@
 %% Figures
+
+
 %% plot1: response lengths(#spikes) vs stimNo / rlvsstimno
 rlvsstimno_h = figure();
 plot(respLengths_n,'.');
