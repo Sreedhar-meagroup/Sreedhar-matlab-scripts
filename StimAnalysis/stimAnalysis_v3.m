@@ -238,81 +238,81 @@ pan xon;
 
 % Comment in/out from here downwards:
 
-% % Binning, averaging and plotting all the PSTHs
-% listOfCounts_all = cell(1,nStimSites);
-% binSize = 10;
-% for ii = 1:nStimSites
-%     psth_h = genvarname(['psth_',num2str(ii)]);
-%     eval([psth_h '= figure();']);%, num2str(1+ii), ');']);
-%     handles(ii+1) = eval(psth_h);
-%     psth_sp_h = zeros(1,60); %psth subplot handles
-%     max_axlim = 0;
-%     for jj = 1:60
-%         bins = -50: binSize: 500;
-%         count = 0;
-%         frMat = zeros(size(stimTimes{ii},2),length(bins));
-%         for kk = 1:size(stimTimes{ii},2)
-%             shiftedSp = periStim{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
-%             %if ~isempty(spks)
-%                 fr = zeros(size(bins));
-%                 for mm = 1:length(bins)-1
-%                     fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
-%                 end
-%                 count = count + 1;
-%                 frMat(count,:) = fr;     
-%             %end
+% Binning, averaging and plotting all the PSTHs
+listOfCounts_all = cell(1,nStimSites);
+binSize = 10;
+for ii = 1:nStimSites
+    psth_h = genvarname(['psth_',num2str(ii)]);
+    eval([psth_h '= figure();']);%, num2str(1+ii), ');']);
+    handles(ii+1) = eval(psth_h);
+    psth_sp_h = zeros(1,60); %psth subplot handles
+    max_axlim = 0;
+    for jj = 1:60
+        bins = -50: binSize: 500;
+        count = 0;
+        frMat = zeros(size(stimTimes{ii},2),length(bins));
+        for kk = 1:size(stimTimes{ii},2)
+            shiftedSp = periStim{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
+            %if ~isempty(spks)
+                fr = zeros(size(bins));
+                for mm = 1:length(bins)-1
+                    fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
+                end
+                count = count + 1;
+                frMat(count,:) = fr;     
+            %end
+        end
+        listOfCounts_all{1,ii}{jj,1} = count; 
+        if count ==0, count=1; end
+        
+        %finding the right subplot position in a 6x10 array
+        ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
+        [row, col] = find(ch6x10_ch8x8_60 == jj);
+        pos = 6*(row-1) + col;
+        
+        psth_sp_h(jj) = subplot(10,6,pos);
+        shadedErrorBar(bins+binSize/2,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
+%         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
+%         axis([-50 500 -0.5 1])
+        
+        line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
+        if jj == cr2hw(stimSites(ii))+1
+            text(375,0.5,num2str(jj),'FontAngle','italic','Color',[1,0,0]);
+        else
+            text(375,0.5,num2str(jj),'FontAngle','italic');
+        end
+        
+%         if ~or(mod(pos,6)==1,pos>54)
+%             set(gca,'YTickLabel',[]);
+%             set(gca,'XTickLabel',[]);
+%         elseif pos>55
+%             set(gca,'YTickLabel',[]);
+%         elseif pos~=55
+%             set(gca,'XTickLabel',[]);
 %         end
-%         listOfCounts_all{1,ii}{jj,1} = count; 
-%         if count ==0, count=1; end
-%         
-%         %finding the right subplot position in a 6x10 array
-%         ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
-%         [row, col] = find(ch6x10_ch8x8_60 == jj);
-%         pos = 6*(row-1) + col;
-%         
-%         psth_sp_h(jj) = subplot(10,6,pos);
-%         shadedErrorBar(bins+binSize/2,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-% %         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-% %         axis([-50 500 -0.5 1])
-%         
-%         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
-%         if jj == cr2hw(stimSites(ii))+1
-%             text(375,0.5,num2str(jj),'FontAngle','italic','Color',[1,0,0]);
-%         else
-%             text(375,0.5,num2str(jj),'FontAngle','italic');
-%         end
-%         
-% %         if ~or(mod(pos,6)==1,pos>54)
-% %             set(gca,'YTickLabel',[]);
-% %             set(gca,'XTickLabel',[]);
-% %         elseif pos>55
-% %             set(gca,'YTickLabel',[]);
-% %         elseif pos~=55
-% %             set(gca,'XTickLabel',[]);
-% %         end
-%         set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
-%         set(gcf,'WindowStyle','docked');
-% 
-%         if max(mean(frMat)+std(frMat)) > max_axlim
-%             max_axlim =  max(mean(frMat)+std(frMat));
-%         end
-%     end
-%     linkaxes(psth_sp_h);
-%     axis([-50 500 -0.5 max_axlim]);
-%     [ax1,h1]=suplabel('time[ms]');
-%     set(h1,'FontSize',16);
-%     [ax2,h2]=suplabel('Mean #spikes','y');
-%     set(h2,'FontSize',16);
-%     [ax4,h3]=suplabel(['PSTH (stimulation at ',num2str(stimSites(ii)),'^{cr} / ',num2str(cr2hw(stimSites(ii))+1),'^{hw+1})'],'t');
-%     set(h3,'FontSize',16);
-%  %  set(h3,'FontSize',30)
-% %     % Add a title to the whole plot
-% %         set(gcf,'NextPlot','add');
-% %         axes;
-% %         h = title(['PSTHs following stimulation at ',num2str(stimSites(ii)),' / ',num2str(cr2hw(stimSites(ii))+1),' cr/(hw^{+1}). [mean #spikes vs time(ms)]']);
-% %         set(gca,'Visible','off');
-% %         set(h,'Visible','on');
-% end
+        set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
+        set(gcf,'WindowStyle','docked');
+
+        if max(mean(frMat)+std(frMat)) > max_axlim
+            max_axlim =  max(mean(frMat)+std(frMat));
+        end
+    end
+    linkaxes(psth_sp_h);
+    axis([-50 500 -0.5 max_axlim]);
+    [ax1,h1]=suplabel('time[ms]');
+    set(h1,'FontSize',16);
+    [ax2,h2]=suplabel('Mean #spikes','y');
+    set(h2,'FontSize',16);
+    [ax4,h3]=suplabel(['PSTH (stimulation at ',num2str(stimSites(ii)),'^{cr} / ',num2str(cr2hw(stimSites(ii))+1),'^{hw+1})'],'t');
+    set(h3,'FontSize',16);
+ %  set(h3,'FontSize',30)
+%     % Add a title to the whole plot
+%         set(gcf,'NextPlot','add');
+%         axes;
+%         h = title(['PSTHs following stimulation at ',num2str(stimSites(ii)),' / ',num2str(cr2hw(stimSites(ii))+1),' cr/(hw^{+1}). [mean #spikes vs time(ms)]']);
+%         set(gca,'Visible','off');
+%         set(h,'Visible','on');
+end
 
 %% saving the figures
 %saveFigs('stimAnalysis', datRoot,handles, stimSites);

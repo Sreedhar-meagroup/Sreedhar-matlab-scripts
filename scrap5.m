@@ -63,7 +63,7 @@ ylabel('Amplitude');
 
 %% ISI histogram for recording channel
 
-SpikeTimes = data.InAChannel{38}; %hw+1
+SpikeTimes = data.InAChannel{20}; %hw+1
 Steps = 10.^[-5:.05:1.5];
 N = 10;
 valleyMinimizer_ms = HistogramISIn(SpikeTimes, N, Steps)
