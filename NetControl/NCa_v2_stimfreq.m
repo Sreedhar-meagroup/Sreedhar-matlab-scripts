@@ -1,5 +1,5 @@
 %% Stimulus frequency distribution
-figure();
+IstimI_dist_h = figure();
 max_yval = 0;
 for ii = 1:nSessions
     IstimI_session = diff(stimTimes(session_vector(ii)+1:session_vector(ii+1)));
@@ -26,7 +26,7 @@ set(h2,'FontSize',12);
 
 
 %% IstimI evolution
-figure();
+IstimI_evol_h = figure();
 for ii = 1:nSessions
     IstimI_session = [NaN, diff(stimTimes(session_vector(ii)+1:session_vector(ii+1)))];
     timeVec = session_vector(ii)+1:session_vector(ii+1);
@@ -52,7 +52,7 @@ set(h2,'FontSize',12);
 binSize = 100;
 timeVec = 0:binSize:max(stimTimes);
 counts = histc(stimTimes,timeVec);
-figure();
+stimfreqvstime_h = figure();
 bar_h = bar(timeVec,counts/binSize,'histc'); hold on;
 plot(stimTimes(session_vector(2:end-1)), max(counts/binSize)*ones(size(stimTimes(session_vector(2:end-1)))),'r^');
 box off;

@@ -1,11 +1,17 @@
 % run spontaneousData prior to running this file
-% spontaneousData;
+spont_data = spontaneousData;
+%getting spontaneous burst start and end times from the data structure.
+mod_NB_onsets = spont_data.NetworkBursts.NB_extrema(:,1);
+NB_ends = spont_data.NetworkBursts.NB_extrema(:,2);
+NB_slices = spont_data.NetworkBursts.NB_slices;
 NB_widths = NB_ends - mod_NB_onsets;
+
+% initializing cells to store rank order and temporal order respectively
+
 rankList = cell(length(NB_slices),1);
 timeList = cell(length(NB_slices),1);
 matWithRanks = zeros(60,length(NB_slices));
 matWithTimes = zeros(60,length(NB_slices));%+ 1+max(NB_widths);
-
 
 for ii = 1:length(NB_slices)
     rankList{ii} = unique_us(NB_slices{ii}.channel)+1; % in 1-60 ch
@@ -29,7 +35,7 @@ imagesc(corrcov(cov(NBsfromHS)));
 colormap(gray);
 colorbar; box off; set(gca,'TickDir','Out');
 
-NBmost2least = []; % this part will arrange the idices of the NBs from hotspots outwards.
+NBmost2least = []; % this part will arrange the indices of the NBs from hotspots outwards.
 for ii = 1:length(LCsorted)
     NBmost2least = [NBmost2least,find(matWithRanks(LCsorted(ii),:) == 1)]; 
 end

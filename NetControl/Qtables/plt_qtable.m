@@ -1,4 +1,4 @@
-function qtab_mat = plt_qtable(pname)
+function [qtab_mat, h] = plt_qtable(pname)
 %Extrats qtable from log file and plots it
 % INPUTS : Full path name of log file or cell array of pathnames
 % OUTPUT : qtable in matrix format
@@ -9,7 +9,7 @@ function qtab_mat = plt_qtable(pname)
     qtab_mat = cell2mat(qtab);
 
     %% plotting and saving
-    figure();
+    h = figure();
     plot(qtab_mat(:,1)*0.5,qtab_mat(:,2),'LineWidth',2,'color','g')
     hold on
     plot(qtab_mat(:,1)*0.5,qtab_mat(:,3),'LineWidth',2,'color','r')

@@ -9,7 +9,7 @@ end
 arg1_bwerr(end+1) = std(RecChannel_post.nSpikesperBurst);
 arg2_bwerr(end+1) = mean(RecChannel_post.nSpikesperBurst);
 
-nSp_diff_cases_h = figure();
+nSp_diffcases_h = figure();
     barwitherr(arg1_bwerr,arg2_bwerr,'g','EdgeColor','None');
 if nSessions == 6
     set(gca,'xticklabel',{'Pre','Train1','Test1','Train2','Test2','Train3','Test3','Post'});

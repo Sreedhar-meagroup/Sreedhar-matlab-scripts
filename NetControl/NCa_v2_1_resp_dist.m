@@ -1,6 +1,6 @@
 % Response distribution
 
-resp_dist_h = figure();
+respdist_h = figure();
 dist_h = zeros(1,nSessions);
 max_yval = 0;
 for ii = 1:nSessions

@@ -28,7 +28,7 @@ for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
 [PID, CID] = getCultureDetails(pathName);
-
+session_number = pathName(end-1);
 %% Peri(-5ms<t<500ms) and post(t<500ms) stimulus spike times at the recording channel
 
 recSite = electrode_details.rec_electrode;
@@ -91,6 +91,7 @@ end
 NetControlData.fileName = datRoot;
 NetControlData.Culture_details.PID = PID;
 NetControlData.Culture_details.CID = CID;
+NetControlData.Session_number = session_number;
 NetControlData.Culture_details.MEA = '';
 NetControlData.Culture_details.MEAtype = '';
 NetControlData.Culture_details.Age = '';

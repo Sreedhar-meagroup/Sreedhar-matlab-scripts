@@ -1,4 +1,4 @@
-function valleyMinimizer_ms = HistogramISIn( SpikeTimes, N, Steps ) 
+function [valleyMinimizer_ms, h] = HistogramISIn( SpikeTimes, N, Steps ) 
 % ISI_N histogram plots 
 % © Douglas Bakkum, 2013 
 % 
@@ -23,7 +23,7 @@ function valleyMinimizer_ms = HistogramISIn( SpikeTimes, N, Steps )
 % 
 
 % version 1.2 @ SSK, 23.04.2014
-figure; hold on 
+h = figure(); hold on 
 map = hsv(length(N)); 
  
 cnt = 0;

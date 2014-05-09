@@ -74,7 +74,7 @@ subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.05], [0.1 0.01]);
 if ~make_it_tight,  clear subplot;  end
 
 
-binSize = 0.5;
+binSize = 0.1;
 [counts,timeVec] = hist(spks.time,0:binSize:ceil(max(spks.time)));
 fig1ha(1) = subplot(3,1,1); bar(timeVec,counts/binSize); box off; 
 set(gca,'XTick',[]);
@@ -119,12 +119,25 @@ if stimulation % Stim response raster
 elseif spontaneous % Spontaneous raster with NBs
     fig1ha(2) = subplot(3,1,2:3);
     hold on;
-    Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
-    Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
-    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
+%% since patch no longer works this way -- 09.05.2014@ssk
+%     Xcoords = [mod_NB_onsets';mod_NB_onsets';NB_ends';NB_ends'];
+%     Ycoords = 61*repmat([0;1;1;0],size(NB_ends'));
+%     patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.35);
+hold on;
+for ii = 1:length(NB_ends)
+    Xcoords = [mod_NB_onsets(ii);mod_NB_onsets(ii);NB_ends(ii);NB_ends(ii)];
+    Ycoords = 61*[0;1;1;0];
+    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+end
 
+%     Detected = []; 
+%     for ii=1:length(NB_ends) 
+%         Detected = [ Detected mod_NB_onsets(ii) NB_ends(ii) NaN ]; 
+%     end
+%     plot(Detected, 61*ones(size(Detected)), 'r', 'linewidth', 4 );
+    
+%%    
     linkaxes(fig1ha, 'x');
-    hold on;
     rasterplot_so(spks.time,spks.channel,'b-');
     hold off;
     set(gca,'TickDir','Out');
