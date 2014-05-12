@@ -89,10 +89,9 @@ Ev_corr.inv_matWithRanks = inv_matWithRanks;
 %% Another figure comparing spont and evoked
 
 figure(); % cross-correlation matrix of the all NBs, sorted from hotspot outwards.
-combined_invRankMat = [Sp_corr.inv_matWithRanks(:,Sp_corr.LCEachBurst==Sp_corr.LCsorted(1))...
-                        Ev_corr.inv_matWithRanks{1}];
-imagesc(corrcov(cov(combined_invRankMat)));
+combined_rankMat = Sp_corr.
+imagesc(corrcov(cov(inv_matWithRanks{1}(:,RespsMost2least))));
 colormap(gray);
 axis square;
 colorbar;box off; set(gca,'TickDir','Out');
-title('Combined(inv)');
+title('All bursts (inv)');

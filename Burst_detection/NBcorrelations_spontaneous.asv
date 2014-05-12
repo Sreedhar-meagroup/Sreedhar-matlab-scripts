@@ -27,11 +27,6 @@ end
 nRepsOfLC = hist(LCEachBurst,1:60);
 [sortednNBs,LCsorted] = sort(nRepsOfLC,'descend');
 
-NBmost2least = []; % this part will arrange the indices of the NBs from hotspots outwards.
-for ii = 1:length(LCsorted)
-    NBmost2least = [NBmost2least,find(matWithRanks(LCsorted(ii),:) == 1)]; 
-end
-
 
 % modifying and rescaling the matWithRanks
 % First modification: 1 - rank values/max(rank values) = inv_matWithRanks;
@@ -41,29 +36,38 @@ inv_matWithRanks(target_ind) = 1 - inv_matWithRanks(target_ind);
 
 
 % second modification: an exponential kernel
-% inv_kernel_matWithRanks = inv_matWithRanks.*(1-exp(-inv_matWithRanks/2*mean(inv_matWithRanks(:))));
+inv_kernel_matWithRanks = inv_matWithRanks.*(1-exp(-inv_matWithRanks/mean(inv_matWithRanks(:))));
 
 
 
 %% figures_old
-% % NBs starting from the leading channels (LCsorted(1)...)
-% NBsfromHS = matWithRanks(:,LCEachBurst == LCsorted(1)); % HS stands for hot-spot; defining LCsorted(1) as the hot-spot
-% 
-% % figure 1: corrcov without modifications/rescaling
-% figure(); % cross-correlation matrix of the hotspot initiated bursts
-% imagesc(corrcov(cov(NBsfromHS)));
-% colormap(gray);
-% colorbar; box off; set(gca,'TickDir','Out');
-% 
-% % figure 2: all NBs, without any modifications/rescaling.
-% figure(); % cross-correlation matrix of the all NBs, sorted from hotspot outwards.
-% imagesc(corrcov(cov(matWithTimes(:,NBmost2least))));
-% colormap(gray);
-% colorbar;box off; set(gca,'TickDir','Out');
-% 
+% NBs starting from the leading channels (LCsorted(1)...)
+NBsfromHS = matWithRanks(:,LCEachBurst == LCsorted(1)); % HS stands for hot-spot; defining LCsorted(1) as the hot-spot
+NBmost2least = []; % this part will arrange the indices of the NBs from hotspots outwards.
+for ii = 1:length(LCsorted)
+    NBmost2least = [NBmost2least,find(matWithRanks(LCsorted(ii),:) == 1)]; 
+end
+
+% figure 1: corrcov without modifications/rescaling
+figure(); % cross-correlation matrix of the hotspot initiated bursts
+imagesc(corrcov(cov(NBsfromHS)));
+colormap(gray);
+colorbar; box off; set(gca,'TickDir','Out');
+
+% figure 2: all NBs, without any modifications/rescaling.
+figure(); % cross-correlation matrix of the all NBs, sorted from hotspot outwards.
+imagesc(corrcov(cov(matWithTimes(:,NBmost2least))));
+colormap(gray);
+colorbar;box off; set(gca,'TickDir','Out');
+
 
 %% figures_new
 NBsfromHS_inv = inv_matWithRanks(:,LCEachBurst == LCsorted(1));
+
+NBmost2least_inv = []; % this part will arrange the indices of the NBs from hotspots outwards.
+for ii = 1:length(LCsorted)
+    NBmost2least_inv = [NBmost2least_inv,find(inv_matWithRanks(LCsorted(ii),:) == 1)]; 
+end
 
 % figure 1: corrcov with modifications/rescaling
 figure(); % cross-correlation matrix of the hotspot initiated bursts
@@ -71,7 +75,7 @@ imagesc(corrcov(cov(NBsfromHS_inv)));
 colormap(gray);
 colorbar; box off; set(gca,'TickDir','Out');
 axis square;
-title('NBs from same hotspot (1-normalized rank)');
+title('NBs from same hotspot, (inv)');
 
 
 % figure 2: all NBs, with modifications/rescaling.
@@ -80,14 +84,25 @@ imagesc(corrcov(cov(inv_matWithRanks(:,NBmost2least))));
 colormap(gray);
 colorbar;box off; set(gca,'TickDir','Out');
 axis square;
-title('All bursts (1-normalized rank)');
+title('All bursts (inv)');
 
 
-%% Data to retain
+%% figures_post new
 
-Sp_corr.data = spont_data;
-Sp_corr.sortednNBs = sortednNBs;
-Sp_corr.LCsorted =  LCsorted;
-Sp_corr.LCEachBurst =  LCEachBurst;
-Sp_corr.matWithRanks = matWithRanks;
-Sp_corr.inv_matWithRanks = inv_matWithRanks;
+NBsfromHS_kinv = inv_kernel_matWithRanks(:,LCEachBurst == LCsorted(1));
+% figure 1: corrcov with modifications/rescaling
+figure(); % cross-correlation matrix of the hotspot initiated bursts
+imagesc(corrcov(cov(NBsfromHS_inv)));
+colormap(gray);
+colorbar; box off; set(gca,'TickDir','Out');
+axis square;
+title('NBs from same hotspot, (inv)');
+
+
+% figure 2: all NBs, with modifications/rescaling.
+figure(); % cross-correlation matrix of the all NBs, sorted from hotspot outwards.
+imagesc(corrcov(cov(inv_matWithRanks(:,NBmost2least))));
+colormap(gray);
+colorbar;box off; set(gca,'TickDir','Out');
+axis square;
+title('All bursts (inv)');

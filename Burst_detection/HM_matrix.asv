@@ -1,5 +1,5 @@
 ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
-for ii= NBmost2least(1:10)%length(rankList)
+for ii= NBmost2least(1:6)%length(rankList)
     HM= NaN(10,6);
     rList = rankList{ii};
 for jj = 1 : length(rList)
