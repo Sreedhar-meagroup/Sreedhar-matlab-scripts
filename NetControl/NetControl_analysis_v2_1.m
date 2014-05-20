@@ -60,11 +60,26 @@ respLengths_n = cellfun(@length, postStimAtRecSite);
     disp('Message::Did you remember to set the right dt?');
 
 %% Collect log of number of stimuli in training and testing sessions
-nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
-nSessions = size(nStimuliInEachSession,1);
-totalStim = repmat([300;200],3,1);
-session_vector = [0;cumsum(nStimuliInEachSession)]; % they are boundaries
+try
+    nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
 
+catch err
+    try 
+        nStimuliInEachSession = str2num(strtrim(fileread([pathName,'\log_num_stimuli.txt'])));
+    catch err
+        disp('Warning:: log_num_stimuli file not found');
+        nStimuliInEachSession = [];
+        nSessions = [];
+        totalStim = [];
+        session_vector = []; 
+    end
+end
+
+if ~isempty(nStimuliInEachSession)
+    nSessions = size(nStimuliInEachSession,1);
+    totalStim = repmat([300;200],3,1);
+    session_vector = [0;cumsum(nStimuliInEachSession)]; % they are boundaries
+end
 %% Burst detection part
 
 burst_detection = burstDetAllCh_sk(spks);
@@ -109,4 +124,9 @@ NetControlData.Silence_s = silence_s;
 NetControlData.RespLengths_n = respLengths_n;
 
 NetControlData.Pre_spontaneous = spontaneousData();
-NetControlData.Post_spontaneous = spontaneousData('spon_after_testing.spike', pathName);
+try
+    NetControlData.Post_spontaneous = spontaneousData('spon_after_testing.spike', pathName);
+catch err
+    disp('Warning:: No post experiment spontaneous data available');
+    NetControlData.Post_spontaneous = [];
+end

@@ -11,6 +11,13 @@ if exist([figNameTemplate,'rlvsstimno.eps'],'file')
     if strcmpi(choice,'yes')
         proceed_flag = 1;
     end
+else
+    choice = questdlg('Would you like to save all 20 figs?', ...
+	figNameTemplate(end-7:end-1), ...
+	'Yes','No','Yes');
+    if strcmpi(choice,'yes')
+        proceed_flag = 1;
+    end
 end
 
 if proceed_flag
@@ -30,9 +37,9 @@ if proceed_flag
     saveas(nSp_diffcases_h,[figNameTemplate,'nSp_diffcases.eps'], 'psc2');
     saveas(spon_dist_h,[figNameTemplate,'spon_dist.eps'], 'psc2');
     
-    saveas(qtab_h(1),[figNameTemplate,'qtab-','1','.eps'], 'psc2');
-    saveas(qtab_h(2),[figNameTemplate,'qtab-','2','.eps'], 'psc2');
-    saveas(qtab_h(3),[figNameTemplate,'qtab-','3','.eps'], 'psc2');
+    for ii = 1:length(qtab_h)
+        saveas(qtab_h(ii),[figNameTemplate,'qtab-',num2str(ii),'.eps'],'psc2');
+    end
     
     saveas(IstimI_dist_h,[figNameTemplate,'IstimI_dist.eps'], 'psc2');
     saveas(IstimI_evol_h,[figNameTemplate,'IstimI_evol.eps'], 'psc2');
@@ -44,6 +51,7 @@ if proceed_flag
 else
     disp('Message:: No figures were saved.');
 end
-    
+
+disp('Message:: Figures were SUCCESSFULLY saved.');
 
 

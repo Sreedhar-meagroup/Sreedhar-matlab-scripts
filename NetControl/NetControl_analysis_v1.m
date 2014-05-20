@@ -196,7 +196,7 @@ spksPerCHPerTime = length(spks.time)/(60*(max(spks.time) - min(spks.time)));
 %% Figures
 %% plot1: response lengths(#spikes) vs stimNo
 rlvsn_h = figure();
-plot(respLengths_n,'LineWidth',1);
+plot(respLengths_n,'.');
 %shadedErrorBar(1:length(respLengths_n),respLengths_n,std(respLengths_n)*ones(size(respLengths_n)),{'b','linewidth',0.5},0);
 hold on;
 plot(mean(respLengths_n)*ones(size(respLengths_n)),'r.', 'MarkerSize',3);
@@ -351,39 +351,69 @@ set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mo
 
 
 %% Collect log of number of stimuli in training and testing sessions
-nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
-nSessions = size(nStimuliInEachSession,1);
-totalStim = repmat([300;200],3,1);
-
-figure(silvssn_h);
-hold on;
-for ii = 1:nSessions
-    line([sum(nStimuliInEachSession(1:ii)),sum(nStimuliInEachSession(1:ii))],[0, max(silence_s)],'Color','k');
-end
+% nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
+% nSessions = size(nStimuliInEachSession,1);
+% totalStim = repmat([300;200],3,1);
+% 
+% figure(silvssn_h);
+% hold on;
+% for ii = 1:nSessions
+%     line([sum(nStimuliInEachSession(1:ii)),sum(nStimuliInEachSession(1:ii))],[0, max(silence_s)],'Color','k');
+% end
 %% 
-figure();
-session_vector = [1;cumsum(nStimuliInEachSession)];
-dist_h = zeros(1,nSessions);
-max_yval = 0;
-for ii = 1:nSessions
-    num = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
-    dist_h(ii) = subplot(3,2,ii);
-    plot(0:max(respLengths_n),num/nStimuliInEachSession(ii),'k-','LineWidth',2);
-    if mod(ii,2)
-        title(['Training:',num2str(ii-fix(ii/2))]);
-    else
-        title(['Testing:',num2str(ii-fix(ii/2))]);
-    end
-    grid on;
-    if max(num/nStimuliInEachSession(ii)) > max_yval
-        max_yval = max(num/nStimuliInEachSession(ii));
-    end
-end
-max_xval = max(respLengths_n);
-linkaxes(dist_h);
-xlim([0,max_xval]);
-ylim([0,max_yval]);
-[ax1,h1]=suplabel('Response length');
-[ax2,h2]=suplabel('probability','y');
-set(h1,'FontSize',12);
-set(h2,'FontSize',12);
+% figure();
+% session_vector = [1;cumsum(nStimuliInEachSession)];
+% dist_h = zeros(1,nSessions);
+% max_yval = 0;
+% for ii = 1:nSessions
+%     num = hist(respLengths_n(session_vector(ii):session_vector(ii+1)),0:max(respLengths_n));
+%     dist_h(ii) = subplot(3,2,ii);
+%     plot(0:max(respLengths_n),num/nStimuliInEachSession(ii),'k-','LineWidth',2);
+%     if mod(ii,2)
+%         title(['Training:',num2str(ii-fix(ii/2))]);
+%     else
+%         title(['Testing:',num2str(ii-fix(ii/2))]);
+%     end
+%     grid on;
+%     if max(num/nStimuliInEachSession(ii)) > max_yval
+%         max_yval = max(num/nStimuliInEachSession(ii));
+%     end
+% end
+% max_xval = max(respLengths_n);
+% linkaxes(dist_h);
+% xlim([0,max_xval]);
+% ylim([0,max_yval]);
+% [ax1,h1]=suplabel('Response length');
+% [ax2,h2]=suplabel('probability','y');
+% set(h1,'FontSize',12);
+% set(h2,'FontSize',12);
+
+%% response length distribution (MEA meeting 2014)
+[counts_tr, indx_tr] = hist(rln.s1_4346.train);
+[counts_tst, indx_tst] = hist(rln.s1_4346.test);
+counts_tr2 = smooth(counts_tr/length(rln.s1_4346.train),'lowess'); 
+counts_tst2 = smooth(counts_tst/length(rln.s1_4346.test),'lowess');
+figure(); plot(indx_tr,counts_tr2/sum(counts_tr2),'k','LineWidth',3);
+hold on; 
+plot(indx_tst,counts_tst2/sum(counts_tst2),'r','LineWidth',3);
+set(gca,'FontSize',14)
+legend('boxoff')
+box off
+lh = legend('Training','Testing')
+set(lh,'FontSize',14);
+legend boxoff
+xlabel('Response length (#spikes)','FontSize',14)
+ylabel('Probability','FontSize',14)
+
+
+% [counts_st, indx_st] = hist(stimTimes,0:50:max(stimTimes));
+% counts_st = [1, counts_st];
+% tot_resp = [];
+% for  ii = 1:length(counts_st)-1
+%     tot_resp(ii) = mean(respLengths_n(counts_st(ii):counts_st(ii+1)));
+% end
+% figure();
+% plot(rln.s1_4346.temp.indx_st,smooth(rln.s1_4346.temp.tot_resp,'lowess'));
+% hold on;
+% plot(rln.s1_4346.temp2.indx_st,smooth(rln.s1_4346.temp2.tot_resp,'lowess'),'r');
+% 

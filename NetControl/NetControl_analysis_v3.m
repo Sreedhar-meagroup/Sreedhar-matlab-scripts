@@ -313,7 +313,7 @@ set(silvssn_h, 'WindowButtonDownFcn',{@Marker2Raster,spks,stimTimes,silence_s,mo
 
 %% Collect log of number of stimuli in training and testing sessions
 % nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
-nStimuliInEachSession = str2num(strtrim(fileread([pathName,'log_num_stimuli.txt']))); % temporary fix
+nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\','log_num_stimuli.txt']))); % temporary fix
 nSessions = size(nStimuliInEachSession,1);
 totalStim = repmat([500;200],3,1);
 session_vector = [0;cumsum(nStimuliInEachSession)]; % they are boundaries
@@ -325,7 +325,7 @@ end
 
 %% spontaneous data
 pre_spont = spontaneousData();
-plt_IBIdist(pre_spont, dt, 'Network pre');
+plt_IBIdist(pre_spont.NetworkBursts.IBIs, dt, 'Network pre');
 spont_after_one = sliceout_spontaneous(NetControlData.Spikes, stimTimes(session_vector(3)), stimTimes(session_vector(4)));
 spont_after_two = sliceout_spontaneous(NetControlData.Spikes, stimTimes(session_vector(5)), stimTimes(session_vector(6)));
 spont_after_three = sliceout_spontaneous(NetControlData.Spikes, stimTimes(session_vector(7)), NetControlData.Spikes.time(end));

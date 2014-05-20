@@ -145,36 +145,36 @@ set(h2,'FontSize',12);
 
 %% Dependence on preburst_silence
 
-discrete_states = [0.2:0.5:8];
-% discrete_states = 1.7;
-var_orig = [];
-var_corr = [];
-for ii = 1:size(discrete_states,2)
-    indsInThisState{ii} = find(silence_s>discrete_states(ii)-0.1 & silence_s<discrete_states(ii)+0.1);
-    respLoriginal{ii} = respLengths_n(indsInThisState{ii});
-    respLcorrected{ii} = respLengths_n(indsInThisState{ii}) - ((median(prevburst_silence(indsInThisState{ii}))+std(prevburst_silence(indsInThisState{ii})))*(1- exp(-prevburst_silence(indsInThisState{ii}))));
-    var_orig(ii) = var(respLoriginal{ii});
-    var_corr(ii) = var(respLcorrected{ii});
-end
+% discrete_states = [0.2:0.5:8];
+% % discrete_states = 1.7;
+% var_orig = [];
+% var_corr = [];
+% for ii = 1:size(discrete_states,2)
+%     indsInThisState{ii} = find(silence_s>discrete_states(ii)-0.1 & silence_s<discrete_states(ii)+0.1);
+%     respLoriginal{ii} = respLengths_n(indsInThisState{ii});
+%     respLcorrected{ii} = respLengths_n(indsInThisState{ii}) - ((median(prevburst_silence(indsInThisState{ii}))+std(prevburst_silence(indsInThisState{ii})))*(1- exp(-prevburst_silence(indsInThisState{ii}))));
+%     var_orig(ii) = var(respLoriginal{ii});
+%     var_corr(ii) = var(respLcorrected{ii});
+% end
 
-figure();
-plot(discrete_states,var_orig,'k.-','Markersize',15,'LineWidth',2);
-box off
-xlabel('Discrete states','FontSize',14);
-ylabel('Variance in response lengths','FontSize',14);
-% plot(discrete_states,var_corr,'r.-','Markersize',15,'LineWidth',2);
+% figure();
+% plot(discrete_states,var_orig,'k.-','Markersize',15,'LineWidth',2);
+% box off
+% xlabel('Discrete states','FontSize',14);
+% ylabel('Variance in response lengths','FontSize',14);
+% % plot(discrete_states,var_corr,'r.-','Markersize',15,'LineWidth',2);
 
 
 %%
-figure; 
-plot(preStim_Blengths,respLengths_n,'.')
-box off
-xlabel('Pre-stimulus burst lengths','FontSize',14);
-ylabel('Response lengths','FontSize',14);
-
-figure;
-plot(prevburst_silence,respLengths_n,'.')
-box off
-xlabel('Previous silence','FontSize',14);
-ylabel('Response lengths','FontSize',14);
+% figure; 
+% plot(preStim_Blengths,respLengths_n,'.')
+% box off
+% xlabel('Pre-stimulus burst lengths','FontSize',14);
+% ylabel('Response lengths','FontSize',14);
+% 
+% figure;
+% plot(prevburst_silence,respLengths_n,'.')
+% box off
+% xlabel('Previous silence','FontSize',14);
+% ylabel('Response lengths','FontSize',14);
 

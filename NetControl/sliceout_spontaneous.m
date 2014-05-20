@@ -45,7 +45,7 @@ for ii = 1: length(mod_NB_onsets)
 end           
 
 IBIs = zeros(size(mod_NB_onsets));
-IBIs(1) = mod_NB_onsets(1);
+IBIs(1) = mod_NB_onsets(1) - start_time;
 IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
 
 %% creating output structure

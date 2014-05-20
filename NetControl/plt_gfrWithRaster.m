@@ -28,7 +28,7 @@ function gfr_rstr_h = plt_gfrWithRaster(data)
 
     stimulation   = 0;
     spontaneous   = 0;
-
+    warnflag      = 0;
 %% Getting data into appropriate variables and exception handling
 try
     if isfield(data,'StimTimes')
@@ -81,17 +81,29 @@ set(gca,'XTick',[]);
 set(gca,'TickDir','Out');
 axis tight; ylabel('Global firing rate [Hz]'); 
 % title(['Global firing rate (bin= 0.5s), data: ', datRoot],'Interpreter','none');
-
+%% Stimulation
 if stimulation % Stim response raster
     fig1ha(2)  = subplot(3,1,2:3);
     linkaxes(fig1ha, 'x');
     hold on;
-    plot(stimTimes,cr2hw(stimSite)+1,'r.');
+    if ~isempty(stimTimes)
+        plot(stimTimes,cr2hw(stimSite)+1,'r.');
+    end
 
-    % code for the tiny rectangle
-    Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
-    Ycoords = 61*repmat([0;1;1;0],size(stimTimes));
-    patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.35);
+    % code for the tiny rectangle "DOESN'T WORK ANYMORE"
+%     Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
+%     Ycoords = 61*repmat([0;1;1;0],size(stimTimes));
+%     patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.35);
+
+    for ii = 1:length(stimTimes)
+        Xcoords = [stimTimes(ii);stimTimes(ii);stimTimes(ii)+0.5;stimTimes(ii)+0.5];
+        Ycoords = 61*[0;1;1;0];
+        patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+    end
+
+
+
+
 
     rasterplot_so(spks.time,spks.channel,'b-');
     response.time = spks.time(spks.channel == cr2hw(recSite));

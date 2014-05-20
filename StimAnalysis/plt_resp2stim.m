@@ -22,12 +22,6 @@ for ii = 1:size(stimTimes{stimNo},2)
 end
 
 pseudoStimTimes = 0:offset:(size(stimTimes{stimNo},2)-1)*offset;
-Xcoords = [pseudoStimTimes;... 
-           pseudoStimTimes;...
-           pseudoStimTimes+0.5;...
-           pseudoStimTimes+0.5];
-       
-Ycoords = 60*repmat([0;1;1;0],size(stimTimes{stimNo}));
 
 [counts,timeVec] = hist(stimResp.time,0:0.1:ceil(max(stimResp.time)));
 h = figure();
@@ -40,7 +34,12 @@ set(gca,'TickDir','Out');
 set(gca,'YMinorGrid','On');
 hold on;
 
-patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+for ii = 1:length(pseudoStimTimes)
+    Xcoords = [pseudoStimTimes(ii);pseudoStimTimes(ii);pseudoStimTimes(ii)+0.5;pseudoStimTimes(ii)+0.5];
+    Ycoords = 61*[0;1;1;0];
+    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+end
+
 plot(pseudoStimTimes,cr2hw(stimSites(stimNo))+1,'r.');
 rasterplot_so(stimResp.time,stimResp.channel,'b-');
 title(['Responses due to stimulation at channel ', num2str(cr2hw(stimSites(stimNo))+1),'(hw+1)/',num2str(stimSites(stimNo)),'(cr) alone.']);

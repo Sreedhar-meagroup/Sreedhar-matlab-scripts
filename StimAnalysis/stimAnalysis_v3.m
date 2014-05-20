@@ -63,10 +63,18 @@ end
 
 %% Fig 1a: global firing rate
 % sliding window; bin width = 100ms
-[counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
-handles(1)= figure(); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
-axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
+% [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
+% handles(1)= figure(); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
+% axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
+% set(gca,'TickDir','Out');
+
+binSize = 0.1;
+handles(1)= figure();
+[counts,timeVec] = hist(spks.time,0:binSize:ceil(max(spks.time)));
+fig1ha(1) = subplot(3,1,1); bar(timeVec,counts/binSize); box off; 
+set(gca,'XTick',[]);
 set(gca,'TickDir','Out');
+axis tight; ylabel('Global firing rate [Hz]'); 
 
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell in a cell structure.
@@ -164,10 +172,19 @@ for ii = 1:nStimSites
 % patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
 
-% code for the tiny rectangle (500 ms)
-Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
-Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
-patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+
+% code for the tiny rectangle (500 ms) STOPPED WORKING
+% Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
+% Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
+% patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+
+for jj = 1:length(stimTimes{ii})
+    Xcoords = [stimTimes{ii}(jj);stimTimes{ii}(jj);stimTimes{ii}(jj)+0.5;stimTimes{ii}(jj)+0.5];
+    Ycoords = 61*[0;1;1;0];
+    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+end
+
+
 end
 rasterplot_so(spks.time,spks.channel,'b-');
 hold off;
@@ -362,6 +379,6 @@ stimEfficacy_data.recording = spks;
 stimEfficacy_data.stimTimes = stimTimes;
 stimEfficacy_data.stimSites = stimSites;
 
-plt_resp2stim(5,stimEfficacy_data);
+% plt_resp2stim(5,stimEfficacy_data);
 
 

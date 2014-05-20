@@ -53,8 +53,11 @@ rlvssil_h = gcf;
 
 %% Collecting pre and post experiment spontaneous data
 IBI_pre_h = plt_IBIdist(NetControlData.Pre_spontaneous.NetworkBursts.IBIs , dt, 'Network, pre');
-IBI_post_h = plt_IBIdist(NetControlData.Post_spontaneous.NetworkBursts.IBIs , dt, 'Network, post');
-
+try
+    IBI_post_h = plt_IBIdist(NetControlData.Post_spontaneous.NetworkBursts.IBIs , dt, 'Network, post');
+catch err
+    disp('Warning:: No post experiment spontaneous data available!');
+end
 %% slice of a raster around a given stim number (automatic -- less accurate)
 figure(silvsstimno_h);
 hold on;

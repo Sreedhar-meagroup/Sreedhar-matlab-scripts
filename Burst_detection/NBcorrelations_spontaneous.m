@@ -91,3 +91,8 @@ Sp_corr.LCsorted =  LCsorted;
 Sp_corr.LCEachBurst =  LCEachBurst;
 Sp_corr.matWithRanks = matWithRanks;
 Sp_corr.inv_matWithRanks = inv_matWithRanks;
+
+
+%% run this
+
+% clearvars -except Sp_corr

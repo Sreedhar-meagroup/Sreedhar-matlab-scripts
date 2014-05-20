@@ -11,11 +11,12 @@ end
 [spks, selIdx, rejIdx] = cleanspikes(spikes,thresh);
         spikes_samples = loadspike([pathName,datName],2); %timestamps loaded as samples
         spks_samples   = cleanspikes(spikes_samples,thresh);
-
-[ch2ignore, NB_extremes, NB_slices] = spontaneousData(datName, pathName);
-
+SpontaneousData = spontaneousData(datName, pathName);
+NB_extremes = SpontaneousData.NetworkBursts.NB_extrema;
+NB_slices = SpontaneousData.NetworkBursts.NB_slices;
 mod_NB_onsets = NB_extremes(:,1);
 NB_ends = NB_extremes(:,2);
+
 %% Generate `states'
 inAChannel = cell(60,1);
 binWidth = 25; %in ms

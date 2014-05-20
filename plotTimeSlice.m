@@ -28,12 +28,17 @@ linkaxes(fig1ha, 'x');
 hold on;
 % line([stimTimesSlice; stimTimesSlice], repmat([0;61],size(stimTimesSlice)),'Color','g','LineWidth',0.1);
 % patch([stimTimesSlice; stimTimesSlice], repmat([0;61],size(stimTimesSlice)),'g', 'EdgeColor','g', 'EdgeAlpha', 0.35, 'FaceColor', 'none');
-plot(stimTimesSlice, cr2hw(stimSitesSlice)+1,'r*');
-
-% code for the tiny rectangle
-Xcoords = [stimTimesSlice; stimTimesSlice; stimTimesSlice+0.5; stimTimesSlice+0.5];
-Ycoords = 61*repmat([0;1;1;0],size(stimTimesSlice));
-patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
+plot(stimTimesSlice, cr2hw(stimSitesSlice)+1,'r.');
+hold on;
+for ii = 1:length(stimTimesSlice)
+    Xcoords = [stimTimesSlice(ii);stimTimesSlice(ii);stimTimesSlice(ii)+0.5;stimTimesSlice(ii)+0.5];
+    Ycoords = 61*[0;1;1;0];
+    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+end
+% % code for the tiny rectangle
+% Xcoords = [stimTimesSlice; stimTimesSlice; stimTimesSlice+0.5; stimTimesSlice+0.5];
+% Ycoords = 61*repmat([0;1;1;0],size(stimTimesSlice));
+% patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
 
 rasterplot_so(timeStamps,channels,'b-');
 
