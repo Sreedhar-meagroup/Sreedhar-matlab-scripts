@@ -55,10 +55,11 @@ end
 %% Response lengths (in no: of spikes)
 respLengths_n = cellfun(@length, postStimAtRecSite);
 
-%% Time discretization
+%% Time discretization and burst criterion
     dt = 0.5
     disp('Message::Did you remember to set the right dt?');
-
+    burst_criterion = 0.2
+    disp('Message::Did you remember to set the right burst criterion?');
 %% Collect log of number of stimuli in training and testing sessions
 try
     nStimuliInEachSession = str2num(strtrim(fileread([pathName,'statistics\log_num_stimuli.txt'])));
@@ -102,6 +103,7 @@ for ii = 1: length(mod_NB_onsets)
     NB_slices{ii}.channel = spks.channel(spks.time>=mod_NB_onsets(ii) & spks.time<=NB_ends(ii));
 end
 
+
 %% NetControl-Data structure
 NetControlData.fileName = datRoot;
 NetControlData.Culture_details.PID = PID;
@@ -123,9 +125,13 @@ NetControlData.SessionInfo.session_vector = session_vector;
 NetControlData.Silence_s = silence_s;
 NetControlData.RespLengths_n = respLengths_n;
 
+NetControlData.burst_criterion = burst_criterion;
+if exist()
 NetControlData.Pre_spontaneous = spontaneousData();
+NetControlData.PreSpontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 try
     NetControlData.Post_spontaneous = spontaneousData('spon_after_testing.spike', pathName);
+    NetControlData.PostSpontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Post_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 catch err
     disp('Warning:: No post experiment spontaneous data available');
     NetControlData.Post_spontaneous = [];

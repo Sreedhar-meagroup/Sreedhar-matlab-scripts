@@ -3,6 +3,7 @@ plot_flag = 1;
 h = 0;
 
 timeVec = floor(min(IBI_data)):dt:ceil(max(IBI_data));
+
 counts = histc(IBI_data,timeVec);
 tag = 'IBI statistics';
 if nargin>2
@@ -19,6 +20,7 @@ if plot_flag
     box off;
     set(bar_h,'EdgeColor','w','FaceColor','k');
     set(gca,'TickDir','Out');
+    set(gca,'XMinorTick','On');
     % axis tight;
     set(gca, 'FontSize', 16)
     ylabel('probability')
