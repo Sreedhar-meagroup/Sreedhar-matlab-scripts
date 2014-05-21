@@ -1,6 +1,6 @@
 %% Pre cell
-
-RecChannel_pre = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[0.2,0.2,3],recSite_in_hwpo);
+burst_criterion = 0.2;
+RecChannel_pre = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 IBI_rec_pre_h = plt_IBIdist(RecChannel_pre.IBIs,dt,'Rec channel, pre');
 Steps = 10.^[-5:.05:1.5];
 [~,ISI_rec_pre_h] = HistogramISIn(NetControlData.Pre_spontaneous.InAChannel{recSite_in_hwpo},2,Steps);

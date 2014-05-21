@@ -1,0 +1,24 @@
+function preStim_bursts = get_prestim_bursts(NetControlData)
+%
+
+recSite_in_hwpo = cr2hw(NetControlData.Electrode_details.rec_electrode)+1;
+inAChannel      = NetControlData.InAChannel;
+stimTimes       = NetControlData.StimTimes;
+
+recChanSpikes = inAChannel{recSite_in_hwpo};
+preStim_bursts = cell(size(stimTimes));
+
+for ii = 1:length(stimTimes)
+    burst_flag = 1;
+    first_sp_ind = find(recChanSpikes<stimTimes(ii),1,'last');
+    temp = recChanSpikes(first_sp_ind);
+        while burst_flag & first_sp_ind>1
+            if recChanSpikes(first_sp_ind) - recChanSpikes(first_sp_ind-1) <= 0.2
+                temp = [recChanSpikes(first_sp_ind-1), temp];
+                first_sp_ind = first_sp_ind - 1;
+            else
+                burst_flag = 0;
+            end
+        end
+    preStim_bursts{ii} = temp;    
+end

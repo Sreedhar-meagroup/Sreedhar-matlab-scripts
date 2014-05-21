@@ -2,7 +2,7 @@ function [h,varargout] = plt_IBIdist(IBI_data, dt, varargin)
 plot_flag = 1;
 h = 0;
 
-timeVec = floor(min(IBI_data)):dt:ceil(max(IBI_data));
+timeVec = min(IBI_data):dt:max(IBI_data);
 counts = histc(IBI_data,timeVec);
 tag = 'IBI statistics';
 if nargin>2
@@ -10,6 +10,8 @@ if nargin>2
         tag = varargin{1};
     else
         plot_flag = 0;
+        varargout{1} = timeVec;
+        varargout{2} = timeVec;
     end 
 end
 
@@ -25,6 +27,3 @@ if plot_flag
     xlabel('IBI [s]')
     title(tag);
 end
-
-varargout{1} = timeVec;
-varargout{2} = counts/length(IBI_data);
