@@ -108,7 +108,7 @@ pathName_preSpont = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments6
 preSpont_filenames = dir([pathName_preSpont,'*.spike']);
 for ii = 1:numel(preSpont_filenames)
     if strfind(preSpont_filenames(ii).name,PID) & strfind(preSpont_filenames(ii).name,CID) & strfind(preSpont_filenames(ii).name,['preS',session_number])
-        datName_preSpont = preSpont_filenames(ii).name;
+        preSpont_datName = preSpont_filenames(ii).name;
     end
 end
 
@@ -121,7 +121,6 @@ NetControlData.Session_number = session_number;
 NetControlData.Culture_details.MEA = '';
 NetControlData.Culture_details.MEAtype = '';
 NetControlData.Culture_details.Age = '';
-NetControlData.discretization= dt;
 
 NetControlData.Spikes = spks;
 NetControlData.Electrode_details = electrode_details;
@@ -136,20 +135,17 @@ NetControlData.Silence_s = silence_s;
 NetControlData.RespLengths_n = respLengths_n;
 
 NetControlData.burst_criterion = burst_criterion;
-
 try
     NetControlData.Pre_spontaneous = spontaneousData(datName_preSpont,pathName_preSpont);
 catch err
-    disp('Warning:: Could not find pre spontaneous file!')
+    disp('')
     NetControlData.Pre_spontaneous = spontaneousData();
 end
-
 NetControlData.PreSpontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
-
 try
     NetControlData.Post_spontaneous = spontaneousData('spon_after_testing.spike', pathName);
     NetControlData.PostSpontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Post_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 catch err
-    disp('Warning:: No post experiment spontaneous data available!');
+    disp('Warning:: No post experiment spontaneous data available');
     NetControlData.Post_spontaneous = [];
 end

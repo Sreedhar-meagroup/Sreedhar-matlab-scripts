@@ -15,7 +15,6 @@ dataPool.pathNames = {...
 
 for sample = 1:length(dataPool.pathNames)
     clc
-    close all;
     clearvars -except ImportantVars dataPool sample
     datName = dataPool.datName;
     pathName = dataPool.pathNames{sample}
@@ -72,23 +71,21 @@ for sample = 1:length(dataPool.pathNames)
     ImportantVars.(['Data_',CID,'_s',session_number]).postSpont.prob_interruption_rc = prob_interruption_rc ;
     ImportantVars.(['Data_',CID,'_s',session_number]).postSpont.distData.timeVec_rc = timeVec_rc;
     ImportantVars.(['Data_',CID,'_s',session_number]).postSpont.distData.counts_norm_rc = counts_norm_rc;
+
     
-    ImportantVars.(['Data_',CID,'_s',session_number]).Emodel_para = getEmodelPara(NetControlData);
     
 end
 
-save 'C:\Sreedhar\Mat_work\Closed_loop\workspace_garage\ImportantVars.mat' ImportantVars;
-
-% %% some analysis
-% exp_sessions = fieldnames(ImportantVars);
-% figure(); hold on;
-% for ii = 1: numel(exp_sessions)
-%     final_learned(ii) = ImportantVars.(exp_sessions{ii}).learnedTime_s(end)-0.2;
-%     preSpont_NetPeaks(ii) = ImportantVars.(exp_sessions{ii}).preSpont.NetPeak(1)+0.5;
-%     postSpont_NetPeaks(ii) = ImportantVars.(exp_sessions{ii}).postSpont.NetPeak(1)+0.5;
-%     temp = find(final_learned(ii) > ImportantVars.exp_sessions{ii}.preSpont.distData.timeVec,1,'first')
-%     
-%     plot(ii,ImportantVars.(exp_sessions{ii}).learnedTime_s(end)-0.2,'^');
-%     plot(ii,ImportantVars.(exp_sessions{ii}).preSpont.NetPeak(1)+0.5,'r*');
-%     plot(ii,ImportantVars.(exp_sessions{ii}).postSpont.NetPeak(1)+0.5,'ko');
-% end
+%% some analysis
+exp_sessions = fieldnames(ImportantVars);
+figure(); hold on;
+for ii = 1: numel(exp_sessions)
+    final_learned(ii) = learnedTime_s(end)-0.2;
+    preSpont_NetPeaks(ii) = ImportantVars.(exp_sessions{ii}).preSpont.NetPeak(1)+0.5;
+    postSpont_NetPeaks(ii) = ImportantVars.(exp_sessions{ii}).postSpont.NetPeak(1)+0.5;
+    temp = find(ImportantVars.(exp_sessions{ii}).preSpont.distData
+    
+    plot(ii,ImportantVars.(exp_sessions{ii}).learnedTime_s(end)-0.2,'^');
+    plot(ii,ImportantVars.(exp_sessions{ii}).preSpont.NetPeak(1)+0.5,'r*');
+    plot(ii,ImportantVars.(exp_sessions{ii}).postSpont.NetPeak(1)+0.5,'ko');
+end
