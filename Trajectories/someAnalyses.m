@@ -43,5 +43,6 @@ plot(Emodel_para(:,1),pred,'r','LineWidth',2);
 text(40,0.1,['R^2 = ',sprintf('%0.2f',rsq)],'FontSize',12,'FontWeight','Bold');
 box off;
 set(gca,'FontSize',14)
-xlabel('Exp model parameter, A');
+set(gca, 'TickDir','Out')
+xlabel('Model parameter, A');
 ylabel('Learned disruption probability');
