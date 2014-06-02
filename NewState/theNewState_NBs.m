@@ -57,7 +57,7 @@ for ii = 1:length(states_NB_dec)
     end
 end
 
-% 
+%% 
 % for ii = 1:nBits
 % states(ii,ceil(inAChannel{sortedIndx(ii)}/(25*binWidth))) = 1;
 % end
@@ -245,3 +245,26 @@ end
 %     axis tight;
 %     title([num2str(allPairsOfChannels(ii,2)),'/',num2str(allPairsOfChannels(ii,1))]);
 % end
+
+%% Transition probability analysis
+
+%forming a concatenated vector of all states
+
+allStates_dec = [];
+for ii = 1:length(NB_ends)
+    allStates_dec(end+1) = 0;
+    allStates_dec = [allStates_dec; states_NB_dec{ii}];
+end
+[unique_states, ind_i, ind_j] = unique(allStates_dec,'first'); 
+transProbMat = zeros(1024);
+for ii = 1:length(unique_states)
+    temp_ind = find(allStates_dec == unique_states(ii));
+    temp_col = zeros(1024,1);
+    for jj = 1:length(temp_ind)
+        if temp_ind(jj)~=length(allStates_dec)
+            temp_col(allStates_dec(temp_ind(jj)+1)+1) = ...
+                temp_col(allStates_dec(temp_ind(jj)+1)+1)+1;
+        end
+    end
+    transProbMat(:,unique_states(ii)+1) = temp_col; 
+end
