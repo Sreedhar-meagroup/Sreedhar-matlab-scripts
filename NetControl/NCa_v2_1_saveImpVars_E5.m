@@ -1,3 +1,12 @@
+% saving variables from Exp 5
+
+learnedTime_s = 5;
+[~,timeVec,counts_norm] = plt_IBIdist(x.NetworkBursts.IBIs,0.5,'no plot');
+maximizer_s = timeVec(counts_norm == max(counts_norm));
+till_here   = find(timeVec>learnedTime_s(end),1,'first');
+prob_interruption = sum(counts_norm(1:till_here));
+
+
 dataPool.datName = 'spon_train.spike';
 pathRoot = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments6\NetControl\';
 dataPool.pathNames = {...

@@ -98,7 +98,7 @@ if stimulation % Stim response raster
     for ii = 1:length(stimTimes)
         Xcoords = [stimTimes(ii);stimTimes(ii);stimTimes(ii)+0.5;stimTimes(ii)+0.5];
         Ycoords = 61*[0;1;1;0];
-        patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+        patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.15);
     end
 
 

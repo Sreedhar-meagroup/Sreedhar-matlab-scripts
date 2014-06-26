@@ -13,5 +13,4 @@ set(bar2_h,'EdgeColor','w','FaceColor','g');
 xlim([-1,50])
 line([learned_time, learned_time],[0, 0.07],'LineWidth',2,'Color','r');
 
-
 %%

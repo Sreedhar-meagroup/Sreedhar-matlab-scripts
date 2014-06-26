@@ -1,4 +1,4 @@
-% Aim: To analyze NetControl data in Experiments6 onwards, where the
+% Aim: To analyze NetControl data in Experiments6, where the
 % training and testing sessions were contiguous and recorded without interruption.
 
 %% File selection and loading data

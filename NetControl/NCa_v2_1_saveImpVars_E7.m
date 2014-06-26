@@ -1,3 +1,5 @@
+% saving variables from Exp 7
+
 dataPool.datName = 'spon_train.spike';
 pathRoot = 'C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\Experiments6\NetControl\';
 dataPool.pathNames = {...
