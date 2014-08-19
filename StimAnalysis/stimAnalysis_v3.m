@@ -196,7 +196,7 @@ set(gca,'YMinorGrid','On');
 title(['Raster plot indicating stimulation at channels [',joined_ch,'] (hw+1)']);
 zoom xon;
 pan xon;
-%% Binning, averaging and plotting the PSTHs 
+%% Binning, averaging and plotting the PSTHs (1s silence) 
 %with 1s pre-stim silence
 % listOfCounts = cell(1,nStimSites);
 % for ii = 1:nStimSites
@@ -253,11 +253,11 @@ pan xon;
 % %         print(gcf, '-depsc', [fPath,datRoot,'_',num2str(stimSites(ii)+1),'.eps']); % hw+1
 % end
 
-% Comment in/out from here downwards:
+%% Comment in/out from here downwards:
 
 % Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
-binSize = 10;
+binSize = 15; % in ms
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
     eval([psth_h '= figure();']);%, num2str(1+ii), ');']);

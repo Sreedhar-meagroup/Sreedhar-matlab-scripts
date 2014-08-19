@@ -66,7 +66,7 @@ ylabel('Model parameter A');
 figure();
 hold on
 for ii = 1:length(Emodel_para(:,1))
-    plot(0:0.01:10,exp_model(0:0.01:10,Emodel_para(ii,:)),'r','LineWidth',2)
+    plot(0.5:0.01:10,exp_model(0.5:0.01:10,Emodel_para(ii,:)),'r','LineWidth',2)
     plot(final_learned(ii),Emodel_para(ii,1)*(1-exp(-Emodel_para(ii,2)*final_learned(ii))),'k^','MarkerSize',8)
 end
 set(gca,'FontSize',14)

@@ -19,7 +19,7 @@ NCa_v2_qtable;
 NCa_v2_stimfreq;
 
 %%
-NCa_v2_prevburst;
+NCa_v2_1_prevburst;
 
 %% saving a few variables
 NCa_v2_1_saveImpVars;

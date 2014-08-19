@@ -49,6 +49,7 @@ try
         datRoot  = 'Unknown';
         warnflag = 1;        
     end
+    
     if isfield(data,'BurstDetector')
         BurstDetector = data.BurstDetector;
     else
@@ -66,6 +67,7 @@ catch err
     end
     if warnflag, disp('Warning :: Some optional fields are missing!!!'); end
 end
+
 gfr_rstr_h    = figure();
 %% Global firing rate
 
@@ -76,7 +78,10 @@ if ~make_it_tight,  clear subplot;  end
 
 binSize = 0.1;
 [counts,timeVec] = hist(spks.time,0:binSize:ceil(max(spks.time)));
-fig1ha(1) = subplot(3,1,1); bar(timeVec,counts/binSize); box off; 
+smooth_gfr = smooth(counts/binSize,'lowess',35);
+% fig1ha(1) = subplot(3,1,1); bar(timeVec,counts/binSize); box off;
+% fig1ha(1) = subplot(3,1,1); plot(timeVec,counts/binSize,'k'); box off;
+fig1ha(1) = subplot(3,1,1); plot(timeVec,smooth_gfr,'k','LineWidth',1); box off;
 set(gca,'XTick',[]);
 set(gca,'TickDir','Out');
 axis tight; ylabel('Global firing rate [Hz]'); 
@@ -98,14 +103,14 @@ if stimulation % Stim response raster
     for ii = 1:length(stimTimes)
         Xcoords = [stimTimes(ii);stimTimes(ii);stimTimes(ii)+0.5;stimTimes(ii)+0.5];
         Ycoords = 61*[0;1;1;0];
-        patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.15);
+        patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.25);
     end
 
 
 
 
 
-    rasterplot_so(spks.time,spks.channel,'b-');
+    rasterplot_so(spks.time,spks.channel,'k-');
     response.time = spks.time(spks.channel == cr2hw(recSite));
     response.channel = spks.channel(spks.channel == cr2hw(recSite));
     rasterplot_so(response.time,response.channel,'g-');
@@ -113,7 +118,7 @@ if stimulation % Stim response raster
     set(gca,'TickDir','Out');
     set(gca,'YMinorGrid','On');
     xlabel('Time (s)');
-    ylabel('Channel # (hw^{+1})');
+    ylabel('Channel');
 
     set( get(fig1ha(1),'Title'), 'String', ...
     sprintf('data: %s;  Stim. ch : Rec. ch = %d:%d (cr) OR %d:%d (hw+1)',...
@@ -139,7 +144,7 @@ hold on;
 for ii = 1:length(NB_ends)
     Xcoords = [mod_NB_onsets(ii);mod_NB_onsets(ii);NB_ends(ii);NB_ends(ii)];
     Ycoords = 61*[0;1;1;0];
-    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.15);
 end
 
 %     Detected = []; 
@@ -150,12 +155,12 @@ end
     
 %%    
     linkaxes(fig1ha, 'x');
-    rasterplot_so(spks.time,spks.channel,'b-');
+    rasterplot_so(spks.time,spks.channel,'k-');
     hold off;
     set(gca,'TickDir','Out');
     set(gca,'YMinorGrid','On');
     xlabel('Time [s]');
-    ylabel('Channel #');
+    ylabel('Channel');
     pan xon;
     zoom xon;
 
