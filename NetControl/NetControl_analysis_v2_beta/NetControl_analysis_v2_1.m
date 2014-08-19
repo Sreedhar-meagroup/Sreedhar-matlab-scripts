@@ -144,11 +144,11 @@ catch err
     NetControlData.Pre_spontaneous = spontaneousData();
 end
 
-NetControlData.PreSpontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
+NetControlData.Pre_spontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 
 try
     NetControlData.Post_spontaneous = spontaneousData('spon_after_testing.spike', pathName);
-    NetControlData.PostSpontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Post_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
+    NetControlData.Post_spontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Post_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 catch err
     disp('Warning:: No post experiment spontaneous data available!');
     NetControlData.Post_spontaneous = [];
