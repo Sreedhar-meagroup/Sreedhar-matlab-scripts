@@ -40,7 +40,7 @@ for ii = 1: length(mod_NB_onsets)
 end
 
 %% Col 1. Oliver's code
-[Delay_hist_fig, nr_starts, EL_return] = NB_sequences_sk(datRoot,network_burst, 0,1,bursting_channels_mea);
+[Delay_hist_fig, nr_starts, EL_return] = NB_sequences_sk(datRoot,network_burst,0,1,bursting_channels_mea);
 final_tally(:,1) = (cr2hw(EL_return)+1)';
 
 %% Col 2. scores with the entire burst lengths divided into 3 sections (unique)
