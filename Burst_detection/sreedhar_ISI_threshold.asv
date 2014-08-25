@@ -12,7 +12,7 @@ function NetworkBursts = sreedhar_ISI_threshold(spks, varargin)
 %                 stop times in seconds respectively for each of the M
 %                 detected NBs.
 
-%% README: << in maintanence>> 26.08.2014
+%% README:
 % -------------------------------------------------------------------------
 % This algorithm(original implementation courtesy Oliver Weihberger) is an
 % inter-spike-interval(ISI) threshold detector with various ad and post hoc
@@ -89,11 +89,6 @@ end
 IBIs = zeros(size(mod_NB_onsets));
 IBIs(1) = mod_NB_onsets(1);
 IBIs(2:end) = mod_NB_onsets(2:end) - NB_ends(1:end-1);
-
-
-NetworkBursts.NB_slices = NB_slices;
-NetworkBursts.NB_extrema = [mod_NB_onsets, NB_ends];
-NetworkBursts.IBIs = IBIs;
 
 if plot_flag
     spontData.BurstDetector = 'ISI threshold';
