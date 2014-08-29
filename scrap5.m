@@ -62,15 +62,16 @@ ylabel('Amplitude');
 
 
 %% ISI histogram for recording channel
-recCh = 55;
+recCh = 17;
 SpikeTimes = data.InAChannel{recCh}; %hw+1
 Steps = 10.^[-5:.05:1.5];
 N = 2;
 valleyMinimizer_ms = HistogramISIn(SpikeTimes, N, Steps)
 Spike.T = data.InAChannel{recCh};
 Spike.C = recCh*ones(size(Spike.T));
-[Burst, BNum] = BurstDetectISIn(Spike, 3, 0.45);
-
+[Burst, BNum] = BurstDetectISIn(Spike, 3, 1);
+mean(Burst.S)
+std(Burst.S)
 
 %% Snipping NetControlData at T s
 T_end = 19e3;

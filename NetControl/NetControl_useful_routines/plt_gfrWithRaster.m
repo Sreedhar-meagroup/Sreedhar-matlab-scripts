@@ -50,8 +50,8 @@ try
         warnflag = 1;        
     end
     
-    if isfield(data,'BurstDetector')
-        BurstDetector = data.BurstDetector;
+    if isfield(data.NetworkBursts,'BurstDetector')
+        BurstDetector = data.NetworkBursts.BurstDetector;
     else
         BurstDetector = 'Unspecified!';
         warnflag = 1;

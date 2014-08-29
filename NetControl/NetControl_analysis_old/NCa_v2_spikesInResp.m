@@ -30,8 +30,8 @@ preStim_Blengths = cellfun(@length, preStim_burst);
 
 arg1_bwerr = zeros(nSessions+2,2);
 arg2_bwerr = zeros(nSessions+2,2);
-arg1_bwerr(1,1) = std(RecChannel_pre.nSpikesperBurst);
-arg2_bwerr(1,1) = mean(RecChannel_pre.nSpikesperBurst);
+arg1_bwerr(1,1) = std(NetControlData.Pre_spontaneous.RecChannelBursts.nSpikesperBurst);
+arg2_bwerr(1,1) = mean(NetControlData.Pre_spontaneous.RecChannelBursts.nSpikesperBurst);
 % arg1_bwerr(1,2) = 0;
 % arg2_bwerr(1,2) = 0;
 
@@ -42,8 +42,8 @@ for ii = 1:nSessions
     arg1_bwerr(ii+1,1) = std(preStim_Blengths(session_vector(ii)+1:session_vector(ii+1)));
     arg2_bwerr(ii+1,1) = mean(preStim_Blengths(session_vector(ii)+1:session_vector(ii+1)));
 end
-arg1_bwerr(ii+2,1) = std(RecChannel_post.nSpikesperBurst);
-arg2_bwerr(ii+2,1) = mean(RecChannel_post.nSpikesperBurst);
+arg1_bwerr(ii+2,1) = std(NetControlData.Post_spontaneous.RecChannelBursts.nSpikesperBurst);
+arg2_bwerr(ii+2,1) = mean(NetControlData.Post_spontaneous.RecChannelBursts.nSpikesperBurst);
 % arg1_bwerr(ii+2,2) = 0;
 % arg2_bwerr(ii+2,2) = 0;
 
