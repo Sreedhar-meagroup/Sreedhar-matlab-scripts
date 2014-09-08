@@ -95,10 +95,6 @@ if stimulation % Stim response raster
         plot(stimTimes,cr2hw(stimSite)+1,'r.');
     end
 
-    % code for the tiny rectangle "DOESN'T WORK ANYMORE"
-%     Xcoords = [stimTimes;stimTimes;stimTimes+0.5;stimTimes+0.5];
-%     Ycoords = 61*repmat([0;1;1;0],size(stimTimes));
-%     patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.35);
 
     for ii = 1:length(stimTimes)
         Xcoords = [stimTimes(ii);stimTimes(ii);stimTimes(ii)+0.5;stimTimes(ii)+0.5];

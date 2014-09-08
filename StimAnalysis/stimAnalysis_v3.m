@@ -12,7 +12,7 @@
 
 %% loading the file
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile(5,'st');
+    [datName,pathName] = chooseDatFile(8,'st');
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
@@ -26,22 +26,23 @@ handles = zeros(1,7);
 % I do this before cleaning the spikes because I do not want to clean off
 % the stim times in the analog channels.
 
+
 inAnalog = cell(4,1);
 for ii=60:63
     inAnalog{ii-59,1} = spikes.time(spikes.channel==ii);
 end
 
-
+try
 rawText = fileread([pathName,datRoot,'.log']);
 stimSitePattern = 'MEA style: ([\d\d ]+)';
 [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
 stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
+catch
+str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
+stimSites = str2num(str{1}); % in cr
+end
 nStimSites = size(stimSites,2);
-
-% str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
-% stimSites = str2num(str{1}); % in cr
-
- stimTimes = cell(1,5);
+stimTimes = cell(1,nStimSites);
 for ii = 1:nStimSites
     stimTimes{ii} = inAnalog{2}(ii:nStimSites:length(inAnalog{2}));
 end
@@ -67,6 +68,7 @@ end
 % handles(1)= figure(); fig1ha(1) = subplot(3,1,1); bar(timeVec,counts);
 % axis tight; ylabel('# spikes'); title('Global firing rate (bin= 0.1s)');
 % set(gca,'TickDir','Out');
+
 
 binSize = 0.1;
 handles(1)= figure();
@@ -170,7 +172,7 @@ for ii = 1:nStimSites
             joined_ch = strcat(joined_ch,'{\color{magenta}',num2str(cr2hw(stimSites(ii))+1),' }');
     end
 % patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
-plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'*']);
+plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'.']);
 
 
 % code for the tiny rectangle (500 ms) STOPPED WORKING
@@ -375,10 +377,9 @@ end
 
 %% preparing structure to send to function plt_resp2stim()
 
-stimEfficacy_data.recording = spks;
+stimEfficacy_data.fileName = datRoot;
+stimEfficacy_data.Spikes = spks;
+stimEfficacy_data.Electrode_details.stim_electrodes = stimSites;
+stimEfficacy_data.Electrode_details.rec_electrode = [];
 stimEfficacy_data.stimTimes = stimTimes;
-stimEfficacy_data.stimSites = stimSites;
-
 % plt_resp2stim(5,stimEfficacy_data);
-
-
