@@ -1,18 +1,39 @@
+function stim_data = stimAnalysis_v4(varargin)
+% stim_data = stimAnalysis_v4(varargin):
+% INPUT Arguments, in the following order:
+%     1. Experiment no. (optional);  default = 5
+%     2. response_window in s; default = 0.5s
+
 %% Version info, aim
 % -------------------------------------------------------------------------------------
 % Purpose: Analyse stim responses and choose appropriate stim & rec. site
 
 % Author: Sreedhar S Kumar
-% Date: 27.06.2013
+% Date: 12.09.2014
 %--------------------------------------------------------------------------------------
-% MATLAB Version 7.12.0.635 (R2011a)
+% MATLAB Version: 8.2.0.701 (R2013b)
+% MATLAB License Number: 886889
 % Operating System: Microsoft Windows 7 Version 6.1 (Build 7601: Service Pack 1)
-% Java VM Version: Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) 64-Bit Server VM mixed mode
-% -------------------------------------------------------------------------------------
+% Java Version: Java 1.7.0_11-b21 with Oracle Corporation Java HotSpot(TM) 64-Bit Server VM mixed mode
+% ----------------------------------------------------------------------------------------------------
+
+
+switch nargin
+    case 0    
+        Exp_no = 5; %default value;
+        response_window = 0.5;
+    case 1
+        Exp_no = varargin{1};
+        response_window = 0.5;
+    case 2
+        [Exp_no, response_window] = varargin{:}; %default value;
+    otherwise
+        disp('Check input arguments');
+end
 
 %% loading the file
 if ~exist('datName','var')
-    [datName,pathName] = chooseDatFile(8,'st');
+    [datName,pathName] = chooseDatFile(Exp_no,'st');
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
@@ -62,7 +83,6 @@ for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
 end
 
-response_window = 2;
 %% Fig 1a: global firing rate
 % sliding window; bin width = 100ms
 % [counts,timeVec] = hist(spks.time,0:0.1:ceil(max(spks.time)));
@@ -123,32 +143,6 @@ for ii = 1:nStimSites
     end
 end
 
-%% Isolating the periStims that follow a period of silence > tSilence_s
-% periStim_selected has the same structure as periStim
-% periStim_selected = cell(size(periStim));
-% tSilence_s = 1;
-% for ii = 1:nStimSites
-%     [validRows, validCols] = find(silence_s{ii}>tSilence_s);
-%     for jj = 1: size(validRows,1)
-%         periStim_selected{ii}{validRows(jj),1}{validCols(jj),1} = periStim{ii}{validRows(jj)}{validCols(jj)};
-%     end
-%     
-% % fixed a bug in retrospective
-% % If by chance a channel did not have a valid response in the 50th trial,
-% % that cell array would remain of length 49. There could be a more elegant
-% % solution. But this patch works for the moment. buggyLength is the index of
-% % such aberrant channels. diffLen is the deficit in length which is then
-% % appropriately compensated.
-%     
-%         buggyLengths = find(cellfun(@length,periStim_selected{ii})<50);
-%         if buggyLengths
-%             for kk = 1:length(buggyLengths)
-%                 diffLen = length(stimTimes{ii}) - length(periStim_selected{ii}{buggyLengths(kk)});
-%                 periStim_selected{ii}{buggyLengths(kk)}{end+diffLen} = [];
-%             end
-%         end
-% end
-
 
 %% Fig 1b: General raster
 figure(handles(1)); 
@@ -174,21 +168,13 @@ for ii = 1:nStimSites
             clr = 'm';
             joined_ch = strcat(joined_ch,'{\color{magenta}',num2str(cr2hw(stimSites(ii))+1),' }');
     end
-% patch([stimTimes{ii} ;stimTimes{ii}], repmat([0;60],size(stimTimes{ii})), 'r', 'EdgeAlpha', 0.2, 'FaceColor', 'none');
 plot(stimTimes{ii},cr2hw(stimSites(ii))+1,[clr,'.']);
 
-
-% code for the tiny rectangle (500 ms) STOPPED WORKING
-% Xcoords = [stimTimes{ii};stimTimes{ii};stimTimes{ii}+0.5;stimTimes{ii}+0.5];
-% Ycoords = 60*repmat([0;1;1;0],size(stimTimes{ii}));
-% patch(Xcoords,Ycoords,'r','EdgeColor','none','FaceAlpha',0.2);
-
-for jj = 1:length(stimTimes{ii})
-    Xcoords = [stimTimes{ii}(jj);stimTimes{ii}(jj);stimTimes{ii}(jj)+0.5;stimTimes{ii}(jj)+response_window];
-    Ycoords = 61*[0;1;1;0];
-    patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
-end
-
+    for jj = 1:length(stimTimes{ii})
+        Xcoords = [stimTimes{ii}(jj);stimTimes{ii}(jj);stimTimes{ii}(jj)+0.5;stimTimes{ii}(jj)+response_window];
+        Ycoords = 61*[0;1;1;0];
+        patch(Xcoords,Ycoords,'r','edgecolor','none','FaceAlpha',0.2);
+    end
 
 end
 rasterplot_so(spks.time,spks.channel,'b-');
@@ -197,73 +183,16 @@ set(gca,'TickDir','Out');
 xlabel('Time (s)');
 ylabel('Channel #');
 set(gca,'YMinorGrid','On');
-
 title(['Raster plot indicating stimulation at channels [',joined_ch,'] (hw+1)']);
 zoom xon;
 pan xon;
-%% Binning, averaging and plotting the PSTHs (1s silence) 
-%with 1s pre-stim silence
-% listOfCounts = cell(1,nStimSites);
-% for ii = 1:nStimSites
-%     figure(2+ii)
-%     for jj = 1:60
-%         bins = -50: 10: 500;
-%         count = 0;
-%         frMat = zeros(2,length(bins));
-%         for kk = 1:size(stimTimes{ii},2)
-%             shiftedSp = periStim_selected{ii}{jj}{kk,1}-stimTimes{ii}(1,kk);
-%             if ~isempty(shiftedSp)
-%                 fr = zeros(size(bins));
-%                 for mm = 1:length(bins)-1
-%                     fr(mm) = length(shiftedSp(and(shiftedSp>=bins(mm)*1e-3,shiftedSp<(bins(mm+1)*1e-3))));
-%                 end
-%                 count = count + 1;
-%                 frMat(count,:) = fr;     
-%             end
-%         end
-%         listOfCounts{1,ii}{jj,1} = count; 
-%         if count ==0, count=1; end
-%         
-%         %finding the right subplot position in a 6x10 array
-%         ch6x10_ch8x8_60 = channelmap6x10_ch8x8_60;
-%         [row, col] = find(ch6x10_ch8x8_60 == jj);
-%         pos = 6*(row-1) + col;
-%         subplot(10,6,pos)
-%         shadedErrorBar(bins,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-%         axis([-100 500 -0.5 2.5])
-%         line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
-%         text(375,1.7,num2str(jj),'FontAngle','italic');
-%         if ~or(mod(pos,6)==1,pos>54)
-%             set(gca,'YTickLabel',[]);
-%             set(gca,'XTickLabel',[]);
-%         elseif pos>55
-%             set(gca,'YTickLabel',[]);
-%         elseif pos~=55
-%             set(gca,'XTickLabel',[]);
-%         end
-%         set(gcf,'WindowButtonDownFcn','popsubplot(gca)')
-%      end
-%         % Add a title to the whole plot
-%         set(gcf,'NextPlot','add');
-%         axes;
-%         h = title(['Mean PSTHs following stimulation at ',num2str(stimSites(ii)+1),'(hw+1). [mean #spikes vs time(ms)]']);
-%         set(gca,'Visible','off');
-%         set(h,'Visible','on');
-%         
-% %         %print as a landscape eps figure
-% %         h=gcf;
-% %         set(h,'PaperPositionMode','auto'); 
-% %         set(h,'PaperOrientation','landscape');
-% %         set(h,'Position',[50 50 1200 800]);
-% %         print(gcf, '-depsc', [fPath,datRoot,'_',num2str(stimSites(ii)+1),'.eps']); % hw+1
-% end
 
-%% Comment in/out from here downwards:
+%% Plotting the PSTHs
 
 % Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
-binSize = 50; % in ms
-% binSize = 15; % in ms
+% binSize = 50; % in ms
+binSize = 15; % in ms
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
     eval([psth_h '= figure();']);%, num2str(1+ii), ');']);
@@ -340,53 +269,14 @@ end
 %% saving the figures
 %saveFigs('stimAnalysis', datRoot,handles, stimSites);
 
-%% Debuggin routines
-%59 il stim um  16 il responses um nokkam
-% art_bin = cell(60,1);
-% for jj = 1:60
-%     for kk = 1: length(stimTimes{5})
-%         shiftedSp = periStim{5}{jj}{kk,1}-stimTimes{5}(1,kk);
-%         art_bin{jj,1}{kk,1} = shiftedSp(and(shiftedSp>=0,shiftedSp<10*1e-3));
-%     end
-% end
-% figure(13)
-% for ii = 1:50
-%     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
-%     for jj = 1:length(realTime)
-%         indxOfSpk = find(and(spks.time == realTime, spks.channel==15));
-%         subplot(5,10,ii)
-%         plot(spks.context(:,indxOfSpk));
-%         hold on;
-%         plot(ones(124,1)*(spks.thresh(indxOfSpk)+mean(spks.context(:,indxOfSpk))),'r');
-%         axis tight;
-%     end
-% end
-% 
-% figure(14)
-% 
-% for ii = 1:50
-%     realTime = art_bin{16}{ii} + stimTimes{5}(ii);
-%     for jj = 1:length(realTime)
-%         lots = find(and(spks.time ~= realTime, spks.channel==12));
-%         indxOfSpk = lots(1+ round(length(lots)*rand(1,1)));
-%         subplot(5,10,ii)
-%         plot(spks.context(:,indxOfSpk));
-%         hold on;
-%         plot(ones(124,1)*(-spks.thresh(indxOfSpk)+mean(spks.context(:,indxOfSpk))),'r');
-%         axis tight;
-%     end
-% end
-
-
-
 %% preparing structure to send to function plt_resp2stim()
 
-stimEfficacy_data.fileName = datRoot;
-stimEfficacy_data.Spikes = spks;
-stimEfficacy_data.Electrode_details.stim_electrodes = stimSites;
-stimEfficacy_data.Electrode_details.rec_electrode = [];
-stimEfficacy_data.stimTimes = stimTimes;
-stimEfficacy_data.resp_slices = resp_slices;
-stimEfficacy_data.silence_s = silence_s;
-
-% plt_resp2stim(5,stimEfficacy_data);
+stim_data.fileName = datRoot;
+stim_data.Spikes = spks;
+stim_data.Electrode_details.stim_electrodes = stimSites;
+stim_data.Electrode_details.rec_electrode = [];
+stim_data.stimTimes = stimTimes;
+stim_data.responses.resp_slices = resp_slices;
+stim_data.responses.resp_lengt = resp_slices;
+stim_data.silence_s = silence_s;
+% plt_resp2stim(5,stim_data);

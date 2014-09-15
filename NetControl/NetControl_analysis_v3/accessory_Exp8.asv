@@ -12,9 +12,9 @@ disp(['Std. dev of participation in SB: ', num2str(std(Burst.S))]);
 
 
 %% response to stimuli
-chosen_stimInd = 3;
+chosen_stimInd = 1;
 recCh = 32; %hw+1
-for ii = 1:50
+for ii = 1:88
     resp_length(ii) = length(find(resp_slices{chosen_stimInd}{ii}.channel == recCh-1));
 end
 disp(['Mean reponse length: ', num2str(mean(resp_length))]);

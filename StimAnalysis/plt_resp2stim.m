@@ -8,9 +8,9 @@ function h = plt_resp2stim(stimNo, stimEfficacy_data)
 % OUTPUT ARGUMENTS: 
 %     h: figure handle of the resulting plot
 
-spks = stimEfficacy_data.recording;
+spks = stimEfficacy_data.Spikes;
 stimTimes = stimEfficacy_data.stimTimes;
-stimSites = stimEfficacy_data.stimSites;
+stimSites = stimEfficacy_data.Electrode_details.stim_electrodes;
 
 stimResp.time = [];
 stimResp.channel = [];

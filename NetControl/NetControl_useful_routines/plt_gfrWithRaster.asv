@@ -150,9 +150,9 @@ if stimulation % Stim response raster
 %     datRoot,joined_ch,cr2hw(recSites)+1),'FontWeight','Bold','Interpreter','None');
 
     set(get(fig1ha(1),'Title'), 'String', ...
-    sprintf('Data: %s',datRoot),'FontWeight','Bold','Interpreter','None');
-%     text(10,94,['Data: ',datRoot],'FontWeight','Bold','Interpreter','None', 'HorizontalAlignment','left');
-    text(spks.time(end),95,['Stim. ch: ',joined_ch, ' || Rec. ch: ',num2str(cr2hw(recSites)+1)],'FontWeight','Bold','HorizontalAlignment','right');
+    ['Stim. ch: ',joined_ch, 'Rec. ch: ',num2str(cr2hw(recSites)+1)],'FontWeight','Bold');
+    text(10,94,['Data: ',datRoot],'FontWeight','Bold','Interpreter','None');
+    text(10,94,['Stim. ch: ',joined_ch, ' || Rec. ch: ',num2str(cr2hw(recSites)+1)],'FontWeight','Bold');
 
 %     title(['Stimulation: ',joined_ch, 'Recording: ', cr2hw(recSites)+1],'FontWeight', 'Bold');
 % to be tested    
