@@ -1,14 +1,14 @@
 %% fitting an expoinential to the NetControl data: generic
-figure;
+figure()
 plot(x, y,'k.','LineWidth',3);
 set(gca, 'FontSize',16);
-xlabel('Pre-stimulus inactivity [s]');
-ylabel('Response length (#spikes)');
+xlabel('Pre-stimulus inactivity [s]', 'FontSize',20);
+ylabel('Response length (#spikes)', 'FontSize',20);
 x_m = satexp_regression(x, y);
-y_m = exp_model(0:0.01:max(x),x_m);
+y_m = exp_model(0:0.01:x,x_m);
 hold on;
-plot(0:0.01:max(x), y_m,'r','LineWidth',3);
-% ylim([0,7.1]);
+plot(0:0.01:x, y,'r','LineWidth',3);
+ylim([0,7.1]);
 box off;
 
 

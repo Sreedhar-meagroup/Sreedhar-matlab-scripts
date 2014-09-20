@@ -46,6 +46,13 @@ for ii = 1:60
 end
 [~,most_active_ch] = sort(ch_virility,'descend');
 
+
+%% Response distribution
+figure; subplot(3,3,[1 2 4 5 7 8]),plot(stim_3s_700.Silence_s{1}(32,:),stim_3s_700.Responses.resp_lengths{1}(32,:),'k.','MarkerSize',7), 
+box off, set(gca,'FontSize',14,'TickDir','Out'); xlabel('Pre-stimulus inactivity [s]'), ylabel('Reponse strength'); 
+[a,b] = hist(stim_3s_700.Responses.resp_lengths{1}(32,:),0:16);
+subplot(3,3,[3,6,9]), plot(a/sum(a),b,'k','LineWidth',2); 
+box off, set(gca,'FontSize',14,'TickDir','Out','YTickLabel',[]); xlabel('p');
 %% No: of spikes in each channel in each Spontaneous network burst
 
 ExtremaPerChPerNB = zeros(60,length(stimTimes{stimInd}),2);
@@ -187,7 +194,7 @@ set(fig5_h, 'Position',[pos(1:2),650, 610]);
 data_in.spcounts = resp_length_n;
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in);
+temp = perimeananalysis(data_in,'all');
 recCh_IF = temp.Indicatorfun;
 
 
@@ -195,8 +202,23 @@ recCh_IF = temp.Indicatorfun;
 data_in.spcounts = sum(nSpPerChPerNB);
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in);
+temp = perimeananalysis(data_in,'none');
 prevSB_glob_IF = temp.Indicatorfun;
+
+
+%% Analysis 8: overmean vs undermean of 1 ch in prev global activity
+data_in.spcounts = nSpPerChPerNB(52,:);
+data_in.stimdetails.stimTimes = stimTimes;
+data_in.stimdetails.stimInd = stimInd; 
+temp = perimeananalysis(data_in,'all');
+prevSB_sCh_IF = temp.Indicatorfun;
+
+%% Analysis 9:
+data_in.spcounts = nSpPerSponNB;
+data_in.stimdetails.stimTimes{1} = spon_data.NetworkBursts.NB_extrema(:,1);
+data_in.stimdetails.stimInd = stimInd;
+temp = perimeananalysis(data_in,'all');
+sponSB_global_IF = temp.Indicatorfun;
 
 %% response dynamics
 figure; hold on; 
@@ -211,6 +233,14 @@ end
 view(3)
 grid on;
 
+
+figure; plot(stim_data.Silence_s{2}(51,:),stim_data.Responses.resp_lengths{2}(51,:),'.','MarkerSize',7);
+box off;set(gca,'FontSize',14,'TickDir','Out');
+xlabel('Pre-stimulus inactivity [s]'), ylabel('Reponse strength')
+
+figure; plot(stim_data_4672.Silence_s{3}(32,:),stim_data_4672.Responses.resp_lengths{3}(32,:),'.','MarkerSize',7);
+box off;set(gca,'FontSize',14,'TickDir','Out');
+xlabel('Pre-stimulus inactivity [s]'), ylabel('Reponse strength')
 
 figure; 
 for ii = 1:6

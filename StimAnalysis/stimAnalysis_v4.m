@@ -22,11 +22,16 @@ switch nargin
     case 0    
         Exp_no = 5; %default value;
         response_window = 0.5;
+        plotID = '';
     case 1
         Exp_no = varargin{1};
         response_window = 0.5;
+        plotID = '';
     case 2
-        [Exp_no, response_window] = varargin{:}; %default value;
+        [Exp_no, response_window] = varargin{:};
+        plotID = ''; %default value;
+    case 3
+        [Exp_no, response_window, plotID] = varargin{:};
     otherwise
         disp('Check input arguments');
 end
@@ -189,7 +194,7 @@ end
 % pan xon;
 
 %% Plotting the PSTHs
-
+if ~strcmpi(strtrim(plotID), 'noplots')
 % Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
 % binSize = 50; % in ms
@@ -266,7 +271,7 @@ for ii = 1:nStimSites
 %         set(gca,'Visible','off');
 %         set(h,'Visible','on');
 end
-
+end
 %% saving the figures
 %saveFigs('stimAnalysis', datRoot,handles, stimSites);
 

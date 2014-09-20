@@ -1,4 +1,5 @@
-function [h,varargout] = plt_IBIdist(IBI_data, dt, varargin)
+function [h,varargout] = plt_IBIdist(spon_data, dt, varargin)
+IBI_data = spon_data.NetworkBursts.IBIs;
 plot_flag = 1;
 h = 0;
 
