@@ -1,19 +1,22 @@
 function SpontaneousData = spontaneousData(varargin)
-% check out input parse feature
 %% Look for data if you dont find the datName
+% default parameter values that could be addressed by varargin
+    expno = 6; % could be 5, 6, 7, 8.
+    burst_detector = 'ISI_threshold'; % Could be 'ISI_threshold' or 'ISIN_threshold'
 
-    [datName,pathName] = chooseDatFile(6,'Spontaneous');
+    if mod(length(varargin),2)~=0
+            disp('Only parameter value pairs accepted!');
+            return;
+    else
+            pvpmod(varargin);
+    end
+    
+   
+    [datName,pathName] = chooseDatFile(expno,'Spontaneous');
     datRoot = datName(1:strfind(datName,'.')-1);
     spikes=loadspike([pathName,datName],2,25);
     thresh  = extract_thresh([pathName, datName, '.desc']);
-    burst_detector = 'ISI_threshold'; % default burst detector
-    
-    if nargin == 1
-        if strcmpi(varargin{1},'ISIN')
-         burst_detector = 'ISIN_threshold';
-        end
-    end
-        
+           
     %% Cleaning spikes, getting them into channels
     off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
     spikes_oc = spikes;

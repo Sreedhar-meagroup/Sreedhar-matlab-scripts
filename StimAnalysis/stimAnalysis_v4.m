@@ -42,7 +42,7 @@ if ~exist('datName','var')
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes=loadspike([pathName,datName],2,25);
+spikes  = loadspike([pathName,datName],2,25);
 thresh  = extract_thresh([pathName, datName, '.desc']);
 handles = zeros(1,7);
 

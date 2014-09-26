@@ -1,6 +1,5 @@
 %% seeking the burst before
 
-stim_data = stim_3s_700;
 recCh_cr     = 51;
 close_stimCh = 52; %hw+1;
 stimInd      = 1;
@@ -48,9 +47,9 @@ end
 
 
 %% Response distribution
-figure; subplot(3,3,[1 2 4 5 7 8]),plot(stim_3s_700.Silence_s{1}(32,:),stim_3s_700.Responses.resp_lengths{1}(32,:),'k.','MarkerSize',7), 
+figure; subplot(3,3,[1 2 4 5 7 8]),plot(stim_data.Silence_s{1}(32,:),stim_data.Responses.resp_lengths{1}(32,:),'k.','MarkerSize',7), 
 box off, set(gca,'FontSize',14,'TickDir','Out'); xlabel('Pre-stimulus inactivity [s]'), ylabel('Reponse strength'); 
-[a,b] = hist(stim_3s_700.Responses.resp_lengths{1}(32,:),0:16);
+[a,b] = hist(stim_data.Responses.resp_lengths{1}(32,:),0:16);
 subplot(3,3,[3,6,9]), plot(a/sum(a),b,'k','LineWidth',2); 
 box off, set(gca,'FontSize',14,'TickDir','Out','YTickLabel',[]); xlabel('p');
 %% No: of spikes in each channel in each Spontaneous network burst
@@ -202,7 +201,7 @@ recCh_IF = temp.Indicatorfun;
 data_in.spcounts = sum(nSpPerChPerNB);
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in,'none');
+temp = perimeananalysis(data_in,'all');
 prevSB_glob_IF = temp.Indicatorfun;
 
 

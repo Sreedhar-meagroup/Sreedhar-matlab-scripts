@@ -20,7 +20,7 @@ if strcmpi(plotID,'1')||strcmpi(plotID,'all')
 figure;
 plot(overmean,ones(size(overmean)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
 plot(undermean,zeros(size(undermean)),'rv','MarkerSize',7,'MarkerFaceColor','r');
-axis([0 90 -0.5 1.5]);
+
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
@@ -33,7 +33,7 @@ legend('supra','infra');
 figure;
 plot(overmeanphstd,ones(size(overmeanphstd)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
 plot(undermeanmhstd,zeros(size(undermeanmhstd)),'rv','MarkerSize',7,'MarkerFaceColor','r');
-axis([0 90 -0.5 1.5]);
+
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
@@ -46,7 +46,7 @@ legend('supra','infra');
 figure;
 plot(overmeanpstd,ones(size(overmeanpstd)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
 plot(undermeanmstd,zeros(size(undermeanmstd)),'rv','MarkerSize',7,'MarkerFaceColor','r');
-axis([0 90 -0.5 1.5]);
+
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
