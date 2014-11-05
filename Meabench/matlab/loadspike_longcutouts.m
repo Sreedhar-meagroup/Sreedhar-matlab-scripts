@@ -61,6 +61,8 @@ function y=loadspike(fn,range,freq)
 %added conversion for context data, to obtain correct analog values after
 %calling this file
 
+
+
 if nargin<2
   range=nan;
 end

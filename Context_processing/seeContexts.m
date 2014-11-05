@@ -40,6 +40,7 @@ function plotContexts(spikes,choice)
         %set(gca,'Xticklabel',[]);
         set(gca,'XTick',0:25:125);
         set(gca,'XTicklabel',-2:3);
+        set(gca,'TickDir','Out');
         xlabel(['timestamp: ',num2str(choice)]);
         axis tight;
 end

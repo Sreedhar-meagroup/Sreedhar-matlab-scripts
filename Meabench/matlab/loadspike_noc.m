@@ -40,6 +40,7 @@ function y=loadspike_noc(fn,range,freq)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+% 03/11/14: This file CANNOT be used for recordings with long cutouts (-2ms to 3ms)
 
 if nargin<2
   range=nan;
@@ -57,7 +58,7 @@ len = ftell(fid);
 fseek(fid,0,-1);
 
 CHUNK=10000;
-raw = zeros(8,len/164);   %82*2bytes is 164 bytes, so len/164 gives the number of spikes(information) in the file, we only need 8 rows since we don't use cutout data
+% raw = zeros(8,len/164);   %82*2bytes is 164 bytes, so len/164 gives the number of spikes(information) in the file, we only need 8 rows since we don't use cutout data
 n=0;
 while 1,                       %this part reads sequentially
   [dat, cnt] = fread(fid,[82 CHUNK],'int16');

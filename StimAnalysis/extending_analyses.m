@@ -193,7 +193,7 @@ set(fig5_h, 'Position',[pos(1:2),650, 610]);
 data_in.spcounts = resp_length_n;
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in,'all');
+temp = perimeananalysis(data_in,'3t','stim');
 recCh_IF = temp.Indicatorfun;
 
 
@@ -201,7 +201,7 @@ recCh_IF = temp.Indicatorfun;
 data_in.spcounts = sum(nSpPerChPerNB);
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in,'all');
+temp = perimeananalysis(data_in,'3t','spon');
 prevSB_glob_IF = temp.Indicatorfun;
 
 

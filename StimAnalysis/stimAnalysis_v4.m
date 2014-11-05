@@ -2,7 +2,8 @@ function stim_data = stimAnalysis_v4(varargin)
 % stim_data = stimAnalysis_v4(varargin):
 % INPUT Arguments, in the following order:
 %     1. Experiment no. (optional);  default = 5
-%     2. response_window in s; default = 0.5s
+%     2. response_window in s (optional); default = 0.5s
+%     3. plotID(optional) = 'noplots'; default = '';
 
 %% Version info, aim
 % -------------------------------------------------------------------------------------
@@ -42,7 +43,7 @@ if ~exist('datName','var')
 end
 
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes  = loadspike([pathName,datName],2,25);
+spikes  = loadspike_sk([pathName,datName],2,25);
 thresh  = extract_thresh([pathName, datName, '.desc']);
 handles = zeros(1,7);
 
@@ -80,6 +81,7 @@ end
 off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
 spikes_oc = spikes;
 spikes_oc.context = off_corr_contexts;
+% spks = spikes_oc; % comment in for unclean data
 [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
 % [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
 spks = blankArtifacts(spks,stimTimes,1);
@@ -198,7 +200,7 @@ if ~strcmpi(strtrim(plotID), 'noplots')
 % Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
 % binSize = 50; % in ms
-binSize = 15; % in ms
+binSize = 5; % in ms
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
     eval([psth_h '= figure();']);%, num2str(1+ii), ');']);

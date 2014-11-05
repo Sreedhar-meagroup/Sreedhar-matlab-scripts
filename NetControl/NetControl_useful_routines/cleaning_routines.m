@@ -21,5 +21,5 @@ spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3);
 
 % Adding additional data to the structure (review this procedure later)
 spks.stimTimes = stimTimes;
-spks.stimSites = repmat(electrode_details.stim_electrode,size(stimTimes));
-spks.recSite = electrode_details.rec_electrode;
+% spks.stimSites = repmat(electrode_details.stim_electrodes,size(stimTimes));
+% spks.recSite = electrode_details.rec_electrodes;

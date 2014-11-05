@@ -1,4 +1,4 @@
-function data_out = perimeananalysis(data_in, plotID)
+function data_out = perimeananalysis(data_in, plotID,tag)
 
 
 spcounts = data_in.spcounts;
@@ -15,35 +15,36 @@ undermeanmhstd = find(spcounts<mean(spcounts)-0.5*std(spcounts));
 overmeanpstd = find(spcounts>mean(spcounts)+std(spcounts));
 undermeanmstd = find(spcounts<mean(spcounts)-std(spcounts));
 
-%% plots 1
+%% plots 1 
 if strcmpi(plotID,'1')||strcmpi(plotID,'all')
 figure;
+subplot(3,1,1)
 plot(overmean,ones(size(overmean)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
 plot(undermean,zeros(size(undermean)),'rv','MarkerSize',7,'MarkerFaceColor','r');
 
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
-xlabel('Stim index, n')
-ylabel('I(n)');
-title('Indicator function around mean');
+% xlabel('Stim index, n')
+% ylabel('I(n)');
+title(['IF around mean: ',tag],'Interpreter','Latex');
 legend('supra','infra');
 
 
-figure;
+subplot(3,1,2)
 plot(overmeanphstd,ones(size(overmeanphstd)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
 plot(undermeanmhstd,zeros(size(undermeanmhstd)),'rv','MarkerSize',7,'MarkerFaceColor','r');
 
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
-xlabel('Stim index, n')
+% xlabel('Stim index, n')
 ylabel('I(n)');
-title('Indicator function around mean $\pm \frac{1}{2}$ std','Interpreter','Latex');
-legend('supra','infra');
+title(['IF around mean $\pm \frac{1}{2}$ std: ',tag],'Interpreter','Latex');
+% legend('supra','infra');
 
 
-figure;
+subplot(3,1,3)
 plot(overmeanpstd,ones(size(overmeanpstd)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
 plot(undermeanmstd,zeros(size(undermeanmstd)),'rv','MarkerSize',7,'MarkerFaceColor','r');
 
@@ -51,9 +52,9 @@ box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
 xlabel('Stim index, n')
-ylabel('I(n)');
-title('Indicator function around mean \pm std');
-legend('supra','infra');
+% ylabel('I(n)');
+title(['IF around mean $\pm$ std: ',tag],'Interpreter','LaTeX');
+% legend('supra','infra');
 
 end
 %% section 2: Distribution of \Delta stimindices
@@ -74,37 +75,38 @@ undermeanmstd_dist = undermeanmstd_dist/sum(undermeanmstd_dist);
 %% plots 2
 if strcmpi(plotID,'2')|| strcmpi(plotID,'all')
 figure;
+subplot(3,1,1)
 plot(smooth(overmean_dist,10,'lowess'),'g','LineWidth',2); hold on;
 plot(smooth(undermean_dist,10,'lowess'),'r','LineWidth',2); hold off;
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
-xlabel('\Delta Stim ind')
-ylabel('p');
-title('Distribution of \Delta Stim indices around mean');
+% xlabel('\Delta Stim ind')
+% ylabel('p');
+title(['Distribution of $\Delta$ indices dist around mean: ',tag],'Interpreter','Latex');
 legend('supra','infra');
 
-figure;
+subplot(3,1,2)
 plot(smooth(overmeanphstd_dist,10,'lowess'),'g','LineWidth',2); hold on;
 plot(smooth(undermeanmhstd_dist,10,'lowess'),'r','LineWidth',2); hold off;
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
-xlabel('\Delta Stim ind')
+% xlabel('\Delta Stim ind')
 ylabel('p');
-title('Distribution of \Delta Stim indices around mean $\pm \frac{1}{2}$ std','Interpreter','Latex');
-legend('supra','infra');
+title('Around mean $\pm \frac{1}{2}$ std','Interpreter','Latex');
+% legend('supra','infra');
 
-figure;
+subplot(3,1,3)
 plot(smooth(overmeanpstd_dist,10,'lowess'),'g','LineWidth',2); hold on;
 plot(smooth(undermeanmstd_dist,10,'lowess'),'r','LineWidth',2); hold off;
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
 xlabel('\Delta Stim ind')
-ylabel('p');
-title('Distribution of \Delta Stim indices around mean \pm std');
-legend('supra','infra');
+% ylabel('p');
+title('Around mean $\pm$ std','Interpreter','Latex');
+% legend('supra','infra');
 end
 
 %% section 3: Dynamics of the density of the indicator function 
@@ -120,38 +122,79 @@ binsize = 3;
 %% plots3
 if strcmpi(plotID,'3')|| strcmpi(plotID,'all')
 figure;
+subplot(3,1,1)
 plot(temp1, smooth(overmean_density,10,'lowess'),'g','LineWidth',2); hold on;
 plot(temp2, smooth(undermean_density,10,'lowess'),'r','LineWidth',2); hold off;
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
-xlabel('Stim ind')
-ylabel('Density');
-title('Around mean');
+% xlabel('Stim ind')
+% ylabel('Density');
+title(['Around mean: ',tag]);
 legend('supra','infra');
 
 
-figure;
+subplot(3,1,2)
 plot(temp3, smooth(overmeanphstd_density,10,'lowess'),'g','LineWidth',2); hold on;
 plot(temp4, smooth(undermeanmhstd_density,10,'lowess'),'r','LineWidth',2); hold off;
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
-xlabel('Stim ind')
+% xlabel('Stim ind')
 ylabel('Density');
 title('Around mean $\pm \frac{1}{2}$ std','Interpreter','Latex');
-legend('supra','infra');
+% legend('supra','infra');
 
-figure;
+subplot(3,1,3)
 plot(temp5, smooth(overmeanpstd_density,10,'lowess'),'g','LineWidth',2); hold on;
 plot(temp6, smooth(undermeanmstd_density,10,'lowess'),'r','LineWidth',2); hold off;
 box off;
 set(gca,'tickDir','Out');
 set(gca,'FontSize',14);
 xlabel('Stim ind')
-ylabel('Density');
+% ylabel('Density');
 title('Around mean \pm std');
+% legend('supra','infra');
+end
+
+
+
+%% plots3t; with time as x axis
+if strcmpi(plotID,'3t')|| strcmpi(plotID,'all')
+figure;
+subplot(3,1,1)
+plot(stimTimes{stimInd}(temp1), smooth(overmean_density,10,'lowess'),'g','LineWidth',2); hold on;
+plot(stimTimes{stimInd}(temp2), smooth(undermean_density,10,'lowess'),'r','LineWidth',2); hold off;
+box off;
+set(gca,'tickDir','Out');
+set(gca,'FontSize',14);
+% xlabel('Stim ind')
+% ylabel('Density');
+title(['Around mean: ',tag],'Interpreter','Latex');
 legend('supra','infra');
+
+
+subplot(3,1,2)
+plot(stimTimes{stimInd}(temp3), smooth(overmeanphstd_density,10,'lowess'),'g','LineWidth',2); hold on;
+plot(stimTimes{stimInd}(temp4), smooth(undermeanmhstd_density,10,'lowess'),'r','LineWidth',2); hold off;
+box off;
+set(gca,'tickDir','Out');
+set(gca,'FontSize',14);
+% xlabel('Stim ind')
+ylabel('Density');
+title('Around mean $\pm \frac{1}{2}$ std','Interpreter','Latex');
+% legend('supra','infra');
+
+subplot(3,1,3)
+plot(stimTimes{stimInd}(temp5), smooth(overmeanpstd_density,10,'lowess'),'g','LineWidth',2); hold on;
+plot(stimTimes{stimInd}(temp6), smooth(undermeanmstd_density,10,'lowess'),'r','LineWidth',2); hold off;
+box off;
+set(gca,'tickDir','Out');
+set(gca,'FontSize',14);
+xlabel('Time [s]')
+% ylabel('Density');
+title('Around mean $\pm$ std','Interpreter','Latex');
+% legend('supra','infra');
 end
 %% Preparing data out
 data_out.Indicatorfun.overmean = overmean;
