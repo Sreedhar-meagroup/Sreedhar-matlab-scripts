@@ -81,11 +81,11 @@ end
 off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
 spikes_oc = spikes;
 spikes_oc.context = off_corr_contexts;
-% spks = spikes_oc; % comment in for unclean data
-[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+spks = spikes_oc; % comment in for unclean data
+% [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
 % [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
-spks = blankArtifacts(spks,stimTimes,1);
-spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
+% spks = blankArtifacts(spks,stimTimes,1);
+% spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);

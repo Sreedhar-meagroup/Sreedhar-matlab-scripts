@@ -26,7 +26,14 @@ electrode_details.stim_electrodes = 87;%14;
 electrode_details.rec_electrodes  = 62;%78;
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into inAChannel cells
+% off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
+% spikes_oc = spikes;
+% spikes_oc.context = off_corr_contexts;
+% [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+% spks = blankArtifacts(spks,stimTimes,1);
+% spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 
+% no cleaning
 spks = spikes; % to use when cleaning routines are not used
 %  spks = cleaning_routines(spikes, stimTimes, electrode_details, thresh);
 inAChannel = cell(60,1);

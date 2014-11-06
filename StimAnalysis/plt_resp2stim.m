@@ -1,13 +1,13 @@
-function h = plt_resp2stim(stimNo, stim_data)
+function h = plt_resp2stim(stim_data,varargin)
 %This function plots the responses to stimuli at a given site arranged
 %sequentially. The function is to go along with stimAnalysis_v3.m.
 % INPUT ARGUMENTS: 
-%     stimNo: (1-5), is the index of the stimulation site
-%     stimEfficacy_data: a structure generated in the file
-%     stimAnalysis_v3.m
+%     stimNo: (1-5), is the index of the stimulation site; default = 1
+%     stim_data: a structure returned in the file
+%     stimAnalysis_v4.m
 % OUTPUT ARGUMENTS: 
 %     h: figure handle of the resulting plot
-
+if nargin == 1, stimNo = 1; end
 spks = stim_data.Spikes;
 stimTimes = stim_data.StimTimes;
 stimSites = stim_data.Electrode_details.stim_electrodes;
