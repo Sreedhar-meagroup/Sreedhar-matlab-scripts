@@ -57,6 +57,45 @@ title(['IF around mean $\pm$ std: ',tag],'Interpreter','LaTeX');
 % legend('supra','infra');
 
 end
+
+%% plots1t; with time as x axis
+if strcmpi(plotID,'1t')|| strcmpi(plotID,'all')
+figure;
+subplot(3,1,1)
+plot(stimTimes{stimInd}(overmean),ones(size(overmean)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on; 
+plot(stimTimes{stimInd}(undermean),zeros(size(undermean)),'rv','MarkerSize',7,'MarkerFaceColor','r');
+box off;
+set(gca,'tickDir','Out');
+set(gca,'FontSize',14);
+% xlabel('Stim index, n')
+% ylabel('I(n)');
+title(['IF around mean: ',tag],'Interpreter','Latex');
+legend('supra','infra');
+
+
+subplot(3,1,2)
+plot(stimTimes{stimInd}(overmeanphstd), ones(size(overmeanphstd)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on;
+plot(stimTimes{stimInd}(undermeanmhstd), zeros(size(undermeanmhstd)),'rv','MarkerSize',7,'MarkerFaceColor','r'); hold off;
+box off;
+set(gca,'tickDir','Out');
+set(gca,'FontSize',14);
+% xlabel('Stim ind')
+ylabel('I(n)');
+title(['IF around mean $\pm \frac{1}{2}$ std: ',tag],'Interpreter','Latex');
+% legend('supra','infra');
+
+subplot(3,1,3)
+plot(stimTimes{stimInd}(overmeanpstd), 0.35+ones(size(overmeanpstd)),'g^','MarkerSize',7,'MarkerFaceColor','g'); hold on;
+plot(stimTimes{stimInd}(undermeanmstd), zeros(size(undermeanmstd)),'rv','MarkerSize',7,'MarkerFaceColor','r'); hold off;
+box off;
+set(gca,'tickDir','Out');
+set(gca,'FontSize',14);
+xlabel('Time [s]')
+% ylabel('Density');
+% legend('supra','infra');
+title(['IF around mean $\pm$ std: ',tag],'Interpreter','LaTeX');
+end
+
 %% section 2: Distribution of \Delta stimindices
 
 overmean_dist = hist(diff(overmean),min(diff(overmean))-5:max(diff(overmean))+5);
