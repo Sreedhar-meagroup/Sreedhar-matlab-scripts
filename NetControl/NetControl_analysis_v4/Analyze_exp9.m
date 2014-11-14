@@ -8,7 +8,8 @@ if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(9,'net');
 end
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes  = loadspike_sk([pathName,datName],2,25); 
+% spikes  = loadspike_sk([pathName,datName],2,25); 
+spikes  = loadspike_noc1_sk([pathName,datName],2,25); 
 try
     thresh  = extract_thresh([pathName, datName, '.desc']);
 catch
@@ -21,9 +22,12 @@ end
 stimTimes   = getStimTimes(spikes);
 %electrode_details =
 %extract_elec_details([pathName,'config_files\train.cls']); correct this
+open([pathName,'config_files\config.yaml']);
+sites = inputdlg('Enter stim site: rec site (in cr),separated by :',':');
+sites = strsplit(strtrim(sites{1}),':');
 electrode_details.description    = 'All electrodes are in cr(11 to 88)';
-electrode_details.stim_electrodes = 87;%14;
-electrode_details.rec_electrodes  = 62;%78;
+electrode_details.stim_electrodes = str2num(sites{1});%87;%14;
+electrode_details.rec_electrodes  = str2num(sites{2});%62;%78;
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into inAChannel cells
 % off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
