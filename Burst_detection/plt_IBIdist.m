@@ -23,7 +23,7 @@ if plot_flag
     set(gca,'TickDir','Out');
     set(gca,'XMinorTick','On');
     % axis tight;
-    set(gca, 'FontSize', 16)
+    set(gca, 'FontSize', 16, 'Layer','Top')
     ylabel('probability')
     xlabel('IBI [s]')
     title(tag);

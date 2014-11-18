@@ -18,7 +18,7 @@ data_dir = '';
 switch nargin
     case 1
         exp_dir = ['Experiments',num2str(varargin{1})];
-    case 2
+    case {2,3}
         exp_dir = ['Experiments',num2str(varargin{1})];
         if strncmpi(varargin{2},'spontaneous',2)
             data_dir = 'Spontaneous';
@@ -37,7 +37,14 @@ if strcmpi(strtrim(name),'sree-pc')
 elseif strcmpi(strtrim(name),'petunia')
     srcPath = ['C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\',exp_dir,'\',data_dir];
 end
-[datName,pathName]=uigetfile('*.spike','Select MEABench Data file',srcPath);
+
+if nargin == 3
+    msg = varargin{3};
+else
+    msg = 'Select MEABench Data file';
 end
+
+[datName,pathName]=uigetfile('*.spike',msg,srcPath);
+
 
 

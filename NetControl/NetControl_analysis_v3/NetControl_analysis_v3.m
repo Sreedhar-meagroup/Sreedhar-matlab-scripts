@@ -9,7 +9,8 @@ if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(7,'net');
 end
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes  = loadspike([pathName,datName],2,25);
+% spikes  = loadspike_sk([pathName,datName],2,25);
+spikes  = loadspike_compact_sk([pathName,datName],2,25);
 try
     thresh  = extract_thresh([pathName, datName, '.desc']);
 catch
@@ -213,7 +214,7 @@ axis tight;
 [sortedSil, silInd] = sort(silence_s);
     respOfSortedSil_n = respLengths_n(silInd);
 if ~isempty(strfind(datName,'trai')) 
-    dt = 0.5
+    dt = NetControlData.dicretization;
     disp('Did you remember to set the right dt?');
     bplot_h = plt_respLength(sortedSil,respOfSortedSil_n,dt,'nspikes');
 %     title('Response during testing');
@@ -393,4 +394,7 @@ set(h2,'FontSize',12);
 % set(h1,'FontSize',12);
 % set(h2,'FontSize',12);
 
+%%
+
+% NetControlData.nStimuliInEachSession = nStimuliInEachSession;
 

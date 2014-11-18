@@ -114,7 +114,7 @@ end
 
 
 %% NetControl-Data structure
-NetControlData.fileName = datRoot;
+% NetControlData.fileName = datRoot;
 NetControlData.Culture_details.PID = PID;
 NetControlData.Culture_details.CID = CID;
 NetControlData.Session_number = session_number;

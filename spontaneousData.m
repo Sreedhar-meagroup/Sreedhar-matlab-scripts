@@ -2,7 +2,7 @@ function SpontaneousData = spontaneousData(varargin)
 % spon_data = spontaneousData(varargin):
 % INPUT Arguments, in the following order:
 %     1. Experiment no. (optional);  default = 5
-%     2,3,... parameter, value pairs e.g. spontaneousData(''burst_detector', ISIN_threshold)
+%     2,3,... parameter, value pairs e.g. spontaneousData('burst_detector', ISIN_threshold)
 
 %% Version info, aim
 % -------------------------------------------------------------------------------------
@@ -33,7 +33,9 @@ function SpontaneousData = spontaneousData(varargin)
 
     disp(['The applied burst-detector:', burst_detector])
     
-    [datName,pathName] = chooseDatFile(Exp_no,'Spontaneous');
+    if ~exist('datName','var')|| ~exist('pathName','var')
+        [datName,pathName] = chooseDatFile(Exp_no,'Spontaneous');
+    end
     datRoot = datName(1:strfind(datName,'.')-1);
     spikes=loadspike_sk([pathName,datName],2,25);
     try
