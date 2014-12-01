@@ -138,7 +138,8 @@ NetControlData.RespLengths_n = respLengths_n;
 NetControlData.burst_criterion = burst_criterion;
 
 try
-    NetControlData.Pre_spontaneous = spontaneousData(datName_preSpont,pathName_preSpont);
+    NetControlData.Pre_spontaneous = spontaneousData('datName',datName_preSpont,'pathName',pathName_preSpont);
+    disp('Loaded pre-spontaneous activity...');
 catch err
     disp('Warning:: Could not find pre spontaneous file!')
     NetControlData.Pre_spontaneous = spontaneousData();
@@ -147,7 +148,8 @@ end
 NetControlData.Pre_spontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 
 try
-    NetControlData.Post_spontaneous = spontaneousData('spon_after_testing.spike', pathName);
+    NetControlData.Post_spontaneous = spontaneousData('datName','spon_after_testing.spike','pathName', pathName);
+    disp('Loaded post-spontaneous activity...');
     NetControlData.Post_spontaneous.RecChannelBursts = bursts_at_RecSite(NetControlData.Post_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
 catch err
     disp('Warning:: No post experiment spontaneous data available!');

@@ -1,5 +1,20 @@
 function [h,varargout] = plt_IBIdist(spon_data, dt, varargin)
-IBI_data = spon_data.NetworkBursts.IBIs;
+% [h,varargout] = plt_IBIdist(spon_data, dt, varargin):
+% plots and (optional) returns the normalized histogram of inter-burst intervals (IBIs).
+% INPUT ARGUMENTS: spon_data(struct), dt (step-size), varargin{'no plot'/'title'}
+% OUTPUT ARGUMENTS: h (fig handle), varargout{probabilities}
+
+try 
+    IBI_data = spon_data.IBIs;
+catch
+    try
+        IBI_data = spon_data.NetworkBursts.IBIs;
+    catch
+        disp('Something wrong with the input data structure!!!');
+        return;
+    end
+end
+
 plot_flag = 1;
 h = 0;
 

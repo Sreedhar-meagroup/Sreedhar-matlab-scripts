@@ -12,7 +12,7 @@
 
 
 
-function [spike_info]=loadspike_samples(fn,range,freq);
+function [spike_info]=loadspike_shortcutouts_bigfiles(fn,range,freq)
 % y=LOADSPIKE(fn) loads spikes from given filename into structure y
 % with members
 %   time    (1xN) (in samples)

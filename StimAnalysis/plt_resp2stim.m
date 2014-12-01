@@ -7,7 +7,12 @@ function h = plt_resp2stim(stim_data,varargin)
 %     stimAnalysis_v4.m
 % OUTPUT ARGUMENTS: 
 %     h: figure handle of the resulting plot
-if nargin == 1, stimNo = 1; end
+if nargin == 1
+    stimNo = 1;
+elseif nargin ==2 
+    stimNo = varargin{1};
+end
+
 spks = stim_data.Spikes;
 stimTimes = stim_data.StimTimes;
 stimSites = stim_data.Electrode_details.stim_electrodes;

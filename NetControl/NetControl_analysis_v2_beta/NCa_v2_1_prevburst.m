@@ -52,7 +52,7 @@
 preStim_burst = recSite_prestim_bursts(NetControlData);
 
 %% Silence preceding the burst preceding the stim
-
+recChanSpikes = inAChannel{recSite_in_hwpo};
 prevburst_silence = zeros(length(stimTimes),1);
 for ii = 1:length(stimTimes)
     first_sp_b4 = find(recChanSpikes<preStim_burst{ii}(1),1,'last');
@@ -73,7 +73,7 @@ min_xval = -1;
 for jj = 1:nSessions
     trials_h(jj) = subplot(nSessions/2,2,jj); hold on;
     for ii = session_vector(jj)+1:session_vector(jj+1)
-        plot(preStim_burst{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(preStim_burst{ii})),'.','MarkerSize',4);
+        plot(preStim_burst{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(preStim_burst{ii})),'k.','MarkerSize',4);
         plot(postStimAtRecSite{ii}-stimTimes(ii),(ii-session_vector(jj))*ones(size(postStimAtRecSite{ii})),'r.','MarkerSize',4);
         temp = min(preStim_burst{ii}-stimTimes(ii));
         if jj <= nSessions-2, set(gca,'XTickLabel',[]);end

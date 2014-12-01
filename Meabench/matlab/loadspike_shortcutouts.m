@@ -1,4 +1,4 @@
-function y=loadspike(fn,range,freq)
+function y=loadspike_shortcutouts(fn,range,freq)
 % y=LOADSPIKE(fn) loads spikes from given filename into structure y
 % with members
 %   time    (1xN) (in samples)

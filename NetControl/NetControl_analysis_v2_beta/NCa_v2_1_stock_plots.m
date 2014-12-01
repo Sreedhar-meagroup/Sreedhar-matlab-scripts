@@ -52,9 +52,9 @@ rlvssil_h = gcf;
 
 
 %% Collecting pre and post experiment spontaneous data
-IBI_pre_h = plt_IBIdist(NetControlData.Pre_spontaneous.NetworkBursts.IBIs , dt, 'Network, pre');
+IBI_pre_h = plt_IBIdist(NetControlData.Pre_spontaneous, dt, 'Network, pre');
 try
-    IBI_post_h = plt_IBIdist(NetControlData.Post_spontaneous.NetworkBursts.IBIs , dt, 'Network, post');
+    IBI_post_h = plt_IBIdist(NetControlData.Post_spontaneous , dt, 'Network, post');
 catch err
     disp('Warning:: No post experiment spontaneous data available!');
 end

@@ -1,7 +1,7 @@
 %% Pre cell
 % burst_criterion = 0.2;
 % RecChannel_pre = bursts_at_RecSite(NetControlData.Pre_spontaneous.Spikes,[burst_criterion,burst_criterion,3],recSite_in_hwpo);
-IBI_rec_pre_h = plt_IBIdist(NetControlData.Pre_spontaneous.RecChannelBursts.IBIs, dt, 'Rec channel, pre');
+IBI_rec_pre_h = plt_IBIdist(NetControlData.Pre_spontaneous.RecChannelBursts, dt, 'Rec channel, pre');
 Steps = 10.^[-5:.05:1.5];
 [~,ISI_rec_pre_h] = HistogramISIn(NetControlData.Pre_spontaneous.InAChannel{recSite_in_hwpo},2,Steps);
 title('pre');
@@ -20,7 +20,7 @@ set(gca,'FontSize',12);
 
 
 % RecChannel_post = bursts_at_RecSite(NetControlData.Post_spontaneous.Spikes,[0.2,0.2,3],recSite_in_hwpo);
-IBI_rec_post_h = plt_IBIdist(NetControlData.Post_spontaneous.RecChannelBursts.IBIs, dt, 'Rec channel, post');
+IBI_rec_post_h = plt_IBIdist(NetControlData.Post_spontaneous.RecChannelBursts, dt, 'Rec channel, post');
 [~,ISI_rec_post_h] = HistogramISIn(NetControlData.Post_spontaneous.InAChannel{recSite_in_hwpo},2,Steps);
 title('post');
 line([200,200],[10^-5, 10^-1]);

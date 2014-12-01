@@ -53,20 +53,20 @@ MIN_NO_SPIKES       = 3;                                                        
 
 %check if I have multiple inputs
 if nargin >1
-    nr_inputs = nargin
+    nr_inputs = nargin;
     switch nr_inputs
         case 2
             
-            MAX_INTERVAL_LENGTH  = varargin{1}
+            MAX_INTERVAL_LENGTH  = varargin{1};
         case 3
             
-             MAX_INTERVAL_LENGTH = varargin{1}
-             MAX_BURST_INT       = varargin{2}
+             MAX_INTERVAL_LENGTH = varargin{1};
+             MAX_BURST_INT       = varargin{2};
         case 4
             
-             MAX_INTERVAL_LENGTH = varargin{1}
-             MAX_BURST_INT       = varargin{2}
-             MIN_NO_SPIKES       = varargin{3}
+             MAX_INTERVAL_LENGTH = varargin{1};
+             MAX_BURST_INT       = varargin{2};
+             MIN_NO_SPIKES       = varargin{3};
     end
 end
 

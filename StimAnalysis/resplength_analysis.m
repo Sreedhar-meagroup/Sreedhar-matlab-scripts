@@ -1,5 +1,4 @@
 %% seeking the burst before
-
 recCh_cr     = 87;
 close_stimCh = 52; %hw+1;
 stimInd      = 1;
@@ -10,7 +9,7 @@ resp_slices  = stim_data.Responses.resp_slices;
 resp_lengths = stim_data.Responses.resp_lengths;
 
 
-% spike train with the response window sliced out
+%% spike train with the response window sliced out
 inRespWindow_time     = [];
 inRespWindow_channels = [];
 inRespWindow_idx      = [];
@@ -30,12 +29,6 @@ spks_wo_resp.channel = spks.channel(reduced_idx);
 NBursts_wo_resp = sreedhar_ISI_threshold(spks_wo_resp);
 mod_NB_onsets = NBursts_wo_resp.NB_extrema(:,1);
 NB_ends = NBursts_wo_resp.NB_extrema(:,2);
-% hold on;
-% for ii = 1:length(NB_ends)
-%     Xcoords = [mod_NB_onsets(ii);mod_NB_onsets(ii);NB_ends(ii);NB_ends(ii)];
-%     Ycoords = 61*[0;1;1;0];
-%     patch(Xcoords,Ycoords,'g','edgecolor','none','FaceAlpha',0.2);
-% end
 
 
 %% 5 most active channels
@@ -45,7 +38,6 @@ for ii = 1:60
 end
 [~,most_active_ch] = sort(ch_virility,'descend');
 
-
 %% Response distribution
 figure; subplot(3,3,[1 2 4 5 7 8]);
 plot(stim_data.Silence_s{1}(cr2hw(recCh_cr)+1,:),stim_data.Responses.resp_lengths{1}(cr2hw(recCh_cr)+1,:),'k.','MarkerSize',7), 
@@ -54,11 +46,9 @@ box off, set(gca,'FontSize',14,'TickDir','Out'); xlabel('Pre-stimulus inactivity
 subplot(3,3,[3,6,9]), plot(a/sum(a),b,'k','LineWidth',2); 
 box off, set(gca,'FontSize',14,'TickDir','Out','YTickLabel',[]); xlabel('p');
 %% No: of spikes in each channel in each Spontaneous network burst
-
 ExtremaPerChPerNB = zeros(60,length(stimTimes{stimInd}),2);
-peakFRperChPerNB = zeros(60,length(stimTimes{stimInd}));
-lastISI          = zeros(60,length(stimTimes{stimInd}));
-prevSB_top6     = cell(6,1);
+numPrevNBs = NaN(1,length(stimTimes{stimInd}));
+
 for ii = 1:length(stimTimes{1})
     closest_SB_idx = find(mod_NB_onsets < stimTimes{1}(ii),1,'last');
      for jj = 1:60
@@ -77,7 +67,9 @@ for ii = 1:length(stimTimes{1})
             end
         end
      end
+    numPrevNBs(ii) = length(find(mod_NB_onsets<stimTimes{1}(ii)));
 end
+numPrevNBs = numPrevNBs(2:end) - numPrevNBs(1:end-1); 
 SBperCh_s = ExtremaPerChPerNB(:,:,2) - ExtremaPerChPerNB(:,:,1);
 
 %% response length by time
