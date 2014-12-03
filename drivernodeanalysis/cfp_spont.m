@@ -1,47 +1,52 @@
-% adyam load spontaneous data
+% first load spontaneous data
 
 
 % Dividing data into blocks of 2^15 events
 % active electrode if 250 spikes out of 2^15
 
-binsize = 0.5e-3; %0.5 ms bin
+binsize = 10e-3; %using 10 ms bin now; earlier, 0.5 ms bin
+winofint = 0.5; % time window of interest
+maxlag = winofint/binsize;
 spks = spon_data.Spikes;
 spks_blk1.time = spks.time(1:2^15); 
 spks_blk1.channel = spks.channel(1:2^15);
-winofint = 0.5; % time window of interest
 
 %% computation of the CFP block (n x n x maxlag matrix)
 % n : the no: of active electrodes
 % maxlag: 500ms/0.5ms = 1000
 for blk = 1:1
     inAChannel = cell(60,1);
+    activeEl = [];
     for ii=0:59
         inAChannel{ii+1,1} = spks_blk1.time(spks_blk1.channel==ii);
-    end
-    
-    activeEl = [];
-    for el = 1:60
-        if length(find(spks_blk1.channel==el-1))>10
-            activeEl = [activeEl, el];
+        if length(find(spks_blk1.channel==ii))>10
+            activeEl = [activeEl, ii+1];
         end
     end
+    
+    
+%     limiting active electrodes to 10
+    activeEl = activeEl(1:10);
     mintime = min(spks_blk1.time);
     maxtime = max(spks_blk1.time);
     binvec = mintime:binsize:(maxtime-binsize);
+
     X = zeros(length(activeEl),length(binvec));
     for ii = 1:length(activeEl)
         X(ii,:) = histc(inAChannel{activeEl(ii)},binvec);
     end
     
-    maxlag = winofint/binsize;
     CFP = zeros(length(activeEl),length(activeEl),maxlag);
     count = 0;
     h = waitbar(0,'Computing CFP matrix ... ');
     for ii = 1:length(activeEl)
         for jj = ii:length(activeEl)
             [cor, lag] = xcorr(X(ii,:),X(jj,:),maxlag);
-            Nfollow_ij = fliplr(cor(lag<0));
-            Nfollow_ji = fliplr(cor(lag>0));
+            Nfollow_ij = cor(lag>0);
+            Nfollow_ji = fliplr(cor(lag<0));
+%             Nfollow_ij = fliplr(cor(lag<0));
+%             Nfollow_ji = fliplr(cor(lag>0));
+
             N_self_i = sum(X(ii,:));
             N_self_j = sum(X(jj,:));
             CFP(ii,jj,:) = Nfollow_ij/ N_self_i;
@@ -54,10 +59,18 @@ for blk = 1:1
     end
     close(h);
 end
+
+
+%% Xcovariance matrix
+X = X'; %each column corresponds to each active electrode
+
+crosscov = xcov(X,maxlag);
+
+
 %%
 sumCFP_tau = sum(CFP,3);
 [maxvals,lininds] = sort(sumCFP_tau(:),'descend');
-hwmnybns = 10;
+hwmnybns = 5;
 meanNbins = 1:hwmnybns:maxlag;
 hwmnyplts = 6;
 figure;
@@ -68,7 +81,7 @@ for plt = 1:hwmnyplts
         stdN(ii) = std(CFP(fromch,toch,meanNbins(ii):meanNbins(ii+1)));
     end
     subplot(3,2,plt)
-    errorbar((1:length(meanN))*5,meanN,stdN,'o');
+    errorbar((1:length(meanN))*binsize*1e3,meanN,stdN,'o');
     title([num2str(activeEl(fromch)),'-->',num2str(activeEl(toch))]);
     set(gca,'FontSize',14,'TickDir','Out'); box off;
 end

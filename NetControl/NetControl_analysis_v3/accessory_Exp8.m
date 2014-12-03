@@ -1,5 +1,5 @@
 %% participation in spontaneous bursts
-recCh = 58; %hw+1
+recCh = 23; %hw+1
 SpikeTimes = spon_data.InAChannel{recCh}; %hw+1
 Steps = 10.^[-5:.05:1.5];
 N = 2;
@@ -10,9 +10,18 @@ Spike.C = recCh*ones(size(Spike.T));
 disp(['Mean participation in SB: ', num2str(mean(Burst.S))]);
 disp(['Std. dev of participation in SB: ', num2str(std(Burst.S))]);
 
+lenInNB = cellfun(@(x) length(find(x.channel == recCh-1)),spon_data.NetworkBursts.NB_slices);
+figure; subplot(211)
+hist(lenInNB,0:max(lenInNB));
+box off;
+set(gca,'TickDir','Out');
+xlabel('No: of spikes')
+ylabel('Probability');
+title(['Distribution of spikes in spontaneous bursts (Ch:', num2str(hw2cr(recCh-1)),')']);
+
 
 %% response to stimuli
-chosen_stimInd = 2;
+chosen_stimInd = 3;
 resp_slices = stim_data.Responses.resp_slices{chosen_stimInd};
 silence_s = stim_data.Silence_s{chosen_stimInd};
 for ii = 1:50
@@ -23,6 +32,9 @@ disp(['Std. dev of response length: ', num2str(std(resp_length))]);
 
 sil_at_rc = silence_s(recCh,:);
 
-figure;
-box off;
+subplot(212)
 plot(sil_at_rc, resp_length, '.');
+box off;
+xlabel('Pre-stimulus inactivity [s]');
+ylabel('Response length');
+title(['Ch:', num2str(hw2cr(recCh-1))])
