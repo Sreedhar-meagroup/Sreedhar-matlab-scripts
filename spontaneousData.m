@@ -74,4 +74,10 @@ SpontaneousData.Spikes = spks;
 SpontaneousData.InAChannel = inAChannel;
 SpontaneousData.NetworkBursts = NetworkBursts;
 SpontaneousData.NetworkBursts.BurstDetector = burst_detector;
+SpontaneousData.Readme.fileName = 'Holds filename of data in the format YYMMDD_PID_CID_DIV_description.';
+SpontaneousData.Readme.Spikes = 'Holds MEABench data structure with spike-times,channels, heights, widths, cutouts(-2ms to +3ms around peak) and channel-wise thresholds respectively.';
+SpontaneousData.Readme.InAChannel = 'A 60x1 matlab cell array with each cell holding spike-times recorded at that channel.';
+SpontaneousData.Readme.NetworkBursts = 'NB_slices (cell array of structs)- Struct holds time-stamps and channel numbers corresponding to each network burst (cell). NB_extrema is an Nx2 matrix holding the detected starts and ends of each NB. IBIs is a vector of inter-butst-intervals. Burst-detector holds the algorithm used.';
+
+
 

@@ -1,10 +1,10 @@
-% first load spontaneous data
-
+% load spontaneous data
+spon_data = spontaneousData(9);
 
 % Dividing data into blocks of 2^15 events
 % active electrode if 250 spikes out of 2^15
 
-binsize = 10e-3; %using 10 ms bin now; earlier, 0.5 ms bin
+binsize = 5e-3; %using 10 ms bin now; earlier, 0.5 ms bin
 winofint = 0.5; % time window of interest
 maxlag = winofint/binsize;
 spks = spon_data.Spikes;
@@ -36,38 +36,40 @@ for blk = 1:1
         X(ii,:) = histc(inAChannel{activeEl(ii)},binvec);
     end
     
-    CFP = zeros(length(activeEl),length(activeEl),maxlag);
-    count = 0;
-    h = waitbar(0,'Computing CFP matrix ... ');
-    for ii = 1:length(activeEl)
-        for jj = ii:length(activeEl)
-            [cor, lag] = xcorr(X(ii,:),X(jj,:),maxlag);
-            Nfollow_ij = cor(lag>0);
-            Nfollow_ji = fliplr(cor(lag<0));
-%             Nfollow_ij = fliplr(cor(lag<0));
-%             Nfollow_ji = fliplr(cor(lag>0));
+    
+%% CFP matrix    
+CFP = computeCFP(X,maxlag);
+param_cfp = zeros(size(X,1),size(X,1),4);
+t = (1:maxlag)*binsize*1e3;
+for ii = 1:size(X,1)
+    for jj = 1:size(X,1)
+        param_cfp(ii,jj,:) = cfpfit(t,squeeze(CFP(ii,jj,:))); % M, T, w, offset: the parames in order
+    end
+end
 
-            N_self_i = sum(X(ii,:));
-            N_self_j = sum(X(jj,:));
-            CFP(ii,jj,:) = Nfollow_ij/ N_self_i;
-            CFP(jj,ii,:) = Nfollow_ji/ N_self_j;
-            count = count + 1;
-            if ~mod(count,1e2)
-                waitbar(count/length(activeEl)^2);
-            end
+%% Computing SRP
+
+param_srp = zeros(size(X,1),size(X,1),4);
+
+for ii = 1:size(X,1)
+    for jj = 1:size(X,1)
+        if jj~=ii
+        param_srp(ii,jj,:) = srpfit(t,squeeze(CFP(ii,ii,:))',squeeze(CFP(ii,jj,:))'); % M, T, w, offset: the parames in order
         end
     end
-    close(h);
+end
+%% Xcovariance matrix
+covmat = computexcovmat(X,maxlag);
+
+
+
 end
 
 
-%% Xcovariance matrix
-X = X'; %each column corresponds to each active electrode
-
-crosscov = xcov(X,maxlag);
 
 
-%%
+%% plotting utilities
+
 sumCFP_tau = sum(CFP,3);
 [maxvals,lininds] = sort(sumCFP_tau(:),'descend');
 hwmnybns = 5;
@@ -75,20 +77,21 @@ meanNbins = 1:hwmnybns:maxlag;
 hwmnyplts = 6;
 figure;
 for plt = 1:hwmnyplts 
-    for ii = 1:length(meanNbins)-1
-        [fromch, toch] = ind2sub(size(sumCFP_tau),lininds(plt+50));
-        meanN(ii) = mean(CFP(fromch,toch,meanNbins(ii):meanNbins(ii+1)));
-        stdN(ii) = std(CFP(fromch,toch,meanNbins(ii):meanNbins(ii+1)));
-    end
+%     for ii = 1:length(meanNbins)-1
+%         [fromch, toch] = ind2sub(size(sumCFP_tau),lininds(plt));
+%         meanN(ii) = mean(CFP(fromch,toch,meanNbins(ii):meanNbins(ii+1)));
+%         stdN(ii) = std(CFP(fromch,toch,meanNbins(ii):meanNbins(ii+1)));
+%     end
     subplot(3,2,plt)
-    errorbar((1:length(meanN))*binsize*1e3,meanN,stdN,'o');
-    title([num2str(activeEl(fromch)),'-->',num2str(activeEl(toch))]);
+%     errorbar((1:length(meanN))*binsize*1e3,meanN,stdN,'o');
+plot((1:maxlag)*binsize*1e3,squeeze(CFP(1,plt,:)),'k^');
+    title([num2str(activeEl(1)),'-->',num2str(activeEl(plt))]);
     set(gca,'FontSize',14,'TickDir','Out'); box off;
 end
 
 [~,h1] = suplabel('\tau [ms]');
 [~,h2] = suplabel('CFP_{i,j}(\tau)','y');
-[~,h3] = suplabel(['File: ', spon_data.fileName],'t');
+[~,h3] = suplabel(['CFP:: ','File: ', spon_data.fileName],'t');
 set(h3,'Interpreter','None');
 set([h1 h2],'FontSize',14);
 
