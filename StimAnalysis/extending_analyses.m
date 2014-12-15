@@ -1,6 +1,7 @@
 %% seeking the burst before
 
-recCh_cr     = 87;
+recCh_cr     = 54;
+recCh_hwpo   = cr2hw(recCh_cr) + 1;
 close_stimCh = 52; %hw+1;
 stimInd      = 1;
 spks         = stim_data.Spikes;
@@ -37,6 +38,7 @@ NB_ends = NBursts_wo_resp.NB_extrema(:,2);
 %     patch(Xcoords,Ycoords,'g','edgecolor','none','FaceAlpha',0.2);
 % end
 
+NBursts_allEvents = sreedhar_ISI_threshold(spks);
 
 %% 5 most active channels
 ch_virility = zeros(60,1);
@@ -48,9 +50,10 @@ end
 
 %% Response distribution
 figure; subplot(3,3,[1 2 4 5 7 8]);
-plot(stim_data.Silence_s{1}(cr2hw(recCh_cr)+1,:),stim_data.Responses.resp_lengths{1}(cr2hw(recCh_cr)+1,:),'k.','MarkerSize',7), 
-box off, set(gca,'FontSize',14,'TickDir','Out'); xlabel('Pre-stimulus inactivity [s]'), ylabel('Reponse strength'); 
-[a,b] = hist(stim_data.Responses.resp_lengths{1}(cr2hw(recCh_cr)+1,:),0:16);
+plot(stim_data.Silence_s{stimInd}(recCh_hwpo,:),stim_data.Responses.resp_lengths{stimInd}(recCh_hwpo,:),'k.','MarkerSize',7), 
+box off, set(gca,'FontSize',14,'TickDir','Out'); xlabel('Pre-stimulus inactivity [s]'), ylabel('Reponse strength');
+a = get(gca,'YTickLabel');
+[a,b] = hist(stim_data.Responses.resp_lengths{stimInd}(recCh_hwpo,:),str2double(a{1}):str2double(a{end}));
 subplot(3,3,[3,6,9]), plot(a/sum(a),b,'k','LineWidth',2); 
 box off, set(gca,'FontSize',14,'TickDir','Out','YTickLabel',[]); xlabel('p');
 %% No: of spikes in each channel in each Spontaneous network burst
@@ -97,7 +100,7 @@ for ii = 1: length(stimTimes{stimInd})
     end
 end
 resp_length_s = resp_extrema(:,2) - resp_extrema(:,1);
-resp_length_n = resp_lengths{stimInd}(cr2hw(recCh_cr)+1,:);
+resp_length_n = resp_lengths{stimInd}(recCh_hwpo,:);
 
 
 %% Analysis 1: resp length (n) as a function of no: of spikes in prev burst
@@ -111,7 +114,7 @@ for ii = 1:6
     title(['Ch: ',num2str(most_active_ch(ii))]);
 end
 [ax1,h1]=suplabel('# in previous SB');
-[ax2,h2]=suplabel(['# response (Ch: ',num2str(cr2hw(recCh_cr)+1),')'],'y');
+[ax2,h2]=suplabel(['# response (Ch: ',num2str(recCh_hwpo),')'],'y');
 [ax4,h3]=suplabel(stim_data.fileName ,'t');
 set(h1,'FontSize',14); set(h2,'FontSize',14);set(h3,'Interpreter','None');
 pos = get(fig1_h, 'Position');
@@ -162,7 +165,7 @@ for ii = 1:6
     title(['Ch: ',num2str(most_active_ch(ii))]);
 end
 [ax1,h1]=suplabel('Duration in previous SB [s]');
-[ax2,h2]=suplabel(['Response length [s] (Ch: ',num2str(cr2hw(recCh_cr)+1),')'],'y');
+[ax2,h2]=suplabel(['Response length [s] (Ch: ',num2str(recCh_hwpo),')'],'y');
 [ax4,h3]=suplabel(stim_data.fileName ,'t');
 set(h1,'FontSize',14); set(h2,'FontSize',14);set(h3,'Interpreter','None');
 pos = get(fig4_h, 'Position');
@@ -181,7 +184,7 @@ for ii = 1:6
     title(['Ch: ',num2str(most_active_ch(ii))]);
 end
 [ax1,h1]=suplabel('Rate in previous SB [Hz]');
-[ax2,h2]=suplabel(['Rate of Response [Hz] (Ch: ',num2str(cr2hw(recCh_cr)+1),')'],'y');
+[ax2,h2]=suplabel(['Rate of Response [Hz] (Ch: ',num2str(recCh_hwpo),')'],'y');
 [ax4,h3]=suplabel(stim_data.fileName ,'t');
 set(h1,'FontSize',14); set(h2,'FontSize',14);set(h3,'Interpreter','None');
 pos = get(fig5_h, 'Position');
@@ -192,24 +195,24 @@ set(fig5_h, 'Position',[pos(1:2),650, 610]);
 data_in.spcounts = resp_length_n;
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in,'3t','stim');
-recCh_IF = temp.Indicatorfun;
+an6 = perimeananalysis(data_in,'3t','stim');
+recCh_IF = an6.Indicatorfun;
 
 
 %% Analysis 7: overmean vs undermean of prev global activity
 data_in.spcounts = sum(nSpPerChPerNB);
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in,'3t','spon');
-prevSB_glob_IF = temp.Indicatorfun;
+an7 = perimeananalysis(data_in,'3t','spon');
+prevSB_glob_IF = an7.Indicatorfun;
 
 
 %% Analysis 8: overmean vs undermean of 1 ch in prev global activity
-data_in.spcounts = nSpPerChPerNB(52,:);
+data_in.spcounts = nSpPerChPerNB(recCh_hwpo,:);
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-temp = perimeananalysis(data_in,'all','stim');
-prevSB_sCh_IF = temp.Indicatorfun;
+an8 = perimeananalysis(data_in,'3t','spon');
+prevSB_sCh_IF = an8.Indicatorfun;
 
 %% Analysis 9:
 data_in.spcounts = nSpPerSponNB;
@@ -217,6 +220,84 @@ data_in.stimdetails.stimTimes{1} = spon_data.NetworkBursts.NB_extrema(:,1);
 data_in.stimdetails.stimInd = stimInd;
 temp = perimeananalysis(data_in,'all');
 sponSB_global_IF = temp.Indicatorfun;
+
+
+%% Spectral analysis of rate profiles
+
+
+Fs = 1;
+T = 1/Fs;
+L = length(an7.plt3t_times);
+t = (0:L-1)*T;
+y = an7.plt3t_yval; % mean-shifted
+figure(); subplot(2,1,1);
+plot(an7.plt3t_times,y);
+box off;
+title('Rate profile of super long responses')
+set(gca,'TickDir','Out')
+xlabel('time [s]')
+
+% % NFFT = 2^nextpow2(L);
+% spInfo = fft(y);
+% spInfo = spInfo(1:L/2+1);
+% freq = 0:Fs/length(y):Fs/2;
+% psdx = (1/(L*Fs))*abs(spInfo).^2;
+% psdx(2:end-1) = 2*psdx(2:end-1);
+% figure();
+% % Plot single sided amplitude spectrum
+% plot(freq*1e3,10*log10(psdx),'r');
+% xlabel('Frequency (Hz)');
+% ylabel('Power/frequency (dB/Hz)');
+subplot(2,1,2)
+periodogram(y,[],[],1/mean(diff(an7.plt3t_times)));
+box off;
+set(gca,'TickDir','Out')
+%% Error from median response lengths plots
+
+med_resp = median(resp_length_n);
+resp_error = resp_length_n - med_resp;
+% history = 1;
+% mSum_sil_recCh = conv(silence_s{stimInd}(recCh_hwpo,:), ones(1,history));
+count = 1;
+figure;
+for ii = 1:5:20
+    history = ii;
+%     mSum_global_spon = conv(sum(nSpPerChPerNB), ones(1,history));
+    mSum_recCh_spon = conv(nSpPerChPerNB(recCh_hwpo,:), ones(1,history));
+    subplot(2,2,count)
+    plot(resp_error(history:end), mSum_recCh_spon(history:end-(history-1)),'.');
+    count = count+1;
+end
+
+%%
+eventStarts = NBursts_allEvents.NB_extrema(:,1);
+nSp_global_allevents = cellfun(@(x) length(x.time), NBursts_allEvents.NB_slices);
+for ii = 1:length(stimTimes{stimInd})
+    last5 = find(eventStarts<stimTimes{1}(ii),6,'last');
+    last5 = last5(1:end-1);
+    target_sp(ii) = mean(nSp_global_allevents(last5));
+   mean_sil(ii) = mean(NBursts_allEvents.IBIs(last5+1));
+    std_sil(ii) = std(NBursts_allEvents.IBIs(last5+1));
+end
+figure;
+plot(target_sp,mean_sil,'.');
+
+
+
+%%
+
+goodones = find(resp_length_n==5);
+for ii = 1:length(goodones)
+    last5 = find(eventStarts<stimTimes{1}(goodones(ii)),6,'last');
+    last5 = last5(1:end-1);
+    target_sp(ii,:) = nSp_global_allevents(last5);
+    sil(ii,:) = NBursts_allEvents.IBIs(last5+1);
+    std_sil(ii) = std(NBursts_allEvents.IBIs(last5+1));
+end
+figure;
+plot(target_sp,mean_sil,'.');
+
+
 
 %% response dynamics
 figure; hold on; 

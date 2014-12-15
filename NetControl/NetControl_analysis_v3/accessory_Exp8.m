@@ -1,5 +1,5 @@
 %% participation in spontaneous bursts
-recCh = 51; %hw+1
+recCh = 38; %hw+1
 SpikeTimes = spon_data.InAChannel{recCh}; %hw+1
 Steps = 10.^[-5:.05:1.5];
 N = 2;
@@ -21,10 +21,10 @@ title(['Distribution of spikes in spontaneous bursts (Ch:', num2str(hw2cr(recCh-
 
 
 %% response to stimuli
-chosen_stimInd = 2;
+chosen_stimInd = 1;
 resp_slices = stim_data.Responses.resp_slices{chosen_stimInd};
 silence_s = stim_data.Silence_s{chosen_stimInd};
-for ii = 1:50
+for ii = 1:size(stim_data.StimTimes{chosen_stimInd},2)
     resp_length(ii) = length(find(resp_slices{ii}.channel == recCh-1));
 end
 disp(['Mean reponse length: ', num2str(mean(resp_length))]);
@@ -33,8 +33,10 @@ disp(['Std. dev of response length: ', num2str(std(resp_length))]);
 sil_at_rc = silence_s(recCh,:);
 
 subplot(212)
-plot(sil_at_rc, resp_length, '.');
+% figure;
+plot(sil_at_rc, resp_length, '.','MarkerSize',12);
 box off;
+set(gca,'TickDir','Out');
 xlabel('Pre-stimulus inactivity [s]');
 ylabel('Response length');
 title(['Ch:', num2str(hw2cr(recCh-1))])

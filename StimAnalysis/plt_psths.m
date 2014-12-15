@@ -3,10 +3,10 @@ function plt_psths(stim_data)
 % stimAnalysis_v4; as simple as that
 
 
-stimSites = stim_data.Electrode_details.stim_electrodes;
-stimTimes = stim_data.StimTimes;
+stimSites  = stim_data.Electrode_details.stim_electrodes;
+stimTimes  = stim_data.StimTimes;
 nStimSites = length(stimSites);
-spks = stim_data.Spikes;
+spks       = stim_data.Spikes;
 response_window = stim_data.Responses.response_window;
 %% Peristimulus spike trains for each stim site and each channel
 % periStim has a cell in a cell in a cell structure.
@@ -60,8 +60,8 @@ for ii = 1:nStimSites
         
         psth_sp_h(jj) = subplot(10,6,pos);
         shadedErrorBar(bins+binSize/2,mean(frMat,1),std(frMat),{'k','linewidth',1.5},0);
-        
-        line([0 0],[-0.5 max(2,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
+        axis tight;
+        line([0 0],[-0.5 max(1,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
         if jj == cr2hw(stimSites(ii))+1
             text(375,0.5,num2str(jj),'FontAngle','italic','Color',[1,0,0]);
         else
@@ -83,8 +83,8 @@ for ii = 1:nStimSites
             max_axlim =  max(mean(frMat)+std(frMat));
         end
     end
-    linkaxes(psth_sp_h);
-    axis([-50 response_window*1e3 -0.5 max_axlim]);
+%     linkaxes(psth_sp_h);
+%     axis([-50 response_window*1e3 -0.5 max_axlim]);
     [ax1,h1]=suplabel('time[ms]');
     set(h1,'FontSize',16);
     [ax2,h2]=suplabel('Mean #spikes','y');

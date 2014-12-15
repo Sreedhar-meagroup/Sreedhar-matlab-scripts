@@ -16,10 +16,10 @@ colormap([nanclr; cm]);
 %# changing color limits
 caxis([amin-dmap amax]);
 %# place a colorbar
-hcb = colorbar;
+%  hcb = colorbar;
 %# change Y limit for colorbar to avoid showing NaN color
-ylim(hcb,[amin amax])
-
+% ylim(hcb,[amin amax])
+% colorbar;
 if nargout > 0
     h = him;
 end

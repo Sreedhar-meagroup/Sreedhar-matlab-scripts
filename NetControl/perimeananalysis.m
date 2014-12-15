@@ -242,3 +242,5 @@ data_out.Indicatorfun.overmeanphstd = overmeanphstd;
 data_out.Indicatorfun.undermeanmhstd = undermeanmhstd;
 data_out.Indicatorfun.overmeanpstd = overmeanpstd;
 data_out.Indicatorfun.undermeanmstd = undermeanmstd;
+data_out.plt3t_times = stimTimes{stimInd}(temp5);
+data_out.plt3t_yval = smooth(overmeanpstd_density,10,'lowess');

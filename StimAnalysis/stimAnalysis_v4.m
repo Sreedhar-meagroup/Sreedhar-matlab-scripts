@@ -57,14 +57,21 @@ for ii=60:63
 end
 
 try
-rawText = fileread([pathName,datRoot,'.log']);
-stimSitePattern = 'MEA style: ([\d\d ]+)';
-[~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
-stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
+    rawText = fileread([pathName,datRoot,'.log']);
+    stimSitePattern = 'MEA style: ([\d\d ]+)';
+    [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
+    stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
+    recSites = [];
 catch
-open([pathName,datRoot,'.log']);
-str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
-stimSites = str2num(str{1}); % in cr
+    open([pathName,datRoot,'.log']);
+    stimSitePattern = 'MEA)..?(\d\d)';
+    [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
+    % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
+    % stimSites = str2num(str{1}); % in cr
+    recSites  = str2num(cell2mat(strtrim(token_data{1}))); % cr
+    stimSites = str2num(cell2mat(strtrim(token_data{2}))); % cr
+    fprintf('Stim(cr): %d\n',stimSites) ;
+    fprintf('Rec(cr) : %d\n',recSites) ;
 end
 nStimSites = size(stimSites,2);
 stimTimes = cell(1,nStimSites);
@@ -78,11 +85,11 @@ end
 off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
 spikes_oc = spikes;
 spikes_oc.context = off_corr_contexts;
-spks = spikes_oc; % comment in for unclean data
-% [spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
+% spks = spikes_oc; % comment in for unclean data
+[spks, selIdx, rejIdx] = cleanspikes(spikes_oc, thresh);
 % [spks, selIdx, rejIdx] = cleanspikes(spikes, thresh);
-% spks = blankArtifacts(spks,stimTimes,1);
-% spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
+spks = blankArtifacts(spks,stimTimes,1);
+spks = cleandata_artifacts_sk(spks,'synch_precision', 120, 'synch_level', 0.3); % cleans the switching artifacts
 inAChannel = cell(60,1);
 for ii=0:59
     inAChannel{ii+1,1} = spks.time(spks.channel==ii);
@@ -126,7 +133,7 @@ end
 stim_data.fileName = datRoot;
 stim_data.Spikes = spks;
 stim_data.Electrode_details.stim_electrodes = stimSites;
-stim_data.Electrode_details.rec_electrodes = [];
+stim_data.Electrode_details.rec_electrodes = recSites;
 stim_data.StimTimes = stimTimes;
 stim_data.Responses.resp_slices = resp_slices;
 stim_data.Responses.resp_lengths = resp_lengths;
