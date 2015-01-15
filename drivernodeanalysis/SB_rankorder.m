@@ -42,15 +42,15 @@ end
 
 figure; count = 1;
 make_it_tight = true;
-subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.05], [0.01 0.01]);
+subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.01], [0.1 0.01], [0.01 0.01]);
 if ~make_it_tight,  clear subplot;  end
 for ii = 1:5
     for jj = 1:11
        subplot(5,11,count)
        imagescwithnan(SB_meamat_norm(:,:,count),jet,[1,1,1]); axis image;
        set(gca,'TickDir','Out','xTickLabel',[],'yTickLabel',[]);
-       text(firsts(count,2),firsts(count,1),'F','color','w','HorizontalAlignment','center','VerticalAlignment','middle','FontWeight','Bold');
-       text(lasts(count,2),lasts(count,1),'L','color','w','HorizontalAlignment','center','VerticalAlignment','middle','FontWeight','Bold');
+       text(firsts(count,2),firsts(count,1),'F','color','y','HorizontalAlignment','center','VerticalAlignment','middle');
+       text(lasts(count,2),lasts(count,1),'L','color','y','HorizontalAlignment','center','VerticalAlignment','middle');
        count = count+1;
     end
 end
@@ -75,7 +75,8 @@ end
 toc
 sum_dist = cellfun(@(x) sum(x)/length(x),dist_metric_norm);
 
-figure; imagesc(sum_dist); axis image; colorbar
+figure; imagesc(sum_dist); axis image; colormap(bone);colorbar;
+xlabel('SB #'); ylabel('SB #'); title('Sum of distances in SB ranks');
 figure; histogram(sum_dist(:),'Normalization','probability');
 set(gca,'tickDir','Out'); box off; xlabel('Distances'); ylabel('p'); title('Distribution of distances');
 
@@ -98,8 +99,9 @@ toc
 
 sum_dist = cellfun(@(x) sum(x)/length(x),dist_metric_norm_1ch);
 
-figure; imagesc(sum_dist); axis image; colorbar
-set(gca,'tickDir','Out'); box off; xlabel('SB#'); ylabel('SB#'); title('Distances between SB pathways ');
+figure; imagesc(sum_dist); axis image; colormap(bone);colorbar;
+set(gca,'tickDir','Out'); box off; xlabel('SB #'); ylabel('SB #'); 
+title('Sum of distances in SBs initiating from a channel ');
 figure; histogram(sum_dist(:),'Normalization','probability');
 set(gca,'tickDir','Out'); box off; xlabel('Distances'); ylabel('p'); title('Distribution of distances');
 
@@ -119,10 +121,23 @@ toc
 
 sum_dist = cellfun(@(x) sum(x)/length(x),dist_metric_norm_s);
 
-figure; imagesc(sum_dist); axis image; colorbar
-set(gca,'tickDir','Out'); box off; xlabel('SB#'); ylabel('SB#'); title('Distances when arranged by leading channel');
+figure; imagesc(sum_dist); axis image; colormap(bone);colorbar;
+set(gca,'tickDir','Out'); box off; xlabel('SB #'); ylabel('SB #'); 
+title('Sum of distances when arranged by leading channel');
 figure; histogram(sum_dist(:),'Normalization','probability');
 set(gca,'tickDir','Out'); box off; xlabel('Distances'); ylabel('p'); title('Distribution of distances');
 
 
 
+%% Distance metric all bursts sorted by leading channel; except first one
+
+sum_dist = cellfun(@(x) sum(x(2:end))/(length(x)-1),dist_metric_norm_s);
+figure; imagesc(sum_dist); axis image; colormap(bone);colorbar;
+set(gca,'tickDir','Out'); box off; xlabel('SB #'); ylabel('SB #'); 
+title('\Sigma distances arranged by leading channel except rank 1');
+figure; histogram(sum_dist(:),'Normalization','probability');
+set(gca,'tickDir','Out'); box off; xlabel('Distances'); ylabel('p'); title('Distribution of distances');
+
+
+
+%%

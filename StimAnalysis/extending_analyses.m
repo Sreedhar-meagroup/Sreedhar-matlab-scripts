@@ -1,6 +1,6 @@
 %% seeking the burst before
 
-recCh_cr     = 54;
+recCh_cr     = stim_data.Electrode_details.rec_electrodes;
 recCh_hwpo   = cr2hw(recCh_cr) + 1;
 close_stimCh = 52; %hw+1;
 stimInd      = 1;
@@ -195,7 +195,7 @@ set(fig5_h, 'Position',[pos(1:2),650, 610]);
 data_in.spcounts = resp_length_n;
 data_in.stimdetails.stimTimes = stimTimes;
 data_in.stimdetails.stimInd = stimInd; 
-an6 = perimeananalysis(data_in,'3t','stim');
+an6 = perimeananalysis(data_in,'3','stim');
 recCh_IF = an6.Indicatorfun;
 
 
