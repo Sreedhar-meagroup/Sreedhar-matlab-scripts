@@ -1,12 +1,13 @@
-NB_slices = spon_data.NetworkBursts.NB_slices;
-SB_meamat = zeros(10,6,size(NB_slices,1));
-SB_meamat_norm = SB_meamat;
-firsts = zeros(length(NB_slices),2);
-lasts = zeros(length(NB_slices),2);
-RanksperSB = zeros(60,length(NB_slices));
-meamap    = channelmap6x10_ch8x8_60;
+function SB_rankorder(spon_data)
+NB_slices         = spon_data.NetworkBursts.NB_slices;
+SB_meamat         = zeros(10,6,size(NB_slices,1));
+SB_meamat_norm    = SB_meamat;
+firsts            = zeros(length(NB_slices),2);
+lasts             = zeros(length(NB_slices),2);
+RanksperSB        = zeros(60,length(NB_slices));
+meamap            = channelmap6x10_ch8x8_60;
 chanList_detailed = cell(1,length(NB_slices));
-chanList_brief = cell(1,length(NB_slices));
+chanList_brief    = cell(1,length(NB_slices));
 
 for ii = 1:length(NB_slices)
     chanList_detailed{ii} = NB_slices{ii}.channel+1;
@@ -81,7 +82,7 @@ figure; histogram(sum_dist(:),'Normalization','probability');
 set(gca,'tickDir','Out'); box off; xlabel('Distances'); ylabel('p'); title('Distribution of distances');
 
 
-%% Distance metric bursts form a single channel
+%% Distance metric bursts from a single channel
 
 tic
 SBsFromACh = SB_hs2cs(1:sortednSBs(1));

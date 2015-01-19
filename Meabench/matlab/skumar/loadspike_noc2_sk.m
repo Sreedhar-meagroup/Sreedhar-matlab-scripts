@@ -1,18 +1,17 @@
-function y=loadspike_noc(fn,range,freq)
-% y=LOADSPIKE_NOC(fn) loads spikes from given filename into structure y
-% with members
+function y=loadspike_noc2_sk(fn,range,freq)
+% y=LOADSPIKE_NOC(fn) loads spikes from given filename WITHOUT
+% CONTEXT in chunks, into structure y with members:
 %   time    (1xN) (in samples)
 %   channel (1xN)
 %   height  (1xN)
 %   width   (1xN)
 %   thresh  (1xN)
-% Context is not loaded.
-% y=LOADSPIKE_NOC(fn,range,freq_khz) converts times to seconds and width to
-% milliseconds using the specified frequency, and the height and
-% context data to microvolts by multiplying by RANGE/2048.
-% As a special case, range=0..3 is interpreted as a MultiChannel Systems
-% gain setting:
-% 
+% y=LOADSPIKE_NOC2_SK(fn,range,freq_khz)  WITHOUT
+% CONTEXT in chunks into y; it also converts times to seconds and width to
+% milliseconds using the specified frequency, and the height 
+% data to microvolts by multiplying by RANGE/2048. As a special case,
+% range=0..3 is interpreted as a MultiChannel Systems gain setting:
+% (@SK: we use range=2, freq_khz = 25)
 % range value   electrode range (uV)    auxillary range (mV)
 %      0               3410                 4092
 %      1               1205                 1446

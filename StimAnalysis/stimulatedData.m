@@ -1,10 +1,10 @@
-function stim_data = stimAnalysis_v4(varargin)
+function stim_data = stimulatedData(varargin)
 % stim_data = stimulatedData(varargin):
 % INPUT Arguments (optional) as parameter, value pairs:
 %     examples:
 %       y = stimulatedData()
 %       y = stimulatedData('Exp_no',9,'response_window', 0.6)
-%       y = spontaneousData('Exp_no',9,'clean',false, 'context',false)
+%       y = spontaneousData('Exp_no',9,'cleaning',false, 'context',false)
 % see defaults for possible parameter value pairs
 % OUTPUT Argument:
 % Structure with fields...
@@ -24,8 +24,8 @@ function stim_data = stimAnalysis_v4(varargin)
 
 % defaults
 Exp_no = 5; 
-response_window = 0.5;
-clean = true;
+response_window = 0.5; %in s
+cleaning = true;
 context = true;
 
 if ~mod(nargin,2)
@@ -46,7 +46,7 @@ if context
     spikes = loadspike_sk([pathName,datName],2,25);
 else
     spikes = loadspike_noc2_sk([pathName,datName],2,25);
-    clean  = false;
+    cleaning  = false;
 end
 thresh  = extract_thresh([pathName, datName, '.desc']);
 
@@ -88,7 +88,7 @@ end
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into cells
 
-if clean & context
+if cleaning & context
     off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
     spikes_oc = spikes;
     spikes_oc.context = off_corr_contexts;

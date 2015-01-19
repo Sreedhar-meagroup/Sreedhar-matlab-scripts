@@ -8,8 +8,8 @@ if ~exist('datName','var')
     [datName,pathName] = chooseDatFile(9,'net');
 end
 datRoot = datName(1:strfind(datName,'.')-1);
-spikes  = loadspike_noc_shortcutouts([pathName,datName],2,25);
-% spikes  = loadspike_sk([pathName,datName],2,25); 
+% spikes  = loadspike_noc_shortcutouts([pathName,datName],2,25);
+spikes  = loadspike_sk([pathName,datName],2,25); 
 % spikes  = loadspike_noc1_sk([pathName,datName],2,25); 
 try
     thresh  = extract_thresh([pathName, datName, '.desc']);

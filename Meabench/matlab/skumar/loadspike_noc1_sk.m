@@ -17,20 +17,20 @@
 % Wavelet Toolbox                                       Version 4.7        (R2011a)
 
 function y=loadspike_noc1_sk(fn,range,freq)
-% y=LOADSPIKE(fn) loads spikes WITHOUT CONTEXT from given filename into structure y
-% with members (but not suitable for huge data files (cf. loadspike_noc2_sk.m))
+% y=LOADSPIKE_NOC1_SK(fn) loads spikes WITHOUT CONTEXT from given filename
+% as a single chunk into structure y with members (may not be suitable for
+% huge data files (cf. loadspike_noc2_sk.m))
 %   time    (1xN) (in samples)
 %   channel (1xN)
 %   height  (1xN)
 %   width   (1xN)
-%   context (75xN)
 %   thresh  (1xN)
 % y=LOADSPIKE(fn,range,freq_khz) converts times to seconds and width to
 % milliseconds using the specified frequency, and the height and
 % context data to microvolts by multiplying by RANGE/2048.
 % As a special case, range=0..3 is interpreted as a MultiChannel Systems 
 % gain setting:
-% 
+% (@SK: we use range=2, freq_khz = 25)
 % range value   electrode range (uV)    auxillary range (mV)
 %      0               3410                 4092
 %      1               1205                 1446

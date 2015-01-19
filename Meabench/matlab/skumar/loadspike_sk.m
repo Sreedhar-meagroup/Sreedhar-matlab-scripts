@@ -1,35 +1,20 @@
-% -------------------------------------------------------------------------------------
-% MATLAB Version 7.12.0.635 (R2011a)
-% MATLAB License Number: 97144
-% Operating System: Microsoft Windows 7 Version 6.1 (Build 7601: Service Pack 1)
-% Java VM Version: Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) 64-Bit Server VM mixed mode
-% -------------------------------------------------------------------------------------
-% MATLAB                                                Version 7.12       (R2011a)
-% Simulink                                              Version 7.7        (R2011a)
-% Data Acquisition Toolbox                              Version 2.18       (R2011a)
-% Fixed-Point Toolbox                                   Version 3.3        (R2011a)
-% Image Processing Toolbox                              Version 7.2        (R2011a)
-% MATLAB Compiler                                       Version 4.15       (R2011a)
-% Neural Network Toolbox                                Version 7.0.1      (R2011a)
-% Parallel Computing Toolbox                            Version 5.1        (R2011a)
-% Signal Processing Toolbox                             Version 6.15       (R2011a)
-% Statistics Toolbox                                    Version 7.5        (R2011a)
-% Wavelet Toolbox                                       Version 4.7        (R2011a)
-
 function y=loadspike_sk(fn,range,freq)
-% y=LOADSPIKE(fn) loads spikes from given filename into structure y
-% with members
+% y=LOADSPIKE_SK(fn) loads spikes from given filename as a single chunk
+% WITH CONTEXT into structure y with members
 %   time    (1xN) (in samples)
 %   channel (1xN)
 %   height  (1xN)
 %   width   (1xN)
-%   context (75xN)
+%   context (124xN)
 %   thresh  (1xN)
-% y=LOADSPIKE(fn,range,freq_khz) converts times to seconds and width to
+% where N is the total number of spikes detected.
+
+% y=LOADSPIKE_SK(fn,range,freq_khz) converts times to seconds and width to
 % milliseconds using the specified frequency, and the height and
-% context data to microvolts by multiplying by RANGE/2048.
+% context data to microvolts by multiplying by RANGE/2048. Cut-outs are
+% long (124 samples instead of the default 74)
 % As a special case, range=0..3 is interpreted as a MultiChannel Systems 
-% gain setting:
+% gain setting: (@SK: we use range=2, freq_khz = 25)
 % 
 % range value   electrode range (uV)    auxillary range (mV)
 %      0               3410                 4092
@@ -59,13 +44,13 @@ function y=loadspike_sk(fn,range,freq)
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-%31/10/06
+%31/10/06 (OW)
 %the file loadspike was changed in order to be able to give  one, two
 %or three parameters. each option imports and converts the data differently
 %one parameter = only datname: no conversion of time and voltage
 %two parameter = datname & gain: electrode voltage is transfered to uv
 % three paramter = datname & gain & samplfreq: as with 2 para, but also % time is converted to seconds
-%13/11/06 
+%13/11/06 (OW)
 %changed this file because from now on, Itry to record with longer cutouts,
 %i.e 2 ms pre and 3 ms post. this was lready changed in the meabench
 %package, now the according changes have to be made in the matlab files.
@@ -76,7 +61,6 @@ function y=loadspike_sk(fn,range,freq)
 %more overload during an experiment (spikedet has to keep up with storing
 %the cutouts) and it is not sure how this will affect the performance
 
-% 03/11/14: This is the script to use to load normal sized files along with context
 
 if nargin<2
   range=nan;

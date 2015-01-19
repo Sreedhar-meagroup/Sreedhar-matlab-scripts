@@ -4,7 +4,7 @@ function gfr_rstr_h = plt_gfrWithRaster(data)
 % gfr_rstr_h = plt_gfrWithRaster(data) plots the raster plot of the
 % recording along with its global firing rate(gfr).
 % Input args:
-%     data: struct (details to be entered later)  
+%     data: standard structure  (details to be entered later)  
 % Output args: 
 %     gfr_rstr_h: resulting figure handle
 
