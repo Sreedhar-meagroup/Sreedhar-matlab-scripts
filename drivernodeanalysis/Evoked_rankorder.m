@@ -1,43 +1,50 @@
-function SB_rankorder(spon_data)
-NB_slices         = spon_data.NetworkBursts.NB_slices;
-SB_meamat         = zeros(10,6,size(NB_slices,1));
-SB_meamat_norm    = SB_meamat;
-firsts            = zeros(length(NB_slices),2);
-lasts             = zeros(length(NB_slices),2);
-RanksperSB        = zeros(60,length(NB_slices));
+% function Evoked_rankorder(stim_data)
+resp_slices       = stim_data.Responses.resp_slices;
+resp_meamat       = cell(1,5);
+resp_meamat_norm    = cell(1,5);
+firsts            = cell(1,5);
+lasts             = cell(1,5);
+RanksperResp      = cell(1,5);
 meamap            = channelmap6x10_ch8x8_60;
-chanList_detailed = cell(1,length(NB_slices));
-chanList_brief    = cell(1,length(NB_slices));
+chanList_detailed = cell(1,5);
+chanList_brief    = cell(1,5);
 
-for ii = 1:length(NB_slices)
-    chanList_detailed{ii} = NB_slices{ii}.channel+1;
-    chanList_brief{ii} = unique_us(chanList_detailed{ii});
+for site=2:2
+for ii = 1:length(resp_slices{site})
+    chanList_detailed{site}{ii} = resp_slices{site}{ii}.channel+1;
+    chanList_brief{site}{ii} = unique_us(chanList_detailed{site}{ii});
     
-    for jj = 1:length(chanList_brief{ii})
-        [r, c] = find(meamap == chanList_brief{ii}(jj));
-        SB_meamat(r,c,ii) = jj;
+    [fr, fc] = find(meamap == (cr2hw(stim_data.Electrode_details.stim_electrodes(site))+1));
+    resp_meamat{site}(fr,fc,ii) = 1;
+    for jj = 1:length(chanList_brief{site}{ii})
+        [r, c] = find(meamap == chanList_brief{site}{ii}(jj));
+        resp_meamat{site}(r,c,ii) = jj+1;
         if jj == 1
-            firsts(ii,:) = [r,c];
-        elseif jj == length(chanList_brief{ii})
-            lasts(ii,:) = [r,c];
+            firsts{site}(ii,:) = [r,c];
+        elseif jj == length(chanList_brief{site}{ii})
+            lasts{site}(ii,:) = [r,c];
         end
     end
-    SB_meamat_norm(:,:,ii) = SB_meamat(:,:,ii)./jj;
-    RanksperSB(chanList_brief{ii},ii) = 1:length(chanList_brief{ii});
+    if isempty(jj)
+%         resp_meamat{site}(:,:,ii) = zeros(10,6);
+        jj = 1;
+    end
+    resp_meamat_norm{site}(:,:,ii) = resp_meamat{site}(:,:,ii)./jj;
+    RanksperResp{site}(chanList_brief{site}{ii},ii) = 1:length(chanList_brief{site}{ii});
 end
 
 % SB_meamat(SB_meamat==0) = NaN;
-SB_meamat_norm(SB_meamat_norm==0) = NaN;
+resp_meamat_norm{site}(resp_meamat_norm{site}==0) = NaN;
 
 
 
-[LCperSB, ~] = find(RanksperSB==1); % LC == leading channel (channel with rank 1 in each burst)
-nSBsfromEachCh = hist(LCperSB,1:60);
-[sortednSBs,LCsorted] = sort(nSBsfromEachCh,'descend');
-SB_hs2cs = []; % this part will arrange the indices of the SBs initiated from hotspots outwards.
-for ii = 1:length(LCsorted)
-    SB_hs2cs = [SB_hs2cs,find(RanksperSB(LCsorted(ii),:) == 1)]; 
-end
+% [LCperSB, ~] = find(RanksperResp{site}==1); % LC == leading channel (channel with rank 1 in each burst)
+% nSBsfromEachCh = hist(LCperSB,1:60);
+% [sortednSBs,LCsorted] = sort(nSBsfromEachCh,'descend');
+% SB_hs2cs = []; % this part will arrange the indices of the SBs initiated from hotspots outwards.
+% for ii = 1:length(LCsorted)
+%     SB_hs2cs = [SB_hs2cs,find(RanksperSB(LCsorted(ii),:) == 1)]; 
+% end
 
 
 
@@ -47,16 +54,22 @@ subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.01], [0.1 0.01], [0.01 0.01]);
 if ~make_it_tight,  clear subplot;  end
 for ii = 1:5
     for jj = 1:10
-       subplot(5,10,count)
-       imagescwithnan(SB_meamat_norm(:,:,SB_hs2cs(count+127)),jet,[1,1,1]); axis image;
+       x = subplot(5,10,count);
+       if length(find(~isnan(resp_meamat_norm{site}(:,:,count))))>1
+       imagescwithnan(resp_meamat_norm{site}(:,:,count),jet,[1,1,1]); axis image;
        set(gca,'TickDir','Out','xTickLabel',[],'yTickLabel',[]);
-       text(firsts(SB_hs2cs(count+127),2),firsts(SB_hs2cs(count+127),1),'F','color','y','HorizontalAlignment','center','VerticalAlignment','middle');
-       text(lasts(SB_hs2cs(count+127),2),lasts(SB_hs2cs(count+127),1),'L','color','y','HorizontalAlignment','center','VerticalAlignment','middle');
+       text(fc,fr,'F','color','y','HorizontalAlignment','center','VerticalAlignment','middle');
+       text(lasts{site}(count,2),lasts{site}(count,1),'L','color','y','HorizontalAlignment','center','VerticalAlignment','middle');
+       else
+           delete(x);
+%            axis image;
+%            set(gca,'xTick',[],'yTick',[]);
+       end
        count = count+1;
     end
 end
 
-
+end
 % 
 % %% Distance metric all bursts in natural order
 % dist_metric = cell(length(NB_slices));
