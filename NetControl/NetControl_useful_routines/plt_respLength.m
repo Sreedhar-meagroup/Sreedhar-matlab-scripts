@@ -15,10 +15,19 @@ for ii = 1:size(binC,2)-1
 end
 figure();
 % toLabel = [groups(find(diff(groups'))), groups(end)];
-h = boxplot(respOfSortedSil,groups,'plotstyle','compact');
-set(gca,'XTickMode','manual','XTickLabelMode','auto','XTick',0:1/dt:groups(end),'XtickLabel',(0:1:ceil(sortedSil(end)))');
+h = boxplot(respOfSortedSil,groups,'labels',(0:dt:ceil(sortedSil(end))),...
+    'plotstyle','compact','labelorientation','horizontal',...
+    'colors',[.5,.5,.5]);
+
+
+% h2 = findobj(gca,'Tag','Box');
+% for jj=1:length(h)
+% patch(get(h2(jj),'XData'),get(h2(jj),'YData'),'k','FaceAlpha',.4);
+% end 
+% set(gca,'XTickLabelMode','auto','XTick',0:1/dt:groups(end),'XtickLabel',(0:1:ceil(sortedSil(end)))');
 xlabel('Pre-stimulus inactivity [s]','FontSize',14);
-set(get(gca,'XLabel'),'Position',get(get(gca,'XLabel'),'Position') - [0, 15, 0]);
+% set(get(gca,'XLabel'),'Position',get(get(gca,'XLabel'),'Position') - [0, 15, 0]);
+
 if nargin > 3
     if strcmpi(varargin{1},'ms')
         ylabel('Response length [ms]','FontSize',14);

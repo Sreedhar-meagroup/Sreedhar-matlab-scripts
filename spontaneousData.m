@@ -11,7 +11,6 @@ function SpontaneousData = spontaneousData(varargin)
 %% Version info, aim
 % -------------------------------------------------------------------------------------
 % Purpose: Analyse stim responses and choose appropriate stim & rec. site
-
 % Author: SK
 % Date: 12.09.2014
 %--------------------------------------------------------------------------------------
@@ -58,7 +57,7 @@ function SpontaneousData = spontaneousData(varargin)
     end
            
 %% Cleaning spikes, getting them into channels
-if cleaning & context
+if cleaning && context
     off_corr_contexts = offset_correction(spikes.context); % comment these two lines out if you do not want offset correction
     spikes_oc = spikes;
     spikes_oc.context = off_corr_contexts;

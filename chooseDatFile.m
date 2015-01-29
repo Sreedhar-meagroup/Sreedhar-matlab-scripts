@@ -36,6 +36,8 @@ if strcmpi(strtrim(name),'sree-pc')
     srcPath = 'D:\Codes\mat_work\MB_data';
 elseif strcmpi(strtrim(name),'petunia')
     srcPath = ['C:\Sreedhar\Mat_work\Closed_loop\Meabench_data\',exp_dir,'\',data_dir];
+else
+    srcPath = '';
 end
 
 if nargin == 3

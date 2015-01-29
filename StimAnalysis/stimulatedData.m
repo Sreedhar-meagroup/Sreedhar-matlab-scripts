@@ -62,23 +62,32 @@ for ii=60:63
     inAnalog{ii-59,1} = spikes.time(spikes.channel==ii);
 end
 
-try
-    rawText = fileread([pathName,datRoot,'.log']);
-    stimSitePattern = 'MEA style: ([\d\d ]+)';
-    [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
-    stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
-    recSites = [];
-catch
-    open([pathName,datRoot,'.log']);
-    stimSitePattern = 'MEA)..?(\d\d)';
-    [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
-    % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
-    % stimSites = str2num(str{1}); % in cr
-    recSites  = str2num(cell2mat(strtrim(token_data{1}))); % cr
-    stimSites = str2num(cell2mat(strtrim(token_data{2}))); % cr
-    fprintf('Stim(cr): %d\n',stimSites) ;
-    fprintf('Rec(cr) : %d\n',recSites) ;
-end
+
+prompt = {'Enter stim site/(s), sepatated by spaces or commas:','Enter rec site (if any):'};
+dlg_title = 'Input';
+num_lines = 1;
+str = inputdlg(prompt,dlg_title,num_lines);
+stimSites = str2num(strtrim(str{1}));
+recSites = str2num(strtrim(str{2}));
+
+% try
+%     rawText = fileread([pathName,datRoot,'.log']);
+%     stimSitePattern = 'MEA style: ([\d\d ]+)';
+%     [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
+%     stimSites = str2num(cell2mat(strtrim(token_data{1}))) % cr
+%     recSites = [];
+% catch
+%     open([pathName,datRoot,'.log']);
+%     stimSitePattern = 'MEA)..?(\d\d)';
+%     [~,~,~,~,token_data] = regexp(rawText, stimSitePattern, 'match');
+%     % str = inputdlg('Enter the list of stim sites (in cr),separated by spaces or commas');
+%     % stimSites = str2num(str{1}); % in cr
+%     recSites  = str2num(cell2mat(strtrim(token_data{1}))); % cr
+%     stimSites = str2num(cell2mat(strtrim(token_data{2}))); % cr
+%     fprintf('Stim(cr): %d\n',stimSites) ;
+%     fprintf('Rec(cr) : %d\n',recSites) ;
+% end
+
 nStimSites = size(stimSites,2);
 stimTimes = cell(1,nStimSites);
 for ii = 1:nStimSites

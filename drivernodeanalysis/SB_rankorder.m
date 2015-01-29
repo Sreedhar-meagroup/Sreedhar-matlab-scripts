@@ -1,4 +1,4 @@
-function SB_rankorder(spon_data)
+function SbRO = SB_rankorder(spon_data)
 NB_slices         = spon_data.NetworkBursts.NB_slices;
 SB_meamat         = zeros(10,6,size(NB_slices,1));
 SB_meamat_norm    = SB_meamat;
@@ -8,10 +8,13 @@ RanksperSB        = zeros(60,length(NB_slices));
 meamap            = channelmap6x10_ch8x8_60;
 chanList_detailed = cell(1,length(NB_slices));
 chanList_brief    = cell(1,length(NB_slices));
+matWithRanks      = zeros(60,length(NB_slices));
+
 
 for ii = 1:length(NB_slices)
     chanList_detailed{ii} = NB_slices{ii}.channel+1;
     chanList_brief{ii} = unique_us(chanList_detailed{ii});
+    matWithRanks(chanList_brief{ii},ii) = 1:length(chanList_brief{ii});
     
     for jj = 1:length(chanList_brief{ii})
         [r, c] = find(meamap == chanList_brief{ii}(jj));
@@ -57,27 +60,27 @@ for ii = 1:5
 end
 
 
-% 
-% %% Distance metric all bursts in natural order
-% dist_metric = cell(length(NB_slices));
-% dist_metric_norm = cell(length(NB_slices));
-% max_dist = sqrt((diff([1 10]).^2+diff([1 6]).^2));
-% tic
-% for sb1 = 1:length(NB_slices)
-%     for sb2 = sb1:length(NB_slices)
-%         for ii = 1:min(length(chanList_brief{sb1}),length(chanList_brief{sb2}))
-%             [r, c] = find(SB_meamat(:,:,[sb1,sb2])==ii);
-%             dist_metric{sb1,sb2}(ii) = sqrt((diff(r).^2+(diff(c)-6).^2));
-%         end
-%         dist_metric_norm{sb1,sb2} = dist_metric{sb1,sb2}./max_dist;
-%         dist_metric_norm{sb2,sb1} = dist_metric_norm{sb1,sb2};
-%     end
-% end
-% toc
-% sum_dist = cellfun(@(x) sum(x)/length(x),dist_metric_norm);
-% 
-% figure; imagesc(sum_dist); axis image; colormap(bone);colorbar;
-% xlabel('SB #'); ylabel('SB #'); title('Sum of distances in SB ranks');
+
+%% Distance metric all bursts in natural order
+dist_metric = cell(length(NB_slices));
+dist_metric_norm = cell(length(NB_slices));
+max_dist = sqrt((diff([1 10]).^2+diff([1 6]).^2));
+tic
+for sb1 = 1:length(NB_slices)
+    for sb2 = sb1:length(NB_slices)
+        for ii = 1:min(length(chanList_brief{sb1}),length(chanList_brief{sb2}))
+            [r, c] = find(SB_meamat(:,:,[sb1,sb2])==ii);
+            dist_metric{sb1,sb2}(ii) = sqrt((diff(r).^2+(diff(c)-6).^2));
+        end
+        dist_metric_norm{sb1,sb2} = dist_metric{sb1,sb2}./max_dist;
+        dist_metric_norm{sb2,sb1} = dist_metric_norm{sb1,sb2};
+    end
+end
+toc
+sum_dist = cellfun(@(x) sum(x)/length(x),dist_metric_norm);
+
+figure; imagesc(sum_dist); axis image; colormap(bone);colorbar;
+xlabel('SB #'); ylabel('SB #'); title('Sum of distances in SB ranks');
 % figure; histogram(sum_dist(:),'Normalization','probability');
 % set(gca,'tickDir','Out'); box off; xlabel('Distances'); ylabel('p'); title('Distribution of distances');
 % 
@@ -142,3 +145,11 @@ end
 % 
 % 
 % %%
+
+
+SbRO.chanList_brief = chanList_brief;
+SbRO.dist_metric_norm = dist_metric_norm;
+SbRO.sortednSBs = sortednSBs;
+SbRO.LCsorted = LCsorted;
+SbRO.SB_hs2cs = SB_hs2cs;
+SbRO.Ranklist = matWithRanks;
