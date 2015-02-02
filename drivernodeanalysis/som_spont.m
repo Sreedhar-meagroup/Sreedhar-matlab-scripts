@@ -1,6 +1,6 @@
-net = selforgmap([8,8]);
+net = selforgmap([4,4]);
 data = sbro.Ranklist;
-net = train(net,data');
+net = train(net,data);
 view(net)
-y = net(x);
+y = net(data);
 classes = vec2ind(y);
