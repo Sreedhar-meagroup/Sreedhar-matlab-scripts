@@ -30,7 +30,7 @@ end
 %%
 % Binning, averaging and plotting all the PSTHs
 listOfCounts_all = cell(1,nStimSites);
-binSize = 5; % in ms
+binSize = 10; % in ms
 for ii = 1:nStimSites
     psth_h = genvarname(['psth_',num2str(ii)]);
     eval([psth_h '= figure();']);%, num2str(1+ii), ');']);

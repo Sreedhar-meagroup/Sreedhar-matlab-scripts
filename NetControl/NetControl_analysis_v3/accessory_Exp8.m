@@ -1,5 +1,5 @@
 %% participation in spontaneous bursts
-recCh = 38; %hw+1
+recCh = 9; %hw+1
 SpikeTimes = spon_data.InAChannel{recCh}; %hw+1
 Steps = 10.^[-5:.05:1.5];
 N = 2;

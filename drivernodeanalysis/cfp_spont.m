@@ -1,14 +1,14 @@
 % load spontaneous data
-spon_data = spontaneousData();
+% spon_data = spontaneousData();
 
 % Dividing data into blocks of 2^15 events
 % active electrode if 250 spikes out of 2^15
 
-binsize = 25e-3;
+binsize = 10e-3;
 winofint = 0.5; % time window of interest
 maxlag = winofint/binsize;
 spks = spon_data.Spikes;
-nBlks = 1;
+nBlks = 6;
 tstep = round(spks.time(end)/nBlks);
 for blk = 1:nBlks
    tstr = find(spks.time>(blk-1)*tstep+1,1,'first');
@@ -70,7 +70,6 @@ covmat = computexcovmat(X,maxlag);
 covmat_blk{blk} = covmat;
 
 end
-
 
 
 

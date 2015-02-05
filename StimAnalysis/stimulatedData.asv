@@ -45,17 +45,11 @@ end
 
 datRoot = datName(1:strfind(datName,'.')-1);
 if context
-    if strcmpi(strtrim(cutout),'short')
-        spikes = loadspike_shortcutouts([pathName,datName],2,25);
-    else
-        spikes = loadspike_sk([pathName,datName],2,25);
-    end
-else 
-    if strcmpi(strtrim(cutout),'short')
-        spikes = loadspike_noc_shortcutouts([pathName,datName],2,25);
-    else
-        spikes = loadspike_noc2_sk([pathName,datName],2,25);
-    end
+%     spikes = loadspike_sk([pathName,datName],2,25);
+    spikes = loadspike_shortcutouts([pathName,datName],2,25);
+elseif strcmpi(strtrim(cutout),''
+%     spikes = loadspike_noc2_sk([pathName,datName],2,25);
+    spikes = loadspike_shortcutouts([pathName,datName],2,25);
     cleaning  = false;
 end
 thresh  = extract_thresh([pathName, datName, '.desc']);
