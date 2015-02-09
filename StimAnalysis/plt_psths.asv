@@ -63,9 +63,9 @@ for ii = 1:nStimSites
         axis tight;
         line([0 0],[-0.5 max(1,max(mean(frMat,1)))+max(std(frMat))],'Color','r');
         if jj == cr2hw(stimSites(ii))+1
-            text(response_window*1e3-50,0.5,num2str(jj),'FontAngle','italic','Color',[1,0,0]);
+            text(375,0.5,num2str(jj),'FontAngle','italic','Color',[1,0,0]);
         else
-            text(response_window*1e3-50,0.5,num2str(jj),'FontAngle','italic');
+            text(375,0.5,num2str(jj),'FontAngle','italic');
         end
         
 %         if ~or(mod(pos,6)==1,pos>54)

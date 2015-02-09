@@ -1,5 +1,5 @@
 %% participation in spontaneous bursts
-recCh = 9; %hw+1
+recCh = 11; %hw+1
 SpikeTimes = spon_data.InAChannel{recCh}; %hw+1
 Steps = 10.^[-5:.05:1.5];
 N = 2;
@@ -21,7 +21,7 @@ title(['Distribution of spikes in spontaneous bursts (Ch:', num2str(hw2cr(recCh-
 
 
 %% response to stimuli
-chosen_stimInd = 1;
+chosen_stimInd = 4;
 resp_slices = stim_data.Responses.resp_slices{chosen_stimInd};
 silence_s = stim_data.Silence_s{chosen_stimInd};
 for ii = 1:size(stim_data.StimTimes{chosen_stimInd},2)
