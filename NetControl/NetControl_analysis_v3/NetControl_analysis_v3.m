@@ -21,7 +21,8 @@ end
 
 %% Stimulus times and location
 
-stimTimes   = getStimTimes(spikes);
+stimTimes   = getStimTimes(spikes,1);
+
 electrode_details = extract_elec_details([pathName,'config_files\train.cls']);
 
 %% Cleaning the spikes; silencing artifacts 1ms post stimulus blank and getting them into inAChannel cells

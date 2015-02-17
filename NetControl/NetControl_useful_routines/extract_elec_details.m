@@ -12,15 +12,37 @@ function electrode_details = extract_elec_details(filename)
 
 text = fileread(filename);
 
-key_stim    = 'stim_stim_electrodes\s*=\s*(\d\d)';
-tok_stim    = regexp(text,key_stim,'tokens');
-key_rec     = 'mea_recording_electrodes\s*=\s*(\d\d)';
-tok_rec     = regexp(text,key_rec,'tokens');
-key_res     = 'mea_response_electrodes\s*=\s*(\d\d)';
-tok_res     = regexp(text,key_res,'tokens');
+temp = regexp(filename,'[.](\w+)','tokens');
+ext  = temp{1};
 
-electrode_details.description    = 'All electrodes are in cr(11 to 88)';
-electrode_details.stim_electrode = str2double(tok_stim{:});
-electrode_details.rec_electrode  = str2double(tok_rec{:});
-electrode_details.res_electrode  = str2double(tok_res{:});
+if strcmpi(ext,'cls')
+    key_stim    = 'stim_stim_electrodes\s*=\s*(\d\d)';
+    tok_stim    = regexp(text,key_stim,'tokens');
+    key_rec     = 'mea_recording_electrodes\s*=\s*(\d\d)';
+    tok_rec     = regexp(text,key_rec,'tokens');
+    key_res     = 'mea_response_electrodes\s*=\s*(\d\d)';
+    tok_res     = regexp(text,key_res,'tokens');
+
+    electrode_details.description    = 'All electrodes are in cr(11 to 88)';
+    electrode_details.stim_electrodes = str2double(tok_stim{:});
+    electrode_details.rec_electrodes  = str2double(tok_rec{:});
+    electrode_details.res_electrodes  = str2double(tok_res{:});
+
+elseif strcmpi(ext,'yaml')
+    key_stim    = 'stimulation_electrode:\s?(\d\d)';
+    tok_stim    = regexp(text,key_stim,'tokens');
+    key_rec     = 'recording_electrodes:\s?\[(\d\d)\]';
+    tok_rec     = regexp(text,key_rec,'tokens');
+    
+    electrode_details.description    = 'All electrodes are in cr(11 to 88)';
+    electrode_details.stim_electrodes = str2double(tok_stim{:});
+    electrode_details.rec_electrodes  = str2double(tok_rec{:});
+    electrode_details.res_electrodes  = '';
+else
+    disp('::Config file format mismatch')
+    electrode_details = [];
+end
+    
+    
+    
 
